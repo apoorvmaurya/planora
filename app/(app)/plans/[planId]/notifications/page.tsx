@@ -1,0 +1,181 @@
+"use client"
+
+import React, { useState, useEffect } from "react"
+import { useParams } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
+import { useUserStore } from "@/store/userStore"
+import { motion } from "framer-motion"
+import { Bell, Sparkles, Loader2, CalendarClock, Briefcase, CloudSun, MapPin } from "lucide-react"
+import { Switch } from "@/components/ui/switch"
+
+type Preferences = {
+  opt_out_t30: boolean;
+  opt_out_t7: boolean;
+  opt_out_t24: boolean;
+  opt_out_t0: boolean;
+}
+
+export default function NotificationsPage() {
+  const params = useParams()
+  const planId = params.planId as string
+  const supabase = createClient()
+  const { profile } = useUserStore()
+
+  const [plan, setPlan] = useState<any>(null)
+  const [preferences, setPreferences] = useState<Preferences>({
+    opt_out_t30: false,
+    opt_out_t7: false,
+    opt_out_t24: false,
+    opt_out_t0: false,
+  })
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+
+  useEffect(() => {
+    async function fetchData() {
+      setIsLoading(true)
+      const { data: pData } = await supabase.from('plans').select('*').eq('id', planId).single()
+      setPlan(pData)
+
+      if (profile) {
+        const { data: prefData } = await supabase
+          .from('plan_notification_preferences')
+          .select('*')
+          .eq('plan_id', planId)
+          .eq('user_id', profile.id)
+          .single()
+
+        if (prefData) {
+          setPreferences({
+            opt_out_t30: prefData.opt_out_t30,
+            opt_out_t7: prefData.opt_out_t7,
+            opt_out_t24: prefData.opt_out_t24,
+            opt_out_t0: prefData.opt_out_t0,
+          })
+        }
+      }
+      setIsLoading(false)
+    }
+
+    if (profile) fetchData()
+  }, [planId, profile, supabase])
+
+  const handleToggle = async (key: keyof Preferences, checked: boolean) => {
+    if (!profile) return
+
+    setPreferences(prev => ({ ...prev, [key]: checked }))
+    setIsSaving(true)
+
+    try {
+      const { error } = await supabase
+        .from('plan_notification_preferences')
+        .upsert({
+          plan_id: planId,
+          user_id: profile.id,
+          [key]: checked,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'plan_id,user_id' })
+
+      if (error) throw error
+    } catch (err) {
+      console.error("Failed to update preferences", err)
+      // Revert on fail
+      setPreferences(prev => ({ ...prev, [key]: !checked }))
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  if (isLoading) return <div className="text-center py-20 text-slate-500">Loading settings...</div>
+  if (!plan) return <div className="text-center py-20 text-red-500">Plan not found</div>
+
+  const triggers = [
+    {
+      key: 'opt_out_t30' as keyof Preferences,
+      title: 'T-30 Excitement Spark',
+      description: 'A hype-building reminder 30 days before the trip starts.',
+      icon: <CalendarClock className="w-5 h-5" />,
+      preview: `Only 30 days until ${plan.destination_name}! Get ready! 🎉`
+    },
+    {
+      key: 'opt_out_t7' as keyof Preferences,
+      title: 'T-7 Packing Nudge',
+      description: 'A reminder to start packing 7 days out.',
+      icon: <Briefcase className="w-5 h-5" />,
+      preview: `1 Week Left! Time to start packing for ${plan.destination_name}! 🧳`
+    },
+    {
+      key: 'opt_out_t24' as keyof Preferences,
+      title: 'T-24 Hype Drop',
+      description: 'The final 24-hour weather and hype check.',
+      icon: <CloudSun className="w-5 h-5" />,
+      preview: `Tomorrow is the day! Check the weather for ${plan.destination_name}! ☀️`
+    },
+    {
+      key: 'opt_out_t0' as keyof Preferences,
+      title: 'Day-of Morning Brief',
+      description: 'An energetic morning push on the day the trip starts.',
+      icon: <MapPin className="w-5 h-5" />,
+      preview: `Trip Day! It's finally here. Let's conquer ${plan.destination_name}! 🗺️`
+    }
+  ]
+
+  return (
+    <div className="max-w-3xl mx-auto pb-20 space-y-8 px-4 sm:px-0">
+      <div>
+        <h1 className="text-3xl font-bold text-slate-900">Momentum Engine</h1>
+        <p className="text-slate-500 mt-1 flex items-center gap-2">
+          Manage AI-powered push notifications for this trip. 
+          <span className="inline-flex items-center gap-1 text-[#1D9E75] bg-teal-50 px-2 py-0.5 rounded-full text-xs font-semibold">
+            <Sparkles className="w-3 h-3" /> Powered by Gemini
+          </span>
+        </p>
+      </div>
+
+      <div className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm divide-y divide-slate-100">
+        {triggers.map((trigger, i) => (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            key={trigger.key} 
+            className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 hover:bg-slate-50 transition-colors"
+          >
+            <div className="flex gap-4 items-start flex-1">
+              <div className="bg-slate-100 p-3 rounded-2xl text-slate-600 shrink-0">
+                {trigger.icon}
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-900">{trigger.title}</h3>
+                <p className="text-sm text-slate-500 mt-1">{trigger.description}</p>
+                
+                <div className="mt-4 bg-slate-900 text-white p-4 rounded-2xl shadow-lg inline-block relative max-w-sm">
+                  <div className="absolute -top-2 left-4 w-4 h-4 bg-slate-900 rotate-45" />
+                  <div className="flex items-center gap-2 mb-1">
+                    <img src="/icon-192.png" className="w-4 h-4 rounded-sm bg-white" alt="" />
+                    <span className="text-[10px] font-bold text-white/60 uppercase tracking-wider">Planora</span>
+                  </div>
+                  <p className="text-sm leading-tight text-white/90">
+                    {trigger.preview}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between sm:flex-col sm:items-end gap-3 shrink-0 pt-4 sm:pt-0 border-t sm:border-0 border-slate-100">
+              <span className="text-sm font-medium text-slate-500">
+                {preferences[trigger.key] ? 'Opted out' : 'Enabled'}
+              </span>
+              <Switch 
+                checked={!preferences[trigger.key]} 
+                onCheckedChange={(checked: boolean) => handleToggle(trigger.key, !checked)}
+                disabled={isSaving}
+                className="data-[state=checked]:bg-[#1D9E75]"
+              />
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  )
+}

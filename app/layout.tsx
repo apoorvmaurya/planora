@@ -3,6 +3,7 @@ import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ServiceWorkerRegister } from "@/components/shared/ServiceWorkerRegister";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const dmSans = DM_Sans({
   variable: "--font-sans",
@@ -10,7 +11,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://planora.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://planora-plum-beta.vercel.app'),
   title: {
     template: 'Planora — %s | Plans that actually happen',
     default: 'Planora | Plans that actually happen',
@@ -29,6 +30,7 @@ export default function RootLayout({
         <ServiceWorkerRegister />
         {children}
         <Toaster />
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Planora | Plans that actually happen",
     description: "Because group plans shouldn't die in the group chat. Planora aligns your friends, budgets, and schedules in one magical workspace.",
-    url: "https://planora.app",
+    url: "https://planora-plum-beta.vercel.app",
     siteName: "Planora",
     images: [
       {

@@ -1,5 +1,5 @@
 import { streamObject } from 'ai'
-import { google } from '@ai-sdk/google'
+import { groq } from '@ai-sdk/groq'
 import { createClient } from '@/lib/supabase/server'
 import { buildPromptContext, itinerarySchema } from '@/lib/ai/gemini'
 
@@ -83,7 +83,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamObject({
-    model: google('gemini-2.5-pro'),
+    model: groq('llama-3.1-8b-instant'),
     schema: itinerarySchema,
     prompt: prompt,
     async onFinish({ object }) {

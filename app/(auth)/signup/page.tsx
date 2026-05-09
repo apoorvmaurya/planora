@@ -20,10 +20,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+import { KeyRound } from "lucide-react";
+
 const formSchema = z.object({
   fullName: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  password: z.string()
+    .min(8, { message: "Password must be at least 8 characters." })
+    .regex(/[A-Z]/, { message: "Must contain at least one uppercase letter." })
+    .regex(/[a-z]/, { message: "Must contain at least one lowercase letter." })
+    .regex(/[0-9]/, { message: "Must contain at least one number." })
+    .regex(/[^A-Za-z0-9]/, { message: "Must contain at least one special character." }),
 });
 
 export default function SignupPage() {
@@ -39,6 +46,30 @@ export default function SignupPage() {
       password: "",
     },
   });
+
+  const passwordValue = form.watch("password");
+
+  const checkStrength = (pass: string) => {
+    let score = 0;
+    if (!pass) return score;
+    if (pass.length >= 8) score += 1;
+    if (/[A-Z]/.test(pass)) score += 1;
+    if (/[a-z]/.test(pass)) score += 1;
+    if (/[0-9]/.test(pass)) score += 1;
+    if (/[^A-Za-z0-9]/.test(pass)) score += 1;
+    return score;
+  };
+
+  const strength = checkStrength(passwordValue);
+  
+  const suggestPassword = () => {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~`|}{[]:;?><,./-=";
+    let newPassword = "P1@"; // guarantee uppercase, number, special
+    for (let i = 0; i < 13; i++) {
+      newPassword += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    form.setValue("password", newPassword, { shouldValidate: true });
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -99,7 +130,7 @@ export default function SignupPage() {
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} />
+                    <Input id="fullName" autoComplete="name" placeholder="John Doe" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -112,7 +143,7 @@ export default function SignupPage() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
+                    <Input type="email" id="email" autoComplete="email" placeholder="name@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -123,10 +154,38 @@ export default function SignupPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <div className="flex items-center justify-between">
+                    <FormLabel>Password</FormLabel>
+                    <button 
+                      type="button" 
+                      onClick={suggestPassword}
+                      className="text-xs text-[#1D9E75] hover:underline flex items-center font-medium"
+                    >
+                      <KeyRound className="w-3 h-3 mr-1" /> Suggest strong password
+                    </button>
+                  </div>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input type="password" id="password" autoComplete="new-password" placeholder="••••••••" {...field} />
                   </FormControl>
+                  {passwordValue && (
+                    <div className="mt-2 space-y-1.5">
+                      <div className="flex gap-1 h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                        {[1, 2, 3, 4, 5].map((level) => (
+                          <div 
+                            key={level} 
+                            className={`flex-1 h-full transition-colors ${
+                              strength >= level 
+                                ? strength <= 2 ? 'bg-red-400' : strength <= 4 ? 'bg-amber-400' : 'bg-emerald-500'
+                                : 'bg-transparent'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-xs text-slate-500 font-medium text-right">
+                        {strength === 0 ? "Empty" : strength <= 2 ? "Weak" : strength <= 4 ? "Good" : "Strong"}
+                      </p>
+                    </div>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}

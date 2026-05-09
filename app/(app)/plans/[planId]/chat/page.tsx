@@ -46,19 +46,12 @@ export default function PlanChatPage() {
         const { done, value } = await reader.read()
         if (done) break
         
-        // Vercel AI SDK text stream returns lines starting with '0:'
-        const chunk = decoder.decode(value)
-        const lines = chunk.split('\n')
-        for (const line of lines) {
-          if (line.startsWith('0:')) {
-            const text = JSON.parse(line.substring(2))
-            assistantMsg += text
-            setMessages(prev => [
-              ...prev.slice(0, -1),
-              { role: 'assistant', content: assistantMsg }
-            ])
-          }
-        }
+        const chunk = decoder.decode(value, { stream: true })
+        assistantMsg += chunk
+        setMessages(prev => [
+          ...prev.slice(0, -1),
+          { role: 'assistant', content: assistantMsg }
+        ])
       }
     } catch (err) {
       console.error(err)

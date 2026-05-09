@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.67",
+    "@ai-sdk/groq": "^3.0.39",
     "@ai-sdk/react": "^3.0.176",
     "@base-ui/react": "^1.4.1",
     "@google/generative-ai": "^0.24.1",
@@ -18,7 +19,7 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@serwist/next": "^9.5.11",
     "@supabase/ssr": "^0.10.2",
-    "@supabase/supabase-js": "^2.105.1",
+    "@supabase/supabase-js": "^2.105.3",
     "@vercel/speed-insights": "^2.0.0",
     "ai": "^6.0.174",
     "class-variance-authority": "^0.7.1",

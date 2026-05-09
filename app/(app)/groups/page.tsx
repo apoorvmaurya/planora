@@ -89,11 +89,20 @@ export default function GroupsPage() {
                   
                   <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
                     <div className="flex -space-x-2">
-                      {[1,2,3].map(j => (
-                        <div key={j} className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-500">
-                          U
+                      {group.group_members?.slice(0, 3).map((member: any) => (
+                        <div key={member.user_id} className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-500 overflow-hidden">
+                          {member.user?.avatar_url ? (
+                            <img src={member.user.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                          ) : (
+                            member.user?.full_name?.charAt(0).toUpperCase() || 'U'
+                          )}
                         </div>
                       ))}
+                      {(group.group_members?.length || 0) > 3 && (
+                        <div className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-500">
+                          +{(group.group_members?.length || 0) - 3}
+                        </div>
+                      )}
                     </div>
                     <span className="text-xs font-semibold text-[#1D9E75] bg-teal-50 px-2 py-1 rounded-full">
                       Active

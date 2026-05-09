@@ -1,5 +1,5 @@
 import { streamText } from 'ai'
-import { google } from '@ai-sdk/google'
+import { groq } from '@ai-sdk/groq'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
   `
 
   const result = streamText({
-    model: google('gemini-2.5-flash'),
+    model: groq('llama-3.1-8b-instant'),
     system: systemPrompt,
     messages,
   })

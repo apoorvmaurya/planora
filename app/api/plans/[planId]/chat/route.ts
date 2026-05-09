@@ -1,5 +1,5 @@
 import { streamText } from 'ai'
-import { google } from '@ai-sdk/google'
+import { groq } from '@ai-sdk/groq'
 import { createClient } from '@/lib/supabase/server'
 
 export const maxDuration = 30
@@ -25,7 +25,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ planId:
   `
 
   const result = streamText({
-    model: google('gemini-2.5-pro'),
+    model: groq('llama-3.1-8b-instant'),
     system: systemPrompt,
     messages,
   })

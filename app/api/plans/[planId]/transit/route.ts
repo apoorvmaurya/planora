@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { generateObject } from 'ai'
-import { google } from '@ai-sdk/google'
+import { groq } from '@ai-sdk/groq'
 import { z } from 'zod'
 
 export async function POST(req: Request) {
@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     if (!origin || !destination) return NextResponse.json({ error: "Missing origin or destination" }, { status: 400 })
 
     const result = await generateObject({
-      model: google('gemini-2.5-pro'),
+      model: groq('llama-3.1-8b-instant'),
       schema: z.object({
         options: z.array(z.object({
           type: z.enum(['flight', 'train', 'bus', 'driving']),

@@ -8,6 +8,7 @@ import { motion } from "framer-motion"
 import { Plus, Receipt, Download, ArrowRight, Wallet, TrendingUp, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AddExpenseModal } from "@/components/shared/AddExpenseModal"
+import { ErrorState } from "@/components/shared/ErrorState"
 import { calculateRawSplits, Expense, Settlement } from "@/lib/utils/splitCalculator"
 
 export default function ExpensesPage() {
@@ -32,8 +33,15 @@ export default function ExpensesPage() {
 
     // Fetch members
     if (pData) {
-      const { data: mData } = await supabase.from('group_members').select('user:profiles(*)').eq('group_id', pData.group_id)
-      setMembers(mData || [])
+      if (pData.group_id) {
+        const { data: mData } = await supabase.from('group_members').select('user:profiles(*)').eq('group_id', pData.group_id)
+        setMembers(mData || [])
+      } else {
+        // Solo plan - use current user as sole member
+        if (profile) {
+          setMembers([{ user: profile }])
+        }
+      }
     }
 
     // Fetch expenses
@@ -67,7 +75,7 @@ export default function ExpensesPage() {
   }
 
   if (isLoading) return <div className="text-center py-20 text-slate-500">Loading expenses...</div>
-  if (!plan) return <div className="text-center py-20 text-red-500">Plan not found</div>
+  if (!plan) return <ErrorState variant="not_found" title="Plan not found" backHref="/plans" backLabel="Back to plans" />
 
   const totalSpent = expenses.reduce((acc, exp) => acc + exp.amount, 0)
   const perPersonAvg = members.length > 0 ? totalSpent / members.length : 0

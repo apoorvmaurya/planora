@@ -11,7 +11,7 @@ export async function GET(req: Request) {
     .from("group_members")
     .select(`
       group_id,
-      groups:groups(*)
+      groups:groups(*, group_members(user_id, user:profiles(full_name, avatar_url)))
     `)
     .eq('user_id', user.id)
 

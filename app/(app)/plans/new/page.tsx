@@ -19,6 +19,7 @@ import { itinerarySchema } from "@/lib/ai/prompts"
 export default function NewPlanPage() {
   const router = useRouter()
   const supabase = createClient()
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
   
   const [step, setStep] = useState(1)
   const [groups, setGroups] = useState<any[]>([])
@@ -31,7 +32,7 @@ export default function NewPlanPage() {
   const [budget, setBudget] = useState("")
   const [currency, setCurrency] = useState("USD")
   
-  const [groupId, setGroupId] = useState("")
+  const [groupId, setGroupId] = useState(searchParams.get('groupId') || "")
   
   const [tripType, setTripType] = useState("leisure")
   const [pace, setPace] = useState("moderate")

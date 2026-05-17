@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, AlertDialogClose } from "@/components/ui/alert-dialog"
+import { ErrorState } from "@/components/shared/ErrorState"
 import { Check, ChevronRight, Loader2, Sparkles, AlertCircle, Trash2 } from "lucide-react"
 import { itinerarySchema } from "@/lib/ai/prompts"
 
@@ -25,6 +27,7 @@ export default function EditPlanPage() {
   const [isLoadingPlan, setIsLoadingPlan] = useState(true)
   const [isConfirming, setIsConfirming] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   
   // Form State
   const [plan, setPlan] = useState<any>(null)
@@ -101,7 +104,6 @@ export default function EditPlanPage() {
   }
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this draft?")) return
     setIsDeleting(true)
     await supabase.from('plans').delete().eq('id', planId)
     toast.success("Draft deleted")
@@ -109,8 +111,8 @@ export default function EditPlanPage() {
   }
 
   if (isLoadingPlan) return <div className="text-center py-20 text-slate-500">Loading draft...</div>
-  if (!plan) return <div className="text-center py-20 text-red-500">Plan not found</div>
-  if (plan.status !== 'draft') return <div className="text-center py-20 text-slate-500">Only drafts can be edited here.</div>
+  if (!plan) return <ErrorState variant="not_found" title="Plan not found" description="This draft may have been deleted or you don't have access." backHref="/plans" backLabel="Back to plans" />
+  if (plan.status !== 'draft') return <ErrorState variant="no_access" title="Not editable" description="Only drafts can be edited here. Confirmed and completed plans are read-only." backHref={`/plans/${planId}`} backLabel="View plan" />
 
   return (
     <div className="max-w-3xl mx-auto pb-20 space-y-6">
@@ -119,7 +121,7 @@ export default function EditPlanPage() {
           <h1 className="text-3xl font-bold text-slate-900">Review Draft</h1>
           <p className="text-slate-500 mt-1">Adjust preferences, regenerate the itinerary, or confirm it.</p>
         </div>
-        <Button variant="destructive" onClick={handleDelete} disabled={isDeleting} className="rounded-xl flex items-center gap-2">
+        <Button variant="destructive" onClick={() => setShowDeleteDialog(true)} disabled={isDeleting} className="rounded-xl flex items-center gap-2">
           <Trash2 className="w-4 h-4" /> Delete
         </Button>
       </div>
@@ -212,6 +214,29 @@ export default function EditPlanPage() {
           </Button>
         </div>
       </div>
+
+      {/* Delete Draft AlertDialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this draft?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the draft plan and all generated itinerary items. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogClose render={<Button variant="outline" className="rounded-xl" />}>Keep draft</AlertDialogClose>
+            <Button
+              className="rounded-xl bg-red-600 hover:bg-red-700 text-white"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              Delete forever
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

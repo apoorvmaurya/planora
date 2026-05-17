@@ -5,9 +5,10 @@ import { useParams } from "next/navigation"
 import { useGroup } from "@/hooks/useGroup"
 import { useUserStore } from "@/store/userStore"
 import { motion } from "framer-motion"
-import { Users, Settings, Plus, MapPin, Map, Calendar, Shield } from "lucide-react"
+import { Users, Plus, MapPin, Map, Calendar, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
 
 export default function GroupDetailPage() {
   const params = useParams()
@@ -45,9 +46,11 @@ export default function GroupDetailPage() {
               <p className="text-white/80 max-w-2xl">{group.description}</p>
             </div>
             {isAdmin && (
-              <Button variant="secondary" className="bg-white/10 text-white hover:bg-white/20 border-0 backdrop-blur-md">
-                <Settings className="w-4 h-4 mr-2" /> Settings
-              </Button>
+              <Link href={`/groups/${groupId}/settings`}>
+                <Button variant="secondary" className="bg-white/10 text-white hover:bg-white/20 border-0 backdrop-blur-md">
+                  Settings
+                </Button>
+              </Link>
             )}
           </div>
         </div>
@@ -61,9 +64,11 @@ export default function GroupDetailPage() {
               <h2 className="text-2xl font-bold text-slate-900 flex items-center">
                 <Map className="w-6 h-6 mr-2 text-[#1D9E75]" /> Group Plans
               </h2>
-              <Button className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl h-10">
-                <Plus className="w-4 h-4 mr-1" /> New Plan
-              </Button>
+              <Link href={`/plans/new?groupId=${groupId}`}>
+                <Button className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl h-10">
+                  <Plus className="w-4 h-4 mr-1" /> New Plan
+                </Button>
+              </Link>
             </div>
 
             {plans.length === 0 ? (
@@ -73,12 +78,12 @@ export default function GroupDetailPage() {
             ) : (
               <div className="space-y-4">
                 {plans.map((plan: any, i: number) => (
-                  <motion.div 
-                    key={plan.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    className="bg-white p-5 rounded-3xl border border-slate-100 flex flex-col sm:flex-row gap-4 items-center group cursor-pointer hover:border-[#1D9E75]/30 hover:shadow-md transition-all"
+                  <Link key={plan.id} href={`/plans/${plan.id}`}>
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      className="bg-white p-5 rounded-3xl border border-slate-100 flex flex-col sm:flex-row gap-4 items-center group cursor-pointer hover:border-[#1D9E75]/30 hover:shadow-md transition-all mb-4"
                   >
                     <div className="w-full sm:w-32 h-24 bg-slate-100 rounded-2xl overflow-hidden shrink-0">
                       {plan.cover_image_url ? (
@@ -99,7 +104,8 @@ export default function GroupDetailPage() {
                         <span className="flex items-center"><Calendar className="w-3 h-3 mr-1" /> {new Date(plan.start_date || plan.created_at).toLocaleDateString()}</span>
                       </div>
                     </div>
-                  </motion.div>
+                    </motion.div>
+                  </Link>
                 ))}
               </div>
             )}

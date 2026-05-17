@@ -7,6 +7,7 @@ import { useUserStore } from "@/store/userStore"
 import { motion } from "framer-motion"
 import { Bell, Sparkles, Loader2, CalendarClock, Briefcase, CloudSun, MapPin } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
+import { ErrorState } from "@/components/shared/ErrorState"
 
 type Preferences = {
   opt_out_t30: boolean;
@@ -87,7 +88,7 @@ export default function NotificationsPage() {
   }
 
   if (isLoading) return <div className="text-center py-20 text-slate-500">Loading settings...</div>
-  if (!plan) return <div className="text-center py-20 text-red-500">Plan not found</div>
+  if (!plan) return <ErrorState variant="not_found" title="Plan not found" backHref="/plans" backLabel="Back to plans" />
 
   const triggers = [
     {

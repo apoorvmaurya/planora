@@ -108,7 +108,7 @@ export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps)
 
         <div className="space-y-3 mb-6 flex-1">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-500 flex items-center gap-2"><Users className="w-4 h-4" /> {plan.group?.name}</span>
+            <span className="text-slate-500 flex items-center gap-2"><Users className="w-4 h-4" /> {plan.group?.name || 'Solo Trip'}</span>
             <div className="flex -space-x-2">
               {members.slice(0, 4).map((m: any, i: number) => (
                 <Image 

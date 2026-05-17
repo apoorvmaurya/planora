@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react"
 import { useParams } from "next/navigation"
-import { Sparkles, Send, ArrowLeft, Bot, User } from "lucide-react"
+import { Sparkles, Send, ArrowLeft, Bot, User, Wrench } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
@@ -66,6 +66,13 @@ export default function PlanChatPage() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  const suggestions = [
+    "Add a coffee shop visit on Day 1 morning",
+    "Remove the museum from Day 2",
+    "Swap lunch and dinner on Day 1",
+    "What should we pack for this trip?",
+  ]
+
   return (
     <div className="max-w-3xl mx-auto h-[calc(100vh-100px)] flex flex-col pb-4">
       <div className="flex items-center gap-4 mb-6">
@@ -76,16 +83,34 @@ export default function PlanChatPage() {
           <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
             Planora AI <Sparkles className="w-5 h-5 text-[#1D9E75]" />
           </h1>
-          <p className="text-slate-500 text-sm">Ask about your itinerary, packing lists, or local tips.</p>
+          <p className="text-slate-500 text-sm flex items-center gap-1.5">
+            <Wrench className="w-3 h-3" /> Can edit, add, remove & reorder your itinerary
+          </p>
         </div>
       </div>
 
       <div className="flex-1 bg-white border border-slate-100 rounded-3xl shadow-sm overflow-hidden flex flex-col">
         <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/50">
           {messages.length === 0 && (
-            <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-4">
-              <Bot className="w-12 h-12 text-slate-300" />
-              <p>Try asking: "What should we pack?" or "Find a restaurant for Day 2 lunch"</p>
+            <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-6">
+              <div className="text-center space-y-3">
+                <div className="w-16 h-16 rounded-full bg-teal-50 text-[#1D9E75] flex items-center justify-center mx-auto">
+                  <Bot className="w-8 h-8" />
+                </div>
+                <h3 className="font-bold text-slate-700 text-lg">What can I help with?</h3>
+                <p className="text-sm max-w-sm">Ask me to modify your itinerary, get travel tips, or manage your plan.</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-md">
+                {suggestions.map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={() => { setInput(s) }}
+                    className="text-left text-sm p-3 rounded-xl border border-slate-200 bg-white hover:border-[#1D9E75]/40 hover:bg-teal-50/50 transition-colors text-slate-600"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
           
@@ -119,7 +144,7 @@ export default function PlanChatPage() {
             <Input 
               value={input} 
               onChange={handleInputChange} 
-              placeholder="Message Planora AI..." 
+              placeholder="Try: 'Add a beach day on Day 2' or 'Remove the museum visit'..." 
               className="h-14 pl-6 pr-14 rounded-2xl bg-slate-50 border-slate-200 text-base focus-visible:ring-[#1D9E75]"
             />
             <Button type="submit" disabled={isLoading || !input.trim()} size="icon" className="absolute right-2 w-10 h-10 rounded-xl bg-[#1D9E75] hover:bg-[#15805e]">

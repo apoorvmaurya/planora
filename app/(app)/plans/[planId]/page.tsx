@@ -1,19 +1,23 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useUserStore } from "@/store/userStore"
 import { motion } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { Map, Calendar, Users, DollarSign, Train, Plane, Bus, MessageSquare, Loader2 } from "lucide-react"
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, AlertDialogClose } from "@/components/ui/alert-dialog"
+import { Map, Calendar, Users, DollarSign, Train, Plane, Bus, MessageSquare, Loader2, Wallet, Camera, Bell, PenSquare, Trash2, XCircle, CheckCircle2, Share2, UserMinus, Sparkles } from "lucide-react"
 import { toast } from "sonner"
 import { ItineraryItemCard } from "@/components/shared/ItineraryItemCard"
+import { ErrorState } from "@/components/shared/ErrorState"
 import Link from "next/link"
+import confetti from "canvas-confetti"
 
 export default function PlanDetailPage() {
   const params = useParams()
+  const router = useRouter()
   const planId = params.planId as string
   const supabase = createClient()
   const { profile } = useUserStore()
@@ -27,6 +31,11 @@ export default function PlanDetailPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [transitLoading, setTransitLoading] = useState<Record<string, boolean>>({})
   const [transitOptions, setTransitOptions] = useState<Record<string, any>>({})
+
+  // AlertDialog state
+  const [kickTarget, setKickTarget] = useState<any>(null)
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   useEffect(() => {
     async function fetchData() {
@@ -46,8 +55,12 @@ export default function PlanDetailPage() {
       const { data: vData } = await supabase.from('member_votes').select('*').eq('plan_id', planId)
       setVotes(vData || [])
 
-      const { data: mData } = await supabase.from('group_members').select('role, user:profiles(*)').eq('group_id', pData.group_id)
-      setMembers(mData || [])
+      if (pData.group_id) {
+        const { data: mData } = await supabase.from('group_members').select('role, user:profiles(*)').eq('group_id', pData.group_id)
+        setMembers(mData || [])
+      } else {
+        setMembers([])
+      }
       
       setIsLoading(false)
     }
@@ -127,7 +140,7 @@ export default function PlanDetailPage() {
   }
 
   if (isLoading) return <div className="text-center py-20 text-slate-500">Loading plan...</div>
-  if (!plan) return <div className="text-center py-20 text-red-500">Plan not found</div>
+  if (!plan) return <ErrorState variant="not_found" title="Plan not found" description="This plan may have been deleted or you don't have access." backHref="/plans" backLabel="Back to plans" />
 
   const days = Array.from(new Set(items.map(i => i.day_number))).sort()
   const currentMember = members.find(m => m.user.id === profile?.id)
@@ -262,36 +275,202 @@ export default function PlanDetailPage() {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm sticky top-8">
-            <h3 className="font-bold text-lg text-slate-900 mb-6">Trip Summary</h3>
+          {/* Trip Summary */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm sticky top-8 space-y-6">
+            <h3 className="font-bold text-lg text-slate-900">Trip Summary</h3>
             
-            <div className="space-y-6">
+            <div className="space-y-5">
               <div>
                 <p className="text-sm text-slate-500 mb-1 flex items-center gap-2"><Calendar className="w-4 h-4" /> Dates</p>
                 <p className="font-bold text-slate-900">{new Date(plan.start_date).toLocaleDateString()} - {new Date(plan.end_date).toLocaleDateString()}</p>
               </div>
-              
               <div>
                 <p className="text-sm text-slate-500 mb-1 flex items-center gap-2"><DollarSign className="w-4 h-4" /> Total Budget</p>
                 <p className="font-bold text-slate-900 text-2xl">{plan.budget_total} {plan.currency}</p>
-                <p className="text-xs text-slate-400 mt-1">~{(plan.budget_total / members.length).toFixed(0)} per person</p>
+                {members.length > 0 && <p className="text-xs text-slate-400 mt-1">~{(plan.budget_total / members.length).toFixed(0)} per person</p>}
               </div>
 
+              {/* Members */}
               <div>
-                <p className="text-sm text-slate-500 mb-2 flex items-center gap-2"><Users className="w-4 h-4" /> The Group</p>
-                <div className="space-y-3">
+                <p className="text-sm text-slate-500 mb-2 flex items-center gap-2"><Users className="w-4 h-4" /> {members.length > 0 ? 'The Group' : 'Solo Trip'}</p>
+                <div className="space-y-2">
+                  {members.length === 0 && (
+                    <p className="text-xs text-slate-400">Just you on this adventure!</p>
+                  )}
                   {members.map(m => (
-                    <div key={m.user.id} className="flex items-center gap-3">
-                      <img src={m.user.avatar_url || `https://ui-avatars.com/api/?name=${m.user.full_name}`} className="w-8 h-8 rounded-full" alt="avatar" />
-                      <span className="text-sm font-semibold text-slate-700">{m.user.full_name}</span>
+                    <div key={m.user.id} className="flex items-center justify-between group">
+                      <div className="flex items-center gap-3">
+                        <img src={m.user.avatar_url || `https://ui-avatars.com/api/?name=${m.user.full_name}`} className="w-8 h-8 rounded-full object-cover" alt="avatar" />
+                        <span className="text-sm font-semibold text-slate-700">{m.user.full_name}</span>
+                      </div>
+                      {isAdmin && m.user.id !== profile?.id && plan.group_id && (
+                        <button
+                          onClick={() => setKickTarget(m.user)}
+                          className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-all p-1 rounded-lg hover:bg-red-50"
+                        >
+                          <UserMinus className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
               </div>
             </div>
+
+            {/* Feature Links */}
+            <div className="border-t border-slate-100 pt-5 space-y-2">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Features</p>
+              <Link href={`/plans/${planId}/expenses`} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700">
+                <Wallet className="w-4 h-4 text-slate-400" /> Expenses & Budget
+              </Link>
+              <Link href={`/plans/${planId}/memories`} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700">
+                <Camera className="w-4 h-4 text-slate-400" /> Trip Memories
+              </Link>
+              <Link href={`/plans/${planId}/notifications`} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700">
+                <Bell className="w-4 h-4 text-slate-400" /> Momentum Engine
+              </Link>
+              {plan.status === 'draft' && (
+                <Link href={`/plans/${planId}/edit`} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700">
+                  <PenSquare className="w-4 h-4 text-slate-400" /> Edit Draft
+                </Link>
+              )}
+              {plan.share_token && (
+                <button
+                  onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/share/${plan.share_token}`); toast.success('Share link copied!') }}
+                  className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700 w-full text-left"
+                >
+                  <Share2 className="w-4 h-4 text-slate-400" /> Copy Share Link
+                </button>
+              )}
+            </div>
+
+            {/* Admin Actions */}
+            {isAdmin && plan.status !== 'cancelled' && (
+              <div className="border-t border-slate-100 pt-5 space-y-2">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Admin</p>
+                {plan.status === 'draft' && (
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start rounded-xl border-teal-200 text-[#1D9E75] hover:bg-teal-50 hover:text-[#15805e]"
+                    onClick={async () => {
+                      const res = await fetch(`/api/plans/${planId}/confirm`, { method: 'POST' })
+                      if (res.ok) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); toast.success('Plan confirmed!'); setPlan((p: any) => ({ ...p, status: 'confirmed' })) }
+                      else toast.error('Failed to confirm')
+                    }}
+                  >
+                    <CheckCircle2 className="w-4 h-4 mr-2" /> Confirm Plan
+                  </Button>
+                )}
+                {plan.status === 'confirmed' && (
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start rounded-xl border-purple-200 text-purple-600 hover:bg-purple-50"
+                    onClick={async () => {
+                      const res = await fetch(`/api/plans/${planId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'completed' }) })
+                      if (res.ok) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); toast.success('Trip marked as completed! 🎉'); setPlan((p: any) => ({ ...p, status: 'completed' })) }
+                      else toast.error('Failed to update')
+                    }}
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" /> Mark as Completed
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  className="w-full justify-start rounded-xl border-orange-200 text-orange-600 hover:bg-orange-50"
+                  onClick={() => setShowCancelDialog(true)}
+                >
+                  <XCircle className="w-4 h-4 mr-2" /> Cancel Plan
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start rounded-xl border-red-200 text-red-600 hover:bg-red-50"
+                  onClick={() => setShowDeleteDialog(true)}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" /> Delete Permanently
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Kick Member AlertDialog */}
+      <AlertDialog open={!!kickTarget} onOpenChange={(open: boolean) => { if (!open) setKickTarget(null) }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove member</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove <strong>{kickTarget?.full_name}</strong> from the group? They will lose access to all plans in this group.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogClose render={<Button variant="outline" className="rounded-xl" />}>Cancel</AlertDialogClose>
+            <Button
+              className="rounded-xl bg-red-600 hover:bg-red-700 text-white"
+              onClick={async () => {
+                const res = await fetch(`/api/groups/${plan.group_id}/members?userId=${kickTarget?.id}`, { method: 'DELETE' })
+                if (res.ok) { toast.success('Member removed'); setMembers(prev => prev.filter(p => p.user.id !== kickTarget?.id)) }
+                else toast.error('Failed to remove member')
+                setKickTarget(null)
+              }}
+            >
+              Remove
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Cancel Plan AlertDialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel this plan?</AlertDialogTitle>
+            <AlertDialogDescription>
+              The plan will be marked as cancelled. Your itinerary and data will be preserved and can be restored later.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogClose render={<Button variant="outline" className="rounded-xl" />}>Keep plan</AlertDialogClose>
+            <Button
+              className="rounded-xl bg-orange-600 hover:bg-orange-700 text-white"
+              onClick={async () => {
+                const res = await fetch(`/api/plans/${planId}`, { method: 'DELETE' })
+                if (res.ok) { toast.success('Plan cancelled'); setPlan((p: any) => ({ ...p, status: 'cancelled' })) }
+                else toast.error('Failed to cancel')
+                setShowCancelDialog(false)
+              }}
+            >
+              Cancel plan
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Plan AlertDialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete permanently?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete <strong>{plan.title}</strong> and all associated data including itinerary items, expenses, memories, and votes. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogClose render={<Button variant="outline" className="rounded-xl" />}>Keep plan</AlertDialogClose>
+            <Button
+              className="rounded-xl bg-red-600 hover:bg-red-700 text-white"
+              onClick={async () => {
+                const res = await fetch(`/api/plans/${planId}?permanent=true`, { method: 'DELETE' })
+                if (res.ok) { toast.success('Plan deleted'); router.push('/plans') }
+                else toast.error('Failed to delete')
+                setShowDeleteDialog(false)
+              }}
+            >
+              Delete forever
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

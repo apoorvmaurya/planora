@@ -29,6 +29,15 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 const profileSchema = z.object({
   fullName: z.string().min(2, "Name is required"),
@@ -62,6 +71,9 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
     style: [] as string[],
     company: [] as string[],
   })
+
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false)
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -172,6 +184,23 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
     }
   }
 
+  const handleDeleteAccount = async () => {
+    setIsDeletingAccount(true)
+    try {
+      const res = await fetch("/api/profile/delete", {
+        method: "POST",
+      })
+      if (!res.ok) throw new Error("Failed to delete account")
+      toast.success("Your profile and account have been successfully deleted.")
+      window.location.href = "/login"
+    } catch (err) {
+      toast.error("Error deleting your profile.")
+    } finally {
+      setIsDeletingAccount(false)
+      setIsDeleteDialogOpen(false)
+    }
+  }
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-md md:max-w-xl w-full p-0 flex flex-col bg-white">
@@ -180,7 +209,7 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
           <SheetDescription>Update your personal information and preferences.</SheetDescription>
         </SheetHeader>
         
-        <ScrollArea className="flex-1 px-6">
+        <ScrollArea className="flex-1 min-h-0 px-6">
           <div className="py-6 space-y-8">
             {/* Avatar Upload */}
             <div className="flex flex-col items-center gap-4">
@@ -318,6 +347,37 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
                       </div>
                     </div>
                   </div>
+                </div>
+
+                <div className="pt-6 mt-6 border-t border-slate-100 space-y-4">
+                  <h3 className="font-semibold text-rose-600 mb-1">Danger Zone</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">Permanently delete your profile, trips, and all collaborative data. This action is irreversible.</p>
+                  
+                  <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                    <DialogTrigger render={
+                      <Button type="button" variant="outline" className="border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 w-full md:w-auto font-semibold">
+                        Delete Account
+                      </Button>
+                    } />
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle className="text-rose-600">Delete Account Permanently?</DialogTitle>
+                        <DialogDescription className="pt-2 text-slate-600 leading-relaxed">
+                          Are you absolutely sure you want to delete your Planora account? This will permanently delete your profile, trips, travel preferences, and remove you from all travel groups. 
+                          <br /><br />
+                          <strong>This action is irreversible.</strong>
+                        </DialogDescription>
+                      </DialogHeader>
+                      <DialogFooter className="mt-4 gap-2">
+                        <Button type="button" variant="outline" onClick={() => setIsDeleteDialogOpen(false)} disabled={isDeletingAccount}>
+                          Cancel
+                        </Button>
+                        <Button type="button" className="bg-rose-600 hover:bg-rose-700 text-white font-bold" onClick={handleDeleteAccount} disabled={isDeletingAccount}>
+                          {isDeletingAccount ? "Deleting..." : "Yes, Delete Permanently"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
 
               </form>

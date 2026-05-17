@@ -116,7 +116,7 @@ export default function NotificationsPage() {
       title: 'Day-of Morning Brief',
       description: 'An energetic morning push on the day the trip starts.',
       icon: <MapPin className="w-5 h-5" />,
-      preview: `Trip Day! It's finally here. Let's conquer ${plan.destination_name}! 🗺️`
+      preview: `Trip Day! It&apos;s finally here. Let&apos;s conquer ${plan.destination_name}! 🗺️`
     }
   ]
 
@@ -127,7 +127,7 @@ export default function NotificationsPage() {
         <p className="text-slate-500 mt-1 flex items-center gap-2">
           Manage AI-powered push notifications for this trip. 
           <span className="inline-flex items-center gap-1 text-[#1D9E75] bg-teal-50 px-2 py-0.5 rounded-full text-xs font-semibold">
-            <Sparkles className="w-3 h-3" /> Powered by Gemini
+            <Sparkles className="w-3 h-3" /> Powered by AI
           </span>
         </p>
       </div>

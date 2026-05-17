@@ -1,7 +1,7 @@
 import { generateText } from 'ai'
-import { google } from '@ai-sdk/google'
+import { groq } from '@ai-sdk/groq'
 
-// AI notification builders using Gemini 2.5 Flash
+// AI notification builders using Groq
 
 export async function buildHypeNotification(plan: any, daysUntil: number) {
   const prompt = `
@@ -12,7 +12,7 @@ export async function buildHypeNotification(plan: any, daysUntil: number) {
   `
   
   const { text } = await generateText({
-    model: google('gemini-2.5-flash'),
+    model: groq('llama-3.3-70b-versatile'),
     prompt
   })
 
@@ -32,7 +32,7 @@ export async function buildDayOfNotification(plan: any) {
   `
 
   const { text } = await generateText({
-    model: google('gemini-2.5-flash'),
+    model: groq('llama-3.3-70b-versatile'),
     prompt
   })
 
@@ -52,7 +52,7 @@ export async function buildReminderNotification(plan: any) {
   `
 
   const { text } = await generateText({
-    model: google('gemini-2.5-flash'),
+    model: groq('llama-3.3-70b-versatile'),
     prompt
   })
 

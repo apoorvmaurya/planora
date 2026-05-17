@@ -58,7 +58,7 @@ export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps)
     return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   }
 
-  const coverUrl = `https://source.unsplash.com/800x600/?${encodeURIComponent(plan.destination_name.split(',')[0])}`
+  const coverUrl = `https://image.pollinations.ai/prompt/beautiful%20scenic%20travel%20destination%20${encodeURIComponent(plan.destination_name.split(',')[0])}?width=800&height=600&nologo=true`
   
   // Safety checks for nested group arrays
   const members = plan.group?.group_members || []
@@ -136,16 +136,18 @@ export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps)
 
         <div className="flex items-center gap-2 pt-4 border-t border-slate-100 opacity-0 group-hover:opacity-100 transition-opacity">
           {plan.status === 'draft' ? (
-            <Link href={`/plans/${plan.id}/edit`} className="flex-1">
-              <button className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <PenSquare className="w-4 h-4" /> Edit Draft
-              </button>
+            <Link 
+              href={`/plans/${plan.id}/edit`} 
+              className="flex-1 w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors"
+            >
+              <PenSquare className="w-4 h-4" /> Edit Draft
             </Link>
           ) : (
-            <Link href={`/plans/${plan.id}`} className="flex-1">
-              <button className="w-full py-2 bg-[#1D9E75]/10 hover:bg-[#1D9E75]/20 text-[#1D9E75] text-sm font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors">
-                View Plan <ArrowRight className="w-4 h-4" />
-              </button>
+            <Link 
+              href={`/plans/${plan.id}`} 
+              className="flex-1 w-full py-2 bg-[#1D9E75]/10 hover:bg-[#1D9E75]/20 text-[#1D9E75] text-sm font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors"
+            >
+              View Plan <ArrowRight className="w-4 h-4" />
             </Link>
           )}
           {onShare && (

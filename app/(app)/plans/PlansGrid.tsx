@@ -50,7 +50,7 @@ export function PlansGrid({ plans }: PlansGridProps) {
       navigator.clipboard.writeText(url)
       toast.success("Public link copied to clipboard!")
     } else {
-      toast.error("This plan doesn't have a share link yet.")
+      toast.error("This plan doesn&apos;t have a share link yet.")
     }
   }
 
@@ -101,10 +101,8 @@ export function PlansGrid({ plans }: PlansGridProps) {
             <p className="text-slate-500 max-w-md mx-auto mb-8">
               {searchQuery ? "Try adjusting your search terms." : "Ready for your next adventure? Start planning a new trip with your group."}
             </p>
-            <Link href="/plans/new">
-              <Button className="bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl px-8 h-12">
-                Create New Plan
-              </Button>
+            <Link href="/plans/new" className="inline-flex shrink-0 items-center justify-center bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl px-8 h-12 text-sm font-medium transition-all">
+              Create New Plan
             </Link>
           </motion.div>
         ) : (

@@ -152,7 +152,7 @@ export default function PublicHomePage() {
               {[
                 { stat: "78%", text: "of group plans never happen", desc: "Lost in chaotic chat threads and endless scrolling." },
                 { stat: "11", text: "apps used for one trip", desc: "Spreadsheets, chats, notes, and payment apps." },
-                { stat: "0", text: "tools for follow-through", desc: "Until Planora's Momentum Engine." }
+                { stat: "0", text: "tools for follow-through", desc: "Until Planora&apos;s Momentum Engine." }
               ].map((item, i) => (
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
@@ -179,7 +179,7 @@ export default function PublicHomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto mb-20">
               <span className="text-[#1D9E75] font-bold tracking-wider uppercase text-sm mb-3 block">Features</span>
-              <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mb-6 tracking-tight">Everything you need, nothing you don't</h2>
+              <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mb-6 tracking-tight">Everything you need, nothing you don&apos;t</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -251,7 +251,7 @@ export default function PublicHomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
               {[
                 { name: "Free", price: "₹0", desc: "Perfect for small trips.", features: ["Up to 3 members", "Basic AI itinerary", "Standard polling"] },
-                { name: "Pro", price: "₹199", period: "/mo", desc: "For the dedicated planner.", features: ["Unlimited members", "Advanced AI (Gemini Pro)", "Expense tracking", "Export to PDF"], popular: true },
+                { name: "Pro", price: "₹199", period: "/mo", desc: "For the dedicated planner.", features: ["Unlimited members", "Advanced AI Itineraries", "Expense tracking", "Export to PDF"], popular: true },
                 { name: "Groups", price: "₹499", period: "/mo", desc: "For large squads & families.", features: ["Everything in Pro", "Priority support", "Multiple sub-itineraries", "Custom integrations"] },
               ].map((tier, i) => (
                 <div key={i} className={`bg-white rounded-[2rem] p-8 lg:p-10 border ${tier.popular ? 'border-[#1D9E75] shadow-2xl shadow-teal-900/10 md:-translate-y-4 md:scale-105 z-10' : 'border-slate-200'} relative flex flex-col h-full`}>

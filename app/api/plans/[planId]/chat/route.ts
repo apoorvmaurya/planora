@@ -25,7 +25,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ planId:
   `
 
   const result = streamText({
-    model: groq('llama-3.1-8b-instant'),
+    model: groq('llama-3.3-70b-versatile'),
     system: systemPrompt,
     messages,
   })

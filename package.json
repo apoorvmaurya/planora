@@ -9,11 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@ai-sdk/google": "^3.0.67",
     "@ai-sdk/groq": "^3.0.39",
+    "@ai-sdk/openai": "^3.0.64",
     "@ai-sdk/react": "^3.0.176",
     "@base-ui/react": "^1.4.1",
-    "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-slot": "^1.2.4",

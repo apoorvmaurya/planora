@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "source.unsplash.com",
+        hostname: "image.pollinations.ai",
       },
       {
         protocol: "https",
@@ -28,6 +28,14 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "locationiq.org",
+      },
+      {
+        protocol: "https",
+        hostname: "yicodkixjfothyotslfv.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
       },
     ],
   },

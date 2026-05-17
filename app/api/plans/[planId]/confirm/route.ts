@@ -73,7 +73,7 @@ export async function POST(
             .catch(err => console.error(`Failed to push to user ${sub.user_id}:`, err))
         )
         
-        // Fire and forget so we don't block the response
+        // Fire and forget so we don&apos;t block the response
         Promise.allSettled(pushPromises)
       }
     }

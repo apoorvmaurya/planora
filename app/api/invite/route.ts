@@ -21,7 +21,7 @@ export async function POST(req: Request) {
             Join Planora
           </a>
           <p style="margin-top: 32px; font-size: 12px; color: #666;">
-            If you don't know ${inviterName}, you can safely ignore this email.
+            If you don&apos;t know ${inviterName}, you can safely ignore this email.
           </p>
         </div>
       `

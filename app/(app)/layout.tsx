@@ -24,6 +24,10 @@ export default async function AppLayout({
     .eq("id", user.id)
     .single()
 
+  if (!profile || !profile.username) {
+    redirect("/onboarding")
+  }
+
   return (
     <UserProvider initialProfile={profile}>
       <div className="min-h-screen bg-slate-50">

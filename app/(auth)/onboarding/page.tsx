@@ -184,7 +184,7 @@ export default function OnboardingPage() {
                 className="space-y-6"
               >
                 <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-slate-900">Let's set up your profile</h2>
+                  <h2 className="text-2xl font-bold text-slate-900">Let&apos;s set up your profile</h2>
                   <p className="text-slate-500">Pick a username and add a photo so friends can find you.</p>
                 </div>
 

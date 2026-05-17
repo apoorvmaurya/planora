@@ -21,7 +21,7 @@ export default function GroupDetailPage() {
   }
 
   if (!group) {
-    return <div className="text-center py-20 text-red-500">Group not found or you don't have access.</div>
+    return <div className="text-center py-20 text-red-500">Group not found or you don&apos;t have access.</div>
   }
 
   const currentUserMember = members.find(m => m.user.id === profile?.id)

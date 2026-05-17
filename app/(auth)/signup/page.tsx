@@ -73,7 +73,7 @@ export default function SignupPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: values.email,
       password: values.password,
       options: {
@@ -89,8 +89,13 @@ export default function SignupPage() {
       return;
     }
 
-    toast.success("Account created successfully!");
-    router.push("/onboarding");
+    if (data.user && !data.session) {
+      toast.success("Verification email sent! Please check your inbox to confirm your email.");
+      router.push("/login");
+    } else {
+      toast.success("Account created successfully!");
+      router.push("/onboarding");
+    }
   }
 
   async function handleGoogleLogin() {

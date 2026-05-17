@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { experimental_useObject as useObject } from "@ai-sdk/react"
+import { useCompletion } from "@ai-sdk/react"
 import { useUserStore } from "@/store/userStore"
 import { toast } from "sonner"
 import { motion, AnimatePresence } from "framer-motion"
@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Check, ChevronRight, Loader2, MapPin, Sparkles, AlertCircle } from "lucide-react"
-import { itinerarySchema } from "@/lib/ai/gemini"
+import { itinerarySchema } from "@/lib/ai/prompts"
 
 export default function NewPlanPage() {
   const router = useRouter()
@@ -42,13 +42,28 @@ export default function NewPlanPage() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [planId, setPlanId] = useState<string | null>(null)
 
-  const { object, submit, isLoading, error } = useObject({
+  const { completion, complete, isLoading, error } = useCompletion({
     api: '/api/plans/generate',
-    schema: itinerarySchema,
-    onFinish: (result: any) => {
+    onFinish: () => {
       toast.success("Itinerary generated successfully!")
     }
   })
+
+  const object = React.useMemo(() => {
+    if (!completion) return null;
+    try {
+      return JSON.parse(completion);
+    } catch {
+      const lastBracket = completion.lastIndexOf('}');
+      const lastArrayBracket = completion.lastIndexOf(']');
+      if (lastBracket > 0) {
+        try {
+          return JSON.parse(completion.substring(0, lastBracket + 1) + (lastArrayBracket < lastBracket ? ']}': '}'));
+        } catch { return null; }
+      }
+      return null;
+    }
+  }, [completion]);
 
   useEffect(() => {
     async function fetchGroups() {
@@ -78,32 +93,41 @@ export default function NewPlanPage() {
 
     setIsGenerating(true)
     
-    submit({
-      destination,
-      startDate,
-      endDate,
-      budget: parseFloat(budget),
-      currency,
-      groupId,
-      preferences: { tripType, pace, dietaryNotes, mustHaves, avoid }
+    complete("", {
+      body: {
+        destination,
+        startDate,
+        endDate,
+        budget: parseFloat(budget),
+        currency,
+        groupId,
+        preferences: { tripType, pace, dietaryNotes, mustHaves, avoid }
+      }
     })
     
     setTimeout(async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        const { data } = await supabase.from('plans').select('id').eq('created_by', user.id).eq('group_id', groupId).order('created_at', { ascending: false }).limit(1).single()
+        let query = supabase.from('plans').select('id').eq('created_by', user.id).order('created_at', { ascending: false }).limit(1)
+        if (groupId === 'solo') {
+          query = query.is('group_id', null)
+        } else {
+          query = query.eq('group_id', groupId)
+        }
+        
+        const { data } = await query.single()
         if (data) setPlanId(data.id)
       }
     }, 2000)
   }
 
   useEffect(() => {
-    if (!isLoading && object?.days && planId) {
+    if (!isLoading && planId && completion) {
       setTimeout(() => {
         router.push(`/plans/${planId}`)
       }, 2000)
     }
-  }, [isLoading, object, planId, router])
+  }, [isLoading, planId, completion, router])
 
   return (
     <div className="max-w-4xl mx-auto pb-20">
@@ -112,7 +136,7 @@ export default function NewPlanPage() {
           <div className="flex items-center justify-between mb-8 pb-8 border-b border-slate-100">
             <div>
               <h1 className="text-3xl font-bold text-slate-900">Craft your plan</h1>
-              <p className="text-slate-500 mt-1">Let Planora's AI build the perfect itinerary for your group.</p>
+              <p className="text-slate-500 mt-1">Let Planora&apos;s AI build the perfect itinerary for your group.</p>
             </div>
             <div className="flex items-center gap-2">
               {[1, 2, 3, 4].map(s => (
@@ -200,9 +224,19 @@ export default function NewPlanPage() {
             {step === 2 && (
               <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
                 <h2 className="text-xl font-bold text-slate-900">Step 2: Who is going?</h2>
-                <p className="text-slate-500">Select the group this plan belongs to. We'll use everyone's preferences to build the itinerary.</p>
+                <p className="text-slate-500">Select the group this plan belongs to. We&apos;ll use everyone's preferences to build the itinerary.</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div 
+                    onClick={() => setGroupId('solo')}
+                    className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${groupId === 'solo' ? 'border-[#1D9E75] bg-teal-50' : 'border-slate-100 hover:border-slate-200 bg-white'}`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-bold text-slate-900">Just me (Solo Trip)</h3>
+                      <span className="text-[10px] uppercase bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold">Personal</span>
+                    </div>
+                    <p className="text-sm text-slate-500 line-clamp-1">Plan a trip just for yourself.</p>
+                  </div>
                   {groups.map(group => (
                     <div 
                       key={group.id} 
@@ -214,7 +248,7 @@ export default function NewPlanPage() {
                     </div>
                   ))}
                   {groups.length === 0 && (
-                    <p className="col-span-2 text-center py-10 text-slate-500">You need to create a group first before planning a trip!</p>
+                    <p className="col-span-1 md:col-span-2 text-center py-6 text-slate-500">You can also create a group from the dashboard to plan with friends!</p>
                   )}
                 </div>
 
@@ -288,14 +322,14 @@ export default function NewPlanPage() {
                     <div><span className="text-slate-500">Destination:</span> <strong className="block text-slate-900">{destination?.name}</strong></div>
                     <div><span className="text-slate-500">Dates:</span> <strong className="block text-slate-900">{startDate} to {endDate}</strong></div>
                     <div><span className="text-slate-500">Budget:</span> <strong className="block text-slate-900">{budget} {currency}</strong></div>
-                    <div><span className="text-slate-500">Group:</span> <strong className="block text-slate-900">{groups.find(g => g.id === groupId)?.name}</strong></div>
+                    <div><span className="text-slate-500">Group:</span> <strong className="block text-slate-900">{groupId === 'solo' ? 'Solo Trip' : groups.find(g => g.id === groupId)?.name}</strong></div>
                     <div><span className="text-slate-500">Type & Pace:</span> <strong className="block text-slate-900 capitalize">{tripType} • {pace}</strong></div>
                   </div>
                 </div>
 
                 <div className="bg-teal-50 text-[#1D9E75] p-4 rounded-xl flex items-start gap-3 text-sm">
                   <Sparkles className="w-5 h-5 shrink-0 mt-0.5" />
-                  <p>Planora AI will analyze all group members' locations and preferences alongside your inputs to craft a customized itinerary.</p>
+                  <p>Planora AI will analyze all group members&apos; locations and preferences alongside your inputs to craft a customized itinerary.</p>
                 </div>
 
                 <div className="flex justify-between pt-6">

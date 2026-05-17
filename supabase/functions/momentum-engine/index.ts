@@ -1,45 +1,35 @@
 /**
  * Momentum Engine - Supabase Edge Function
  * 
- * Deployment Instructions:
- * 1. Generate a new Web Push VAPID keypair if you don't have one.
- * 2. Set the secrets in Supabase:
- *    supabase secrets set GOOGLE_GENERATIVE_AI_API_KEY="your-key"
- *    supabase secrets set VAPID_PUBLIC_KEY="your-public"
- *    supabase secrets set VAPID_PRIVATE_KEY="your-private"
- * 3. Deploy the function:
+ * 1. Set the secrets in Supabase:
+ *    supabase secrets set GROQ_API_KEY="your-key"
+ *    supabase secrets set RESEND_API_KEY="your-resend-key"
+ * 2. Deploy the function:
  *    supabase functions deploy momentum-engine --no-verify-jwt
  */
 
-// @ts-ignore
+// @ts-expect-error deno types
 import { createClient } from 'npm:@supabase/supabase-js@2.39.3'
-// @ts-ignore
-import webpush from 'npm:web-push@3.6.7'
-// @ts-ignore
-import { generateNotificationCopy, generateTripRecap } from './geminiCopy.ts'
+// @ts-expect-error deno types
+import { generateNotificationCopy, generateTripRecap } from './groqCopy.ts'
 
-webpush.setVapidDetails(
-  'mailto:support@planora.app',
-  // @ts-ignore
-  Deno.env.get('VAPID_PUBLIC_KEY') || '',
-  // @ts-ignore
-  Deno.env.get('VAPID_PRIVATE_KEY') || ''
-)
+// @ts-expect-error deno types
+const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 
-// @ts-ignore
+// @ts-expect-error deno types
 Deno.serve(async (req) => {
   try {
     // Check authorization (if triggered by pg_cron with service role)
     const authHeader = req.headers.get('Authorization')
-    // @ts-ignore
+    // @ts-expect-error deno types
     const expectedAuth = `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`
     if (authHeader !== expectedAuth) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
     }
 
-    // @ts-ignore
+    // @ts-expect-error deno types
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    // @ts-ignore
+    // @ts-expect-error deno types
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseKey)
 
@@ -117,13 +107,18 @@ Deno.serve(async (req) => {
       if (!members || members.length === 0) continue
       const userIds = members.map((m: any) => m.user_id)
 
-      // Fetch push subscriptions for those members
-      const { data: subscriptions } = await supabase
-        .from('push_subscriptions')
-        .select('user_id, subscription')
-        .in('user_id', userIds)
+      if (!userIds || userIds.length === 0) continue
 
-      if (!subscriptions || subscriptions.length === 0) continue
+      // Fetch user emails from auth.admin
+      const userEmails: Record<string, string> = {}
+      for (const uid of userIds) {
+        const { data: userData } = await supabase.auth.admin.getUserById(uid)
+        if (userData?.user?.email) {
+          userEmails[uid] = userData.user.email
+        }
+      }
+
+      if (Object.keys(userEmails).length === 0) continue
 
       // Fetch preferences
       const { data: prefs } = await supabase
@@ -140,24 +135,52 @@ Deno.serve(async (req) => {
 
       // Generate AI copy once per plan/trigger
       const copy = await generateNotificationCopy(plan.destination_name, triggerType)
-      const payload = { ...copy, icon: '/icon-192.png', data: { url: `/plans/${plan.id}` } }
 
-      // Send pushes
-      for (const subRecord of subscriptions) {
-        if (optOuts.has(subRecord.user_id)) continue // user opted out
+      // Send Emails via Resend
+      for (const [uid, email] of Object.entries(userEmails)) {
+        if (optOuts.has(uid)) continue // user opted out
 
         try {
-          await webpush.sendNotification(subRecord.subscription, JSON.stringify(payload))
-          sentCount++
+          if (RESEND_API_KEY) {
+            const emailRes = await fetch("https://api.resend.com/emails", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${RESEND_API_KEY}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                from: "Planora <onboarding@resend.dev>",
+                to: [email],
+                subject: copy.title,
+                html: `
+                  <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <h1 style="color: #1D9E75;">${copy.title}</h1>
+                    <p style="font-size: 16px; color: #333;">${copy.body}</p>
+                    <p style="margin-top: 20px;">
+                      <a href="https://planora-plum-beta.vercel.app/plans/${plan.id}" style="display: inline-block; background-color: #1D9E75; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+                        View Itinerary
+                      </a>
+                    </p>
+                  </div>
+                `
+              })
+            })
+            if (!emailRes.ok) {
+              console.error(`Failed to send email to ${email}:`, await emailRes.text())
+            } else {
+              sentCount++
+            }
+          }
           
           // Log notification
           await supabase.from('notification_log').insert({
             plan_id: plan.id,
-            user_id: subRecord.user_id,
-            type: triggerType
+            user_id: uid,
+            type: triggerType,
+            message: copy.body
           })
         } catch (err) {
-          console.error(`Failed to send push to user ${subRecord.user_id}:`, err)
+          console.error(`Failed to send email to user ${uid}:`, err)
         }
       }
     }

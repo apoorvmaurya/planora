@@ -53,8 +53,9 @@ export default function DashboardPage() {
         const groupIds = memberGroups?.map(g => g.group_id) || [];
 
         let plans: any[] = [];
+
+        // Fetch group plans
         if (groupIds.length > 0) {
-          // 4. Fetch Plans for these groups
           const { data } = await supabase
             .from('plans')
             .select(`
@@ -65,6 +66,21 @@ export default function DashboardPage() {
             .order('created_at', { ascending: false });
             
           plans = data || [];
+        }
+
+        // Fetch solo plans (group_id is null, created by this user)
+        const { data: soloPlans } = await supabase
+          .from('plans')
+          .select(`
+            id, destination_name, start_date, end_date, status, created_at
+          `)
+          .is('group_id', null)
+          .eq('created_by', profile.id)
+          .order('created_at', { ascending: false });
+
+        if (soloPlans && soloPlans.length > 0) {
+          plans = [...plans, ...soloPlans];
+          plans.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         }
 
         const activePlans = plans.filter(p => p.status !== 'completed' && p.status !== 'cancelled');

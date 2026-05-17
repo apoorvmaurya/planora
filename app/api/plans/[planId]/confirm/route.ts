@@ -26,16 +26,23 @@ export async function POST(
       return NextResponse.json({ error: "Plan not found" }, { status: 404 })
     }
 
-    // Verify user is in the group (RLS handles this generally, but good to be explicit for notifications)
-    const { data: membership } = await supabase
-      .from("group_members")
-      .select("*")
-      .eq("group_id", plan.group_id)
-      .eq("user_id", user.id)
-      .single()
+    // For group plans, verify user is in the group
+    if (plan.group_id) {
+      const { data: membership } = await supabase
+        .from("group_members")
+        .select("*")
+        .eq("group_id", plan.group_id)
+        .eq("user_id", user.id)
+        .single()
 
-    if (!membership) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      if (!membership) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      }
+    } else {
+      // Solo plan - verify the user is the creator
+      if (plan.created_by !== user.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      }
     }
 
     // 2. Update Plan Status
@@ -46,35 +53,37 @@ export async function POST(
 
     if (updateError) throw updateError
 
-    // 3. Send Push Notifications to everyone in the group
-    const { data: members } = await supabase
-      .from("group_members")
-      .select("user_id")
-      .eq("group_id", plan.group_id)
+    // 3. Send Push Notifications to everyone in the group (skip for solo plans)
+    if (plan.group_id) {
+      const { data: members } = await supabase
+        .from("group_members")
+        .select("user_id")
+        .eq("group_id", plan.group_id)
 
-    if (members && members.length > 0) {
-      const userIds = members.map(m => m.user_id)
-      
-      const { data: subscriptions } = await supabase
-        .from("push_subscriptions")
-        .select("*")
-        .in("user_id", userIds)
-
-      if (subscriptions && subscriptions.length > 0) {
-        const payload = {
-          title: "Plan Confirmed! 🎉",
-          body: `The trip to ${plan.destination_name} is officially locked in! Pack your bags!`,
-          icon: "/icon-192.png",
-          data: { url: `/plans/${plan.id}` }
-        }
-
-        const pushPromises = subscriptions.map(sub => 
-          sendPushNotification(sub.subscription, payload)
-            .catch(err => console.error(`Failed to push to user ${sub.user_id}:`, err))
-        )
+      if (members && members.length > 0) {
+        const userIds = members.map(m => m.user_id)
         
-        // Fire and forget so we don&apos;t block the response
-        Promise.allSettled(pushPromises)
+        const { data: subscriptions } = await supabase
+          .from("push_subscriptions")
+          .select("*")
+          .in("user_id", userIds)
+
+        if (subscriptions && subscriptions.length > 0) {
+          const payload = {
+            title: "Plan Confirmed! 🎉",
+            body: `The trip to ${plan.destination_name} is officially locked in! Pack your bags!`,
+            icon: "/icon-192.png",
+            data: { url: `/plans/${plan.id}` }
+          }
+
+          const pushPromises = subscriptions.map(sub => 
+            sendPushNotification(sub.subscription, payload)
+              .catch(err => console.error(`Failed to push to user ${sub.user_id}:`, err))
+          )
+          
+          // Fire and forget so we don't block the response
+          Promise.allSettled(pushPromises)
+        }
       }
     }
 

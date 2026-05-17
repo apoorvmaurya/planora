@@ -77,7 +77,7 @@ export default function EditPlanPage() {
       endDate,
       budget: parseFloat(budget),
       currency,
-      groupId: plan.group_id,
+      groupId: plan.group_id || 'solo',
       preferences: { tripType, pace, dietaryNotes, mustHaves, avoid }
     })
   }
@@ -128,7 +128,7 @@ export default function EditPlanPage() {
         <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 space-y-4">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div><span className="text-slate-500">Destination:</span> <strong className="block text-slate-900">{plan.destination_name}</strong></div>
-            <div><span className="text-slate-500">Group:</span> <strong className="block text-slate-900">{plan.group?.name}</strong></div>
+            <div><span className="text-slate-500">Group:</span> <strong className="block text-slate-900">{plan.group?.name || 'Solo Trip'}</strong></div>
           </div>
         </div>
 

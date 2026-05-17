@@ -48,12 +48,14 @@ export async function POST(req: Request) {
 
   await supabase.from('request_logs').insert({ user_id: user.id, endpoint: '/api/plans/generate' })
 
-  const { data: groupMembers } = await supabase
-    .from('group_members')
-    .select('user:profiles(*)')
-    .eq('group_id', groupId)
-
-  const members = groupMembers?.map((m: any) => m.user) || []
+  let members: any[] = []
+  if (groupId !== 'solo') {
+    const { data: groupMembers } = await supabase
+      .from('group_members')
+      .select('user:profiles(*)')
+      .eq('group_id', groupId)
+    members = groupMembers?.map((m: any) => m.user) || []
+  }
 
   const prompt = await buildPromptContext({
     destination, startDate, endDate, budget, currency, preferences, members

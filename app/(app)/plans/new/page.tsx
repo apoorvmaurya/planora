@@ -44,6 +44,14 @@ export default function NewPlanPage() {
 
   const { completion, complete, isLoading, error } = useCompletion({
     api: '/api/plans/generate',
+    fetch: async (input, init) => {
+      const res = await globalThis.fetch(input, init);
+      const id = res.headers.get('X-Planora-Plan-Id');
+      if (id) {
+        setPlanId(id);
+      }
+      return res;
+    },
     onFinish: () => {
       toast.success("Itinerary generated successfully!")
     }
@@ -58,7 +66,7 @@ export default function NewPlanPage() {
       const lastArrayBracket = completion.lastIndexOf(']');
       if (lastBracket > 0) {
         try {
-          return JSON.parse(completion.substring(0, lastBracket + 1) + (lastArrayBracket < lastBracket ? ']}': '}'));
+          return JSON.parse(completion.substring(0, lastBracket + 1) + (lastArrayBracket < lastBracket ? ']}' : '}'));
         } catch { return null; }
       }
       return null;
@@ -104,21 +112,6 @@ export default function NewPlanPage() {
         preferences: { tripType, pace, dietaryNotes, mustHaves, avoid }
       }
     })
-    
-    setTimeout(async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        let query = supabase.from('plans').select('id').eq('created_by', user.id).order('created_at', { ascending: false }).limit(1)
-        if (groupId === 'solo') {
-          query = query.is('group_id', null)
-        } else {
-          query = query.eq('group_id', groupId)
-        }
-        
-        const { data } = await query.single()
-        if (data) setPlanId(data.id)
-      }
-    }, 2000)
   }
 
   useEffect(() => {

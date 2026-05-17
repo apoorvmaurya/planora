@@ -40,20 +40,17 @@ export default function NewPlanPage() {
   const [avoid, setAvoid] = useState("")
 
   const [isGenerating, setIsGenerating] = useState(false)
-  const [planId, setPlanId] = useState<string | null>(null)
+  const planIdRef = React.useRef<string | null>(null)
 
   const { completion, complete, isLoading, error } = useCompletion({
     api: '/api/plans/generate',
-    fetch: async (input, init) => {
-      const res = await globalThis.fetch(input, init);
-      const id = res.headers.get('X-Planora-Plan-Id');
-      if (id) {
-        setPlanId(id);
-      }
-      return res;
-    },
     onFinish: () => {
       toast.success("Itinerary generated successfully!")
+      if (planIdRef.current) {
+        setTimeout(() => {
+          router.push(`/plans/${planIdRef.current}`)
+        }, 1500)
+      }
     }
   })
 
@@ -100,27 +97,49 @@ export default function NewPlanPage() {
     }
 
     setIsGenerating(true)
-    
-    complete("", {
-      body: {
-        destination,
-        startDate,
-        endDate,
-        budget: parseFloat(budget),
-        currency,
-        groupId,
-        preferences: { tripType, pace, dietaryNotes, mustHaves, avoid }
-      }
-    })
-  }
 
-  useEffect(() => {
-    if (!isLoading && planId && completion) {
-      setTimeout(() => {
-        router.push(`/plans/${planId}`)
-      }, 2000)
+    try {
+      // Step 1: Create the plan and get a guaranteed plan ID
+      const createRes = await fetch('/api/plans/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          destination,
+          startDate,
+          endDate,
+          budget: parseFloat(budget),
+          currency,
+          groupId,
+          preferences: { tripType, pace, dietaryNotes, mustHaves, avoid }
+        })
+      })
+
+      if (!createRes.ok) {
+        const err = await createRes.json()
+        throw new Error(err.error || "Failed to create plan")
+      }
+
+      const { planId } = await createRes.json()
+      planIdRef.current = planId
+
+      // Step 2: Stream the AI itinerary generation
+      complete("", {
+        body: {
+          planId,
+          destination,
+          startDate,
+          endDate,
+          budget: parseFloat(budget),
+          currency,
+          groupId,
+          preferences: { tripType, pace, dietaryNotes, mustHaves, avoid }
+        }
+      })
+    } catch (err: any) {
+      toast.error(err.message || "Generation failed")
+      setIsGenerating(false)
     }
-  }, [isLoading, planId, completion, router])
+  }
 
   return (
     <div className="max-w-4xl mx-auto pb-20">

@@ -242,6 +242,27 @@ export default function ExpensesPage() {
               </div>
             )}
           </div>
+
+          {/* Settlement Template - Future Payment Integration */}
+          {settlements.length > 0 && (
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white p-6 rounded-3xl shadow-lg relative overflow-hidden border border-slate-700">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-bl-full pointer-events-none" />
+              <div className="relative z-10 text-center space-y-3">
+                <div className="w-12 h-12 mx-auto bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center">
+                  <Wallet className="w-6 h-6 text-purple-400" />
+                </div>
+                <h3 className="font-bold text-lg">Settle Up</h3>
+                <p className="text-sm text-slate-400 max-w-xs mx-auto">
+                  One-tap payment settlement via UPI, Stripe, or PayPal is coming soon.
+                </p>
+                <div className="flex justify-center gap-2 pt-2">
+                  <span className="bg-white/10 backdrop-blur text-xs font-bold px-3 py-1.5 rounded-full text-slate-300">UPI</span>
+                  <span className="bg-white/10 backdrop-blur text-xs font-bold px-3 py-1.5 rounded-full text-slate-300">Stripe</span>
+                  <span className="bg-white/10 backdrop-blur text-xs font-bold px-3 py-1.5 rounded-full text-slate-300">PayPal</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

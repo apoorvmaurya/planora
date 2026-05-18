@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${dmSans.variable} antialiased`}>
+      <body className={`${dmSans.variable} antialiased min-h-[100dvh] flex flex-col overflow-x-hidden w-full max-w-[100vw]`}>
         <ServiceWorkerRegister />
         {children}
         <Toaster />

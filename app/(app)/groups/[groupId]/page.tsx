@@ -5,7 +5,7 @@ import { useParams } from "next/navigation"
 import { useGroup } from "@/hooks/useGroup"
 import { useUserStore } from "@/store/userStore"
 import { motion } from "framer-motion"
-import { Users, Plus, MapPin, Map, Calendar, Shield } from "lucide-react"
+import { Users, Plus, MapPin, Map, Calendar, Shield, Copy, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
@@ -16,7 +16,16 @@ export default function GroupDetailPage() {
   const { profile } = useUserStore()
   
   const { group, members, plans, isLoading, removeMember, isProcessing } = useGroup(groupId)
-  
+  const [copiedLink, setCopiedLink] = useState(false)
+
+  const handleCopyInvite = () => {
+    if (!group?.invite_code) return
+    const url = `${window.location.origin}/invite/${group.invite_code}`
+    navigator.clipboard.writeText(url)
+    setCopiedLink(true)
+    setTimeout(() => setCopiedLink(false), 2000)
+  }
+
   if (isLoading) {
     return <div className="text-center py-20 text-slate-500">Loading group...</div>
   }
@@ -119,11 +128,21 @@ export default function GroupDetailPage() {
               <h3 className="text-lg font-bold text-slate-900 flex items-center">
                 <Users className="w-5 h-5 mr-2 text-slate-400" /> Members ({members.length})
               </h3>
-              {isAdmin && (
-                <Button variant="ghost" className="text-[#1D9E75] hover:text-[#15805e] hover:bg-teal-50 px-3 rounded-lg h-8 text-xs font-bold">
-                  + Invite
-                </Button>
-              )}
+              <Button
+                variant="ghost"
+                onClick={handleCopyInvite}
+                className={`px-3 rounded-lg h-8 text-xs font-bold transition-colors ${
+                  copiedLink
+                    ? 'text-emerald-600 bg-emerald-50'
+                    : 'text-[#1D9E75] hover:text-[#15805e] hover:bg-teal-50'
+                }`}
+              >
+                {copiedLink ? (
+                  <><CheckCircle2 className="w-3 h-3 mr-1" /> Copied!</>
+                ) : (
+                  <><Copy className="w-3 h-3 mr-1" /> Invite Link</>
+                )}
+              </Button>
             </div>
 
             <div className="space-y-4">

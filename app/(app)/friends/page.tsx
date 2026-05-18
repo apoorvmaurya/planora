@@ -3,12 +3,11 @@
 import React, { useState, useEffect } from "react"
 import { useFriends } from "@/hooks/useFriends"
 import { FriendCard } from "@/components/shared/FriendCard"
-import { InviteModal } from "@/components/shared/InviteModal"
 import { motion } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Mail, Search, Users, UserPlus, Inbox } from "lucide-react"
+import { Copy, CheckCircle2, Search, Users, UserPlus, Inbox } from "lucide-react"
 
 export default function FriendsPage() {
   const {
@@ -26,7 +25,14 @@ export default function FriendsPage() {
   } = useFriends()
 
   const [searchQuery, setSearchQuery] = useState("")
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
+  const [copiedLink, setCopiedLink] = useState(false)
+
+  const handleShareLink = () => {
+    const url = `${window.location.origin}/signup`
+    navigator.clipboard.writeText(url)
+    setCopiedLink(true)
+    setTimeout(() => setCopiedLink(false), 2000)
+  }
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -44,11 +50,18 @@ export default function FriendsPage() {
         </div>
         
         <Button 
-          onClick={() => setIsInviteModalOpen(true)}
-          className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl h-11 px-6 shadow-md"
+          onClick={handleShareLink}
+          className={`rounded-xl h-11 px-6 shadow-md transition-colors ${
+            copiedLink
+              ? 'bg-emerald-600 hover:bg-emerald-700'
+              : 'bg-slate-900 hover:bg-slate-800'
+          } text-white`}
         >
-          <Mail className="w-4 h-4 mr-2" />
-          Invite by email
+          {copiedLink ? (
+            <><CheckCircle2 className="w-4 h-4 mr-2" /> Copied!</>
+          ) : (
+            <><Copy className="w-4 h-4 mr-2" /> Share Planora</>
+          )}
         </Button>
       </header>
 
@@ -154,7 +167,7 @@ export default function FriendsPage() {
           </div>
 
           {searchQuery.length > 0 && searchResults.length === 0 ? (
-            <p className="text-center text-slate-500 py-10">No users found matching "{searchQuery}"</p>
+            <p className="text-center text-slate-500 py-10">No users found matching &quot;{searchQuery}&quot;</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
               {searchResults.map((user, i) => (
@@ -171,8 +184,6 @@ export default function FriendsPage() {
           )}
         </TabsContent>
       </Tabs>
-
-      <InviteModal open={isInviteModalOpen} onOpenChange={setIsInviteModalOpen} />
     </div>
   )
 }

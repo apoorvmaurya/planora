@@ -157,7 +157,7 @@ export default function MemoriesPage() {
             <ImagePlus className="w-8 h-8" />
           </div>
           <h3 className="text-lg font-bold text-slate-900">No memories yet</h3>
-          <p className="text-slate-500 mt-1 max-w-sm mx-auto">Upload the first photo to start building your trip's shared album.</p>
+          <p className="text-slate-500 mt-1 max-w-sm mx-auto">Upload the first photo to start building your trip&apos;s shared album.</p>
         </div>
       ) : (
         <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">

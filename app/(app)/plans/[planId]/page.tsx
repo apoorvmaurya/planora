@@ -8,7 +8,7 @@ import { motion } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, AlertDialogClose } from "@/components/ui/alert-dialog"
-import { Map, Calendar, Users, DollarSign, Train, Plane, Bus, MessageSquare, Loader2, Wallet, Camera, Bell, PenSquare, Trash2, XCircle, CheckCircle2, Share2, UserMinus, Sparkles } from "lucide-react"
+import { Map, Calendar, Users, DollarSign, Train, Plane, Bus, MessageSquare, Loader2, Wallet, Camera, Bell, PenSquare, Trash2, XCircle, CheckCircle2, Share2, UserMinus, Sparkles, Plus } from "lucide-react"
 import { toast } from "sonner"
 import { ItineraryItemCard } from "@/components/shared/ItineraryItemCard"
 import { ErrorState } from "@/components/shared/ErrorState"
@@ -31,6 +31,7 @@ export default function PlanDetailPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [transitLoading, setTransitLoading] = useState<Record<string, boolean>>({})
   const [transitOptions, setTransitOptions] = useState<Record<string, any>>({})
+  const [transitAdding, setTransitAdding] = useState<Record<string, boolean>>({})
 
   // AlertDialog state
   const [kickTarget, setKickTarget] = useState<any>(null)
@@ -255,14 +256,36 @@ export default function PlanDetailPage() {
                   {transitOptions[m.user.id] && (
                     <div className="mt-4 pt-4 border-t border-slate-100 grid gap-3">
                       {transitOptions[m.user.id].map((opt: any, idx: number) => (
-                        <div key={idx} className="flex items-start gap-3 bg-slate-50 p-3 rounded-xl">
+                        <div key={idx} className="flex items-start gap-3 bg-slate-50 p-3 rounded-xl"
+                        >
                           {opt.type === 'flight' ? <Plane className="w-5 h-5 text-blue-500 mt-0.5" /> : 
                            opt.type === 'train' ? <Train className="w-5 h-5 text-orange-500 mt-0.5" /> : 
                            <Bus className="w-5 h-5 text-[#1D9E75] mt-0.5" />}
-                          <div>
+                          <div className="flex-1">
                             <p className="font-bold text-sm text-slate-900">{opt.title}</p>
                             <p className="text-xs text-slate-500">{opt.details} • Est: {opt.cost}</p>
                           </div>
+                          <button
+                            disabled={transitAdding[`${m.user.id}_${idx}`]}
+                            onClick={async () => {
+                              const key = `${m.user.id}_${idx}`
+                              setTransitAdding(prev => ({ ...prev, [key]: true }))
+                              try {
+                                const res = await fetch(`/api/plans/${planId}/transit/add`, {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ ...opt, day_number: 1 })
+                                })
+                                if (res.ok) toast.success(`"${opt.title}" added to Day 1`)
+                                else toast.error('Failed to add')
+                              } catch { toast.error('Failed to add') }
+                              finally { setTransitAdding(prev => ({ ...prev, [key]: false })) }
+                            }}
+                            className="shrink-0 text-[#1D9E75] hover:bg-teal-50 p-1.5 rounded-lg transition-colors disabled:opacity-50"
+                            title="Add to Day 1"
+                          >
+                            {transitAdding[`${m.user.id}_${idx}`] ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                          </button>
                         </div>
                       ))}
                     </div>

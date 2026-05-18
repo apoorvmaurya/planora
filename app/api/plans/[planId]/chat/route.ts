@@ -119,5 +119,5 @@ Rules:
     },
   })
 
-  return result.toTextStreamResponse()
+  return result.toUIMessageStreamResponse()
 }

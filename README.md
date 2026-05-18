@@ -1,52 +1,188 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<h1 align="center">Plan<span>ora</span></h1>
+
+<p align="center">
+  <strong>Plans that actually happen — together.</strong><br />
+  The collaborative trip planner that turns "we should hang out" into "here's the boarding pass."
+</p>
+
+<p align="center">
+  <a href="https://planora-plum-beta.vercel.app">Live Demo</a> ·
+  <a href="#features">Features</a> ·
+  <a href="#tech-stack">Tech Stack</a> ·
+  <a href="#getting-started">Getting Started</a> ·
+  <a href="#project-structure">Project Structure</a> ·
+  <a href="#license">License</a>
+</p>
+
+---
+
+## Why Planora?
+
+78 % of group plans never happen. They drown in chaotic group chats, scattered spreadsheets, and endless "let me check my calendar" messages. Planora fixes that with a single, real-time workspace powered by AI — so the plan moves forward even when nobody wants to be *the planner*.
+
+---
+
+## Features
+
+| Feature | Description |
+|---|---|
+| **AI Itinerary Generation** | Drop a prompt and get a fully personalized, day-by-day itinerary in seconds — powered by Groq's Llama 3.3 70B. |
+| **PlaBot Chat** | An AI travel assistant that can read and modify your itinerary through tool-calling, right inside the plan. |
+| **Group Sync** | Real-time collaborative workspace. Create groups, invite friends via link, and plan together. |
+| **Voting & Polls** | Up/down voting on itinerary items with automatic AI tie-breaking so decisions don't stall. |
+| **Momentum Engine** | Smart email nudges (via Resend) keep everyone engaged and accountable. Runs as a Supabase Edge Function on a cron schedule. |
+| **Budget Splitter** | Track expenses on the go and see who owes what — without the awkward math. |
+| **Trip Memories** | Shared collaborative photo dump to relive the best moments of your journey. |
+| **Transit Weaver** | AI-generated transit suggestions (flights, trains, cabs) for each group member, insertable directly into your itinerary. |
+| **PWA Support** | Installable Progressive Web App with offline caching via Serwist and push notifications via Web Push. |
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Framework** | [Next.js 15](https://nextjs.org) (App Router, Turbopack) |
+| **Language** | TypeScript |
+| **Styling** | [Tailwind CSS v4](https://tailwindcss.com), [shadcn/ui](https://ui.shadcn.com) |
+| **Database** | [Supabase](https://supabase.com) (PostgreSQL + Row Level Security) |
+| **Auth** | Supabase Auth (email/password, OAuth) |
+| **AI** | [Vercel AI SDK](https://sdk.vercel.ai) + [Groq](https://groq.com) (Llama 3.3 70B) |
+| **Email** | [Resend](https://resend.com) |
+| **State** | [Zustand](https://github.com/pmndrs/zustand), React hooks |
+| **Animations** | [Framer Motion](https://www.framer.com/motion/) |
+| **PWA** | [Serwist](https://serwist.pages.dev) (service worker), Web Push API |
+| **Monitoring** | [Vercel Speed Insights](https://vercel.com/docs/speed-insights) |
+| **Deployment** | [Vercel](https://vercel.com) |
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- **Node.js** ≥ 18
+- **pnpm** (recommended) or npm
+- A [Supabase](https://supabase.com) project
+- A [Groq](https://console.groq.com) API key
+- A [Resend](https://resend.com) API key
+- A [LocationIQ](https://locationiq.com) API key
+
+### 1. Clone and install
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/apoorvmaurya/planora.git
+cd planora
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configure environment
 
-## Environment Variables
+```bash
+cp .env.local.example .env.local
+```
 
-Create a `.env.local` file with the following variables before starting the dev server:
+Fill in the values — see [`.env.local.example`](.env.local.example) for the full list:
 
 ```env
+# Supabase
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
-GOOGLE_GENERATIVE_AI_API_KEY=
+
+# AI (Groq)
+GROQ_API_KEY=
+
+# Geocoding (LocationIQ)
 NEXT_PUBLIC_LOCATIONIQ_KEY=
+
+# Email (Resend)
 RESEND_API_KEY=
-NEXT_PUBLIC_APP_URL=
+
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Web Push (VAPID)
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=
 VAPID_PRIVATE_KEY=
 ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Run the development server
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm dev
+```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Database setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The Supabase project should have the required tables, RLS policies, and Edge Functions deployed. Migration files are in the [`supabase/`](supabase/) directory and can be applied via the Supabase CLI or the MCP integration.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+planora/
+├── app/
+│   ├── (app)/              # Authenticated app pages (dashboard, plans, groups, etc.)
+│   ├── (auth)/             # Auth pages (login, signup, onboarding)
+│   ├── (public)/           # Public landing page
+│   ├── api/                # API routes (plans, groups, friends, AI, push, etc.)
+│   ├── auth/               # OAuth callback handler
+│   ├── layout.tsx          # Root layout (font, Toaster, SpeedInsights, SW)
+│   └── globals.css         # Design tokens, theme variables, performance layer
+├── components/
+│   ├── layout/             # Sidebar
+│   ├── providers/          # UserProvider (auth context)
+│   ├── shared/             # Reusable components (modals, cards, PlaBot, etc.)
+│   └── ui/                 # shadcn/ui primitives
+├── hooks/                  # Custom React hooks (useFriends, useGroup, useProfile)
+├── lib/
+│   ├── supabase/           # Supabase client (browser, server, middleware)
+│   ├── ai/                 # AI utilities
+│   ├── locationiq/         # Geocoding helpers
+│   ├── push/               # Web Push utilities
+│   ├── utils/              # Business logic (expense calculator, etc.)
+│   └── utils.ts            # Tailwind `cn()` helper
+├── store/                  # Zustand stores
+├── supabase/               # Migrations & Edge Functions (Momentum Engine)
+├── public/                 # Static assets, PWA icons, service worker
+└── middleware.ts            # Next.js middleware (session refresh, route guards)
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Scripts
+
+| Command | Description |
+|---|---|
+| `pnpm dev` | Start dev server with Turbopack |
+| `pnpm build` | Production build |
+| `pnpm start` | Start production server |
+| `pnpm lint` | Run ESLint |
+
+---
+
+## Deployment
+
+The app is deployed on **Vercel**. Push to `main` to trigger automatic deployment.
+
+```bash
+vercel --prod
+```
+
+Environment variables must be configured in the Vercel project settings.
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+<p align="center">
+  Made with 💖 for better trips.
+</p>

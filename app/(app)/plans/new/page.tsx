@@ -237,7 +237,7 @@ export default function NewPlanPage() {
             {step === 2 && (
               <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
                 <h2 className="text-xl font-bold text-slate-900">Step 2: Who is going?</h2>
-                <p className="text-slate-500">Select the group this plan belongs to. We&apos;ll use everyone's preferences to build the itinerary.</p>
+                <p className="text-slate-500">Select the group this plan belongs to. We&apos;ll use everyone&apos;s preferences to build the itinerary.</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div 

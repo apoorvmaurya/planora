@@ -2,6 +2,7 @@ import { streamText, tool } from 'ai'
 import { groq } from '@ai-sdk/groq'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { forwardGeocode } from '@/lib/locationiq/geocode'
 
 export const maxDuration = 60
 
@@ -53,9 +54,21 @@ Rules:
           estimated_cost: z.number().describe('Estimated cost in plan currency'),
         }),
         execute: async (p) => {
+          let lat = 0
+          let lng = 0
+          try {
+            const coords = await forwardGeocode(p.location_name)
+            if (coords) {
+              lat = coords.lat
+              lng = coords.lng
+            }
+          } catch (err) {
+            console.error("Geocoding failed for tool add_item:", err)
+          }
+
           const { data, error } = await supabase
             .from('itinerary_items')
-            .insert({ plan_id: planId, ...p, lat: 0, lng: 0, sort_order: 99 })
+            .insert({ plan_id: planId, ...p, lat, lng, sort_order: 99 })
             .select()
             .single()
           if (error) return { success: false, error: error.message }
@@ -78,10 +91,25 @@ Rules:
           const { data: existing } = await supabase.from('itinerary_items').select('*').eq('id', item_id).single()
           if (!existing) return { success: false, error: 'Item not found' }
 
+          let lat = existing.lat
+          let lng = existing.lng
+
+          if (updates.location_name && updates.location_name !== existing.location_name) {
+            try {
+              const coords = await forwardGeocode(updates.location_name)
+              if (coords) {
+                lat = coords.lat
+                lng = coords.lng
+              }
+            } catch (err) {
+              console.error("Geocoding failed for tool edit_item:", err)
+            }
+          }
+
           const history = (existing.history as Array<Record<string, unknown>>) || []
           history.push({ ...existing, saved_at: new Date().toISOString(), saved_by: 'planora_ai' })
 
-          const { data, error } = await supabase.from('itinerary_items').update({ ...updates, history }).eq('id', item_id).select().single()
+          const { data, error } = await supabase.from('itinerary_items').update({ ...updates, lat, lng, history }).eq('id', item_id).select().single()
           if (error) return { success: false, error: error.message }
           return { success: true, item: data }
         }

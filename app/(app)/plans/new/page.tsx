@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useCompletion } from "@ai-sdk/react"
+import { experimental_useObject as useObject } from "@ai-sdk/react"
 import { useUserStore } from "@/store/userStore"
 import { toast } from "sonner"
 import { motion, AnimatePresence } from "framer-motion"
@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Check, ChevronRight, Loader2, MapPin, Sparkles, AlertCircle } from "lucide-react"
-import { itinerarySchema } from "@/lib/ai/prompts"
+import { itineraryResponseSchema } from "@/lib/ai/prompts"
 
 export default function NewPlanPage() {
   const router = useRouter()
@@ -43,8 +43,9 @@ export default function NewPlanPage() {
   const [isGenerating, setIsGenerating] = useState(false)
   const planIdRef = React.useRef<string | null>(null)
 
-  const { completion, complete, isLoading, error } = useCompletion({
+  const { object, submit, isLoading, error } = useObject({
     api: '/api/plans/generate',
+    schema: itineraryResponseSchema,
     onFinish: () => {
       toast.success("Itinerary generated successfully!")
       if (planIdRef.current) {
@@ -54,22 +55,6 @@ export default function NewPlanPage() {
       }
     }
   })
-
-  const object = React.useMemo(() => {
-    if (!completion) return null;
-    try {
-      return JSON.parse(completion);
-    } catch {
-      const lastBracket = completion.lastIndexOf('}');
-      const lastArrayBracket = completion.lastIndexOf(']');
-      if (lastBracket > 0) {
-        try {
-          return JSON.parse(completion.substring(0, lastBracket + 1) + (lastArrayBracket < lastBracket ? ']}' : '}'));
-        } catch { return null; }
-      }
-      return null;
-    }
-  }, [completion]);
 
   useEffect(() => {
     async function fetchGroups() {
@@ -124,17 +109,15 @@ export default function NewPlanPage() {
       planIdRef.current = planId
 
       // Step 2: Stream the AI itinerary generation
-      complete("", {
-        body: {
-          planId,
-          destination,
-          startDate,
-          endDate,
-          budget: parseFloat(budget),
-          currency,
-          groupId,
-          preferences: { tripType, pace, dietaryNotes, mustHaves, avoid }
-        }
+      submit({
+        planId,
+        destination,
+        startDate,
+        endDate,
+        budget: parseFloat(budget),
+        currency,
+        groupId,
+        preferences: { tripType, pace, dietaryNotes, mustHaves, avoid }
       })
     } catch (err: any) {
       toast.error(err.message || "Generation failed")

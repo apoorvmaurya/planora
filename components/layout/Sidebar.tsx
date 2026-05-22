@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useUserStore } from "@/store/userStore"
@@ -33,6 +33,17 @@ export function Sidebar() {
   const router = useRouter()
   const supabase = createClient()
   const [isOpen, setIsOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  const handleScroll = useCallback(() => {
+    setScrolled(window.scrollY > 10)
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [handleScroll])
+
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -111,17 +122,39 @@ export function Sidebar() {
   return (
     <>
       {/* Mobile Top Bar */}
-      <div className="md:hidden fixed top-0 w-full h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 z-50 flex items-center justify-between px-4">
-        <Link href="/dashboard" className="text-xl font-bold tracking-tight">
-          Plan<span className="text-[#1D9E75]">ora</span>
-        </Link>
-        <button 
-          onClick={() => setIsOpen(!isOpen)}
-          className="p-2 -mr-2 text-slate-600 hover:bg-slate-100 rounded-lg"
+      <motion.nav
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 20 }}
+        className="fixed top-0 left-0 right-0 z-30 flex justify-center px-4 pt-3 md:hidden"
+      >
+        <motion.div
+          animate={{
+            backdropFilter: scrolled ? "blur(20px)" : "blur(12px)",
+            backgroundColor: scrolled
+              ? "rgba(255, 255, 255, 0.85)"
+              : "rgba(255, 255, 255, 0.6)",
+            boxShadow: scrolled
+              ? "0 8px 32px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.3) inset"
+              : "0 4px 16px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.5) inset",
+            scale: scrolled ? 0.97 : 1,
+          }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="w-full rounded-full border border-white/40 px-4 py-2.5 flex justify-between items-center shadow-lg"
+          style={{ WebkitBackdropFilter: scrolled ? "blur(20px)" : "blur(12px)" }}
         >
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </div>
+          <Link href="/dashboard" className="text-xl font-bold tracking-tight px-1">
+            Plan<span className="text-[#1D9E75]">ora</span>
+          </Link>
+          <button 
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-2 rounded-full hover:bg-slate-100/80 transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </motion.div>
+      </motion.nav>
 
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-64 h-screen fixed left-0 top-0 bg-white border-r border-slate-200 z-40">

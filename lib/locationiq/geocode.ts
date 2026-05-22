@@ -30,3 +30,27 @@ export async function reverseGeocode(lat: number, lng: number) {
     return null;
   }
 }
+
+export async function forwardGeocode(query: string) {
+  if (!LOCATIONIQ_KEY || !query) return null;
+
+  try {
+    const res = await fetch(
+      `https://us1.locationiq.com/v1/search?key=${LOCATIONIQ_KEY}&q=${encodeURIComponent(query)}&format=json`
+    );
+    if (!res.ok) throw new Error("Failed to fetch geocode data");
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      return {
+        lat: parseFloat(data[0].lat),
+        lng: parseFloat(data[0].lon),
+        display_name: data[0].display_name
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error("LocationIQ Forward Geocode Error:", error);
+    return null;
+  }
+}
+

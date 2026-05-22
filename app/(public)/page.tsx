@@ -76,7 +76,7 @@ export default function PublicHomePage() {
             <div className="hidden md:flex items-center space-x-6">
               <Link href="#features" className="text-slate-500 hover:text-slate-900 text-sm font-medium transition-colors duration-200">Features</Link>
               <Link href="#how-it-works" className="text-slate-500 hover:text-slate-900 text-sm font-medium transition-colors duration-200">How it works</Link>
-              <Link href="#pricing" className="text-slate-500 hover:text-slate-900 text-sm font-medium transition-colors duration-200">Pricing</Link>
+              <Link href="/coming-soon" className="text-slate-500 hover:text-slate-900 text-sm font-medium transition-colors duration-200">Coming Soon</Link>
             </div>
 
             {/* Desktop actions */}
@@ -114,7 +114,7 @@ export default function PublicHomePage() {
               <div className="flex flex-col space-y-4">
                 <Link href="#features" onClick={() => setMobileMenuOpen(false)} className="text-slate-600 hover:text-slate-900 font-medium transition-colors py-2">Features</Link>
                 <Link href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="text-slate-600 hover:text-slate-900 font-medium transition-colors py-2">How it works</Link>
-                <Link href="#pricing" onClick={() => setMobileMenuOpen(false)} className="text-slate-600 hover:text-slate-900 font-medium transition-colors py-2">Pricing</Link>
+                <Link href="/coming-soon" onClick={() => setMobileMenuOpen(false)} className="text-slate-600 hover:text-slate-900 font-medium transition-colors py-2">Coming Soon</Link>
                 <hr className="border-slate-100" />
                 <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="text-slate-600 hover:text-slate-900 font-medium transition-colors py-2">Login</Link>
                 <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="bg-[#1D9E75] hover:bg-[#15805e] text-white text-center px-6 py-3 rounded-full font-semibold transition-all shadow-sm">
@@ -311,47 +311,6 @@ export default function PublicHomePage() {
           </div>
         </section>
 
-        {/* Pricing */}
-        <section id="pricing" className="py-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-20">
-              <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mb-6 tracking-tight">Simple, transparent pricing</h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
-              {[
-                { name: "Free", price: "₹0", desc: "Perfect for small trips.", features: ["Up to 3 members", "Basic AI itinerary", "Standard polling"] },
-                { name: "Pro", price: "₹199", period: "/mo", desc: "For the dedicated planner.", features: ["Unlimited members", "Advanced AI Itineraries", "Expense tracking", "Export to PDF"], popular: true },
-                { name: "Groups", price: "₹499", period: "/mo", desc: "For large squads & families.", features: ["Everything in Pro", "Priority support", "Multiple sub-itineraries", "Custom integrations"] },
-              ].map((tier, i) => (
-                <div key={i} className={`bg-white rounded-[2rem] p-8 lg:p-10 border ${tier.popular ? 'border-[#1D9E75] shadow-2xl shadow-teal-900/10 md:-translate-y-4 md:scale-105 z-10' : 'border-slate-200'} relative flex flex-col h-full`}>
-                  {tier.popular && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#1D9E75] text-white px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase shadow-md">
-                      Most Popular
-                    </div>
-                  )}
-                  <h3 className="text-2xl font-bold text-slate-900 mb-3">{tier.name}</h3>
-                  <p className="text-slate-500 mb-8 h-12">{tier.desc}</p>
-                  <div className="mb-8">
-                    <span className="text-5xl font-black text-slate-900">{tier.price}</span>
-                    {tier.period && <span className="text-slate-500 font-medium ml-1">{tier.period}</span>}
-                  </div>
-                  <ul className="space-y-4 mb-10 flex-1">
-                    {tier.features.map((f, j) => (
-                      <li key={j} className="flex items-center gap-3 text-slate-700">
-                        <CheckCircle2 className="w-5 h-5 text-[#1D9E75] flex-shrink-0" />
-                        <span className="font-medium">{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <button className={`w-full py-4 rounded-full font-bold transition-all duration-300 ${tier.popular ? 'bg-[#1D9E75] hover:bg-[#15805e] text-white shadow-lg shadow-[#1D9E75]/25 hover:shadow-[#1D9E75]/40' : 'bg-slate-100 hover:bg-slate-200 text-slate-900'}`}>
-                    Get Started
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
       </main>
 
       <footer className="bg-white border-t border-slate-200 pt-20 pb-10">
@@ -374,7 +333,7 @@ export default function PublicHomePage() {
               <h4 className="font-bold text-slate-900 mb-6 text-lg">Product</h4>
               <ul className="space-y-4">
                 <li><Link href="#features" className="text-slate-500 hover:text-[#1D9E75] font-medium transition-colors">Features</Link></li>
-                <li><Link href="#pricing" className="text-slate-500 hover:text-[#1D9E75] font-medium transition-colors">Pricing</Link></li>
+                <li><Link href="/coming-soon" className="text-slate-500 hover:text-[#1D9E75] font-medium transition-colors">Coming Soon</Link></li>
                 <li><a href="#" className="text-slate-500 hover:text-[#1D9E75] font-medium transition-colors">Templates</a></li>
                 <li><a href="#" className="text-slate-500 hover:text-[#1D9E75] font-medium transition-colors">Guides</a></li>
               </ul>

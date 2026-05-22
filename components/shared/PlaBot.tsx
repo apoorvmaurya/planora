@@ -105,7 +105,7 @@ export function PlaBot() {
               {messages.length === 0 ? (
                 <div className="space-y-4">
                   <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-sm text-slate-700">
-                    Hi! I&apos;m PlaBot. 👋 I can help answer any questions you have about Planora&apos;s features, pricing, or how the AI works. What&apos;s on your mind?
+                    Hi! I&apos;m PlaBot. 👋 I can help answer any questions you have about Planora&apos;s features, upcoming premium plans, or how the AI works. What&apos;s on your mind?
                   </div>
                   <div className="space-y-2">
                     <p className="text-xs font-semibold text-slate-500 uppercase px-2">Suggested</p>

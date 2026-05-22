@@ -2,6 +2,7 @@ import React from "react"
 import Link from "next/link"
 import { createClient } from "@supabase/supabase-js"
 import { Sparkles, Heart, MapPin, CalendarDays } from "lucide-react"
+import { PublicShareHeader } from "@/components/shared/PublicShareHeader"
 
 // Use service role to bypass RLS for public share links
 const supabase = createClient(
@@ -44,21 +45,9 @@ export default async function PublicSharePage({ params }: { params: { token: str
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-white border-b border-slate-100 sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-slate-900 font-bold text-lg">
-            <div className="w-8 h-8 bg-slate-900 text-white rounded-xl flex items-center justify-center">
-              P
-            </div>
-            Planora
-          </div>
-          <Link href="/" className="text-sm font-medium text-[#1D9E75] hover:underline">
-            Create your own trip
-          </Link>
-        </div>
-      </header>
+      <PublicShareHeader />
 
-      <main className="max-w-6xl mx-auto px-4 py-12 space-y-12">
+      <main className="max-w-6xl mx-auto px-4 pt-28 pb-12 space-y-12">
         {/* Trip Hero */}
         <div className="text-center max-w-2xl mx-auto space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold text-slate-900">

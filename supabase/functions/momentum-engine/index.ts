@@ -21,17 +21,29 @@ Deno.serve(async (req) => {
   try {
     // Check authorization (if triggered by pg_cron with service role)
     const authHeader = req.headers.get('Authorization')
-    // @ts-expect-error deno types
-    const expectedAuth = `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`
-    if (authHeader !== expectedAuth) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+    }
+
+    const token = authHeader.replace(/^Bearer\s+/, '')
+    
+    // Decode JWT payload to verify it is indeed the service role key
+    let isServiceRole = false
+    try {
+      const payloadPart = token.split('.')[1]
+      const decodedPayload = JSON.parse(atob(payloadPart))
+      isServiceRole = decodedPayload.role === 'service_role'
+    } catch (e) {
+      console.error('Failed to parse authorization token:', e)
+    }
+
+    if (!isServiceRole) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
     }
 
     // @ts-expect-error deno types
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    // @ts-expect-error deno types
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    const supabase = createClient(supabaseUrl, token)
 
     // --- PHASE 1: Handle Completed Trips ---
     const { data: expiredPlans } = await supabase
@@ -181,6 +193,35 @@ Deno.serve(async (req) => {
           })
         } catch (err) {
           console.error(`Failed to send email to user ${uid}:`, err)
+        }
+      }
+
+      // Send Web Push Notifications
+      const pushUserIds = Object.keys(userEmails).filter(uid => !optOuts.has(uid))
+      if (pushUserIds.length > 0) {
+        try {
+          // @ts-expect-error deno types
+          const appUrl = Deno.env.get('NEXT_PUBLIC_APP_URL') || 'https://planora-plum-beta.vercel.app'
+          
+          const pushRes = await fetch(`${appUrl}/api/push/send`, {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              userIds: pushUserIds,
+              title: copy.title,
+              body: copy.body,
+              url: `/plans/${plan.id}`
+            })
+          })
+
+          if (!pushRes.ok) {
+            console.error("Failed to send push notifications:", await pushRes.text())
+          }
+        } catch (pushErr) {
+          console.error("Error triggering push notifications:", pushErr)
         }
       }
     }

@@ -15,6 +15,72 @@ type AddMemoryModalProps = {
   onSuccess: () => void
 }
 
+const compressImage = (file: File): Promise<File> => {
+  return new Promise((resolve) => {
+    // If the file is already small (e.g. less than 1MB), upload as-is
+    if (file.size < 1024 * 1024) {
+      resolve(file)
+      return
+    }
+
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = (event) => {
+      const img = new Image()
+      img.src = event.target?.result as string
+      img.onload = () => {
+        const canvas = document.createElement("canvas")
+        let width = img.width
+        let height = img.height
+        const maxDim = 1500
+
+        // Scale resolution while keeping aspect ratio
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round((height * maxDim) / width)
+            width = maxDim
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round((width * maxDim) / height)
+            height = maxDim
+          }
+        }
+
+        canvas.width = width
+        canvas.height = height
+
+        const ctx = canvas.getContext("2d")
+        if (!ctx) {
+          resolve(file)
+          return
+        }
+
+        ctx.drawImage(img, 0, 0, width, height)
+
+        // Convert to Blob with quality parameter (0.8 = 80% JPEG quality)
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                type: "image/jpeg",
+                lastModified: Date.now()
+              })
+              resolve(compressedFile)
+            } else {
+              resolve(file)
+            }
+          },
+          "image/jpeg",
+          0.8
+        )
+      }
+      img.onerror = () => resolve(file)
+    }
+    reader.onerror = () => resolve(file)
+  })
+}
+
 export function AddMemoryModal({ planId, isOpen, onClose, onSuccess }: AddMemoryModalProps) {
   const { profile } = useUserStore()
   const supabase = createClient()
@@ -70,14 +136,17 @@ export function AddMemoryModal({ planId, isOpen, onClose, onSuccess }: AddMemory
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
-        const fileExt = file.name.split('.').pop()
+        
+        // Dynamic client-side image compression prior to uploading
+        const compressedFile = await compressImage(file)
+        const fileExt = compressedFile.name.split('.').pop()
         const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`
         const filePath = `${planId}/${profile.id}/${fileName}`
 
         // Upload to storage
         const { error: uploadError } = await supabase.storage
           .from('memories')
-          .upload(filePath, file)
+          .upload(filePath, compressedFile)
 
         if (uploadError) throw uploadError
 

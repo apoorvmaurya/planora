@@ -17,7 +17,25 @@ export const itinerarySchema = z.object({
   }))
 })
 
-export type Itinerary = z.infer<typeof itinerarySchema>
+export const itineraryResponseSchema = z.object({
+  title: z.string().describe("A catchy name for the trip plan"),
+  days: z.array(z.object({
+    day_number: z.number().describe("Day number starting from 1"),
+    itinerary_items: z.array(z.object({
+      title: z.string().describe("Title of the activity"),
+      description: z.string().describe("Detailed description of what to do"),
+      time_of_day: z.enum(['Morning', 'Afternoon', 'Evening', 'Night']),
+      location_name: z.string().describe("Name of the venue/place"),
+      lat: z.number().describe("Latitude of the venue"),
+      lng: z.number().describe("Longitude of the venue"),
+      category: z.enum(['activity', 'food', 'transport', 'accommodation', 'leisure']),
+      duration_minutes: z.number().describe("Estimated duration in minutes"),
+      estimated_cost: z.number().describe("Estimated cost in plan currency")
+    }))
+  }))
+})
+
+export type Itinerary = z.infer<typeof itineraryResponseSchema>
 
 export async function buildPromptContext({
   destination,

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Loader2 } from "lucide-react"
+import { Loader2, Sparkles, Camera } from "lucide-react"
 
 const expenseSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -53,6 +53,8 @@ export function AddExpenseModal({
   onSuccess?: () => void;
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isScanning, setIsScanning] = useState(false)
+  const [scanError, setScanError] = useState<string | null>(null)
 
   const { register, handleSubmit, control, watch, formState: { errors }, setValue, reset } = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseSchema) as any,
@@ -64,6 +66,42 @@ export function AddExpenseModal({
 
   const splitType = watch("split_type")
   const amount = watch("amount") || 0
+
+  const handleScanReceipt = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsScanning(true)
+    setScanError(null)
+
+    const formData = new FormData()
+    formData.append("file", file)
+
+    try {
+      const res = await fetch(`/api/plans/${planId}/expenses/scan`, {
+        method: "POST",
+        body: formData,
+      })
+
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to scan receipt")
+      }
+
+      const receipt = data.receipt
+      if (receipt) {
+        setValue("title", receipt.merchant || "Receipt Expense")
+        setValue("amount", receipt.total || 0)
+      }
+    } catch (err: any) {
+      console.error(err)
+      setScanError(err.message || "An unexpected error occurred while scanning.")
+    } finally {
+      setIsScanning(false)
+      // reset file input
+      e.target.value = ""
+    }
+  }
 
   const onSubmit = async (data: ExpenseFormValues) => {
     setIsSubmitting(true)
@@ -112,6 +150,46 @@ export function AddExpenseModal({
           <DialogTitle>Add Expense</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-4">
+          {/* AI Scan Receipt Section */}
+          <div className="bg-emerald-50/50 p-4 rounded-xl border border-dashed border-emerald-200 text-center relative overflow-hidden">
+            <div className="flex flex-col items-center justify-center space-y-2">
+              <div className="p-2.5 bg-emerald-100/80 rounded-full text-emerald-700 animate-pulse">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-semibold text-emerald-950">AI Receipt Scanner</h4>
+                <p className="text-xs text-emerald-600/80 mt-0.5 font-normal">Upload or take a photo to pre-fill expense details instantly</p>
+              </div>
+              <label className="cursor-pointer">
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={handleScanReceipt} 
+                  disabled={isScanning || isSubmitting} 
+                />
+                <div className="mt-2.5 inline-flex items-center justify-center h-9 px-4 rounded-lg bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700 transition duration-150 disabled:opacity-50">
+                  {isScanning ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Analyzing with AI...
+                    </>
+                  ) : (
+                    <>
+                      <Camera className="w-4 h-4 mr-2" />
+                      Scan Receipt
+                    </>
+                  )}
+                </div>
+              </label>
+            </div>
+            {scanError && (
+              <p className="text-xs text-red-600 font-medium mt-2 bg-red-50 p-2 rounded border border-red-100">
+                {scanError}
+              </p>
+            )}
+          </div>
+
           <div className="space-y-2">
             <Label>Description</Label>
             <Input {...register("title")} placeholder="E.g., Dinner at Mario's" />

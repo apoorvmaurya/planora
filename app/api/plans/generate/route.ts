@@ -1,7 +1,7 @@
-import { streamText } from 'ai'
+import { streamObject } from 'ai'
 import { groq } from '@ai-sdk/groq'
 import { createClient } from '@/lib/supabase/server'
-import { buildPromptContext } from '@/lib/ai/prompts'
+import { buildPromptContext, itineraryResponseSchema } from '@/lib/ai/prompts'
 
 import { z } from 'zod'
 
@@ -66,41 +66,16 @@ export async function POST(req: Request) {
   const fullPrompt = `${prompt}
   
   **Important Formatting Rules:**
-  - DO NOT wrap the output in markdown codeblocks like \`\`\`json. Output ONLY raw JSON text.
   - Create ${days} days of itinerary.
   - Each day should have 3-5 distinct items (e.g. Morning, Afternoon, Evening).
-  - Output JSON matching this EXACT structure:
-  {
-    "title": "string (Catchy name for the trip)",
-    "days": [
-      {
-        "day_number": number,
-        "itinerary_items": [
-          {
-            "title": "string",
-            "description": "string",
-            "time_of_day": "Morning" | "Afternoon" | "Evening" | "Night",
-            "location_name": "string",
-            "lat": number,
-            "lng": number,
-            "category": "activity" | "food" | "transport" | "accommodation" | "leisure",
-            "duration_minutes": number,
-            "estimated_cost": number
-          }
-        ]
-      }
-    ]
-  }
   `
 
-  const result = streamText({
+  const result = streamObject({
     model: groq('llama-3.3-70b-versatile'),
+    schema: itineraryResponseSchema,
     prompt: fullPrompt,
-    async onFinish({ text }) {
+    async onFinish({ object }) {
       try {
-        const cleanText = text.replace(/```(?:json)?\n?/g, '').replace(/```/g, '').trim()
-        const object = JSON.parse(cleanText)
-
         if (object?.title) {
           await supabase.from('plans').update({ title: object.title }).eq('id', planId)
         }
@@ -108,8 +83,10 @@ export async function POST(req: Request) {
         if (object?.days) {
           const itemsToInsert = []
           for (const day of object.days) {
+            if (!day) continue
             let sortOrder = 0
-            for (const item of day.itinerary_items) {
+            for (const item of day.itinerary_items || []) {
+              if (!item) continue
               itemsToInsert.push({
                 plan_id: planId,
                 day_number: day.day_number,
@@ -117,8 +94,8 @@ export async function POST(req: Request) {
                 title: item.title,
                 description: item.description,
                 location_name: item.location_name,
-                lat: item.lat,
-                lng: item.lng,
+                lat: item.lat || 0,
+                lng: item.lng || 0,
                 category: item.category,
                 duration_minutes: item.duration_minutes,
                 estimated_cost: item.estimated_cost,

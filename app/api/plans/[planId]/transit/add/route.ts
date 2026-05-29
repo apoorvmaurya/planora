@@ -44,20 +44,20 @@ export async function POST(
 
   if (query) {
     try {
-      const coords = await forwardGeocode(query)
+      const { data: plan } = await supabase.from("plans").select("destination_name").eq("id", planId).single()
+      const destination = plan?.destination_name
+      
+      const coords = await forwardGeocode(query, destination)
       if (coords) {
         lat = coords.lat
         lng = coords.lng
         resolvedLocationName = coords.display_name ? coords.display_name.split(',')[0] : query
-      } else {
-        const { data: plan } = await supabase.from("plans").select("destination_name").eq("id", planId).single()
-        if (plan && plan.destination_name) {
-          const fallbackCoords = await forwardGeocode(`${query}, ${plan.destination_name}`)
-          if (fallbackCoords) {
-            lat = fallbackCoords.lat
-            lng = fallbackCoords.lng
-            resolvedLocationName = fallbackCoords.display_name ? fallbackCoords.display_name.split(',')[0] : query
-          }
+      } else if (destination) {
+        const fallbackCoords = await forwardGeocode(`${query}, ${destination}`)
+        if (fallbackCoords) {
+          lat = fallbackCoords.lat
+          lng = fallbackCoords.lng
+          resolvedLocationName = fallbackCoords.display_name ? fallbackCoords.display_name.split(',')[0] : query
         }
       }
     } catch (err) {
@@ -69,6 +69,7 @@ export async function POST(
     .from("itinerary_items")
     .insert({
       plan_id: planId,
+      user_id: user.id,
       day_number: day_number || 1,
       time_of_day: timeLabel,
       title: `🚀 ${title}`,

@@ -1,31 +1,31 @@
 import { NextResponse } from "next/server"
-import { generateObject } from 'ai'
-import { z } from 'zod'
+import { generateText } from 'ai'
 import { groq } from '@ai-sdk/groq'
-
-const transitOptionsSchema = z.object({
-  options: z.array(
-    z.object({
-      type: z.enum(['flight', 'train', 'bus', 'driving']),
-      title: z.string().describe('Short title for the transit option'),
-      details: z.string().describe('Details such as transfer stations, airlines, or highway route names'),
-      cost: z.string().describe('Estimated cost string, e.g. "$150", "$30 - $50"')
-    })
-  )
-})
+import { safeJsonParse } from "@/lib/utils/jsonParser"
 
 export async function POST(req: Request) {
   try {
     const { origin, destination } = await req.json()
     if (!origin || !destination) return NextResponse.json({ error: "Missing origin or destination" }, { status: 400 })
 
-    const { object } = await generateObject({
+    const { text } = await generateText({
       model: groq('llama-3.3-70b-versatile'),
-      schema: transitOptionsSchema,
-      prompt: `Suggest 3 realistic transit options to travel from ${origin} to ${destination}. Provide a mix of speed and budget if applicable. Provide cost estimates in USD.`,
+      prompt: `Suggest 3 realistic transit options to travel from ${origin} to ${destination}. Provide a mix of speed and budget if applicable. Provide cost estimates in USD.
+Return the output strictly as a JSON object adhering to this schema:
+{
+  "options": [
+    {
+      "type": "flight" | "train" | "bus" | "driving",
+      "title": "Short title for the transit option",
+      "details": "Details such as transfer stations, airlines, or highway route names",
+      "cost": "Estimated cost string, e.g. \\"$150\\", \\"$30 - $50\\""
+    }
+  ]
+}`,
     })
 
-    return NextResponse.json(object)
+    const parsed = safeJsonParse(text)
+    return NextResponse.json(parsed)
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

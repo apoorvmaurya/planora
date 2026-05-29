@@ -10,19 +10,10 @@
   <a href="#features">Features</a> ·
   <a href="#tech-stack">Tech Stack</a> ·
   <a href="#getting-started">Getting Started</a> ·
-  <a href="#project-structure">Project Structure</a> ·
-  <a href="#license">License</a>
+  <a href="#project-structure">Project Structure</a>
 </p>
 
----
-
-## Why Planora?
-
-78 % of group plans never happen. They drown in chaotic group chats, scattered spreadsheets, and endless "let me check my calendar" messages. Planora fixes that with a single, real-time workspace powered by AI — so the plan moves forward even when nobody wants to be *the planner*.
-
----
-
-## Features
+## ✨ Features
 
 | Feature | Description |
 |---|---|
@@ -38,7 +29,7 @@
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -52,12 +43,11 @@
 | **State** | [Zustand](https://github.com/pmndrs/zustand), React hooks |
 | **Animations** | [Framer Motion](https://www.framer.com/motion/) |
 | **PWA** | [Serwist](https://serwist.pages.dev) (service worker), Web Push API |
-| **Monitoring** | [Vercel Speed Insights](https://vercel.com/docs/speed-insights) |
 | **Deployment** | [Vercel](https://vercel.com) |
 
 ---
 
-## Getting Started
+## 🏁 Getting Started
 
 ### Prerequisites
 
@@ -121,7 +111,7 @@ The Supabase project should have the required tables, RLS policies, and Edge Fun
 
 ---
 
-## Project Structure
+## 📂 Project Structure
 
 ```
 planora/
@@ -151,35 +141,6 @@ planora/
 ├── public/                 # Static assets, PWA icons, service worker
 └── middleware.ts            # Next.js middleware (session refresh, route guards)
 ```
-
----
-
-## Scripts
-
-| Command | Description |
-|---|---|
-| `pnpm dev` | Start dev server with Turbopack |
-| `pnpm build` | Production build |
-| `pnpm start` | Start production server |
-| `pnpm lint` | Run ESLint |
-
----
-
-## Deployment
-
-The app is deployed on **Vercel**. Push to `main` to trigger automatic deployment.
-
-```bash
-vercel --prod
-```
-
-Environment variables must be configured in the Vercel project settings.
-
----
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
 
 ---
 

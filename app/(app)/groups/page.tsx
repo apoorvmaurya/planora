@@ -32,13 +32,13 @@ export default function GroupsPage() {
     <div className="space-y-8 pb-10 max-w-6xl mx-auto">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Groups</h1>
-          <p className="text-slate-500 mt-1 text-lg">Plan trips together with your favorite people.</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight transition-colors duration-500">Groups</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 text-lg transition-colors duration-500">Plan trips together with your favorite people.</p>
         </div>
         
         <Button 
           onClick={() => setIsModalOpen(true)}
-          className="bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl h-11 px-6 shadow-md"
+          className="bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl h-11 px-6 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
         >
           <Plus className="w-4 h-4 mr-2" />
           Create group
@@ -46,19 +46,19 @@ export default function GroupsPage() {
       </header>
 
       {isLoading ? (
-        <p className="text-center text-slate-500 py-20">Loading groups...</p>
+        <p className="text-center text-slate-500 dark:text-slate-400 py-20 transition-colors duration-500">Loading groups...</p>
       ) : groups.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-3xl border border-slate-100 border-dashed">
-          <div className="w-20 h-20 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Users className="w-10 h-10 text-[#1D9E75]" />
+        <div className="text-center py-20 bg-white dark:bg-slate-900/40 rounded-3xl border border-slate-100 dark:border-slate-800/80 border-dashed transition-all duration-500">
+          <div className="w-20 h-20 bg-teal-50 dark:bg-teal-950/20 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors duration-500">
+            <Users className="w-10 h-10 text-[#1D9E75] dark:text-teal-400" />
           </div>
-          <h3 className="text-2xl font-bold text-slate-900 mb-2">No groups yet</h3>
-          <p className="text-slate-500 max-w-sm mx-auto mb-6">
+          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2 transition-colors duration-500">No groups yet</h3>
+          <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto mb-6 transition-colors duration-500">
             Start a group to begin collaborating on itineraries, voting on dates, and tracking expenses together.
           </p>
           <Button 
             onClick={() => setIsModalOpen(true)}
-            className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl"
+            className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl cursor-pointer"
           >
             Create your first group
           </Button>
@@ -70,10 +70,17 @@ export default function GroupsPage() {
               <motion.div 
                 initial={{ opacity: 0, y: 10 }} 
                 animate={{ opacity: 1, y: 0 }} 
-                transition={{ delay: i * 0.1 }}
-                className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-md hover:border-[#1D9E75]/30 transition-all overflow-hidden group cursor-pointer h-full flex flex-col"
+                whileHover={{ scale: 1.025, y: -2 }}
+                whileTap={{ scale: 0.975 }}
+                transition={{ 
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 30,
+                  delay: i * 0.05
+                }}
+                className="bg-white dark:bg-slate-900/60 backdrop-blur-md rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm hover:shadow-lg dark:shadow-none hover:border-[#1D9E75]/40 dark:hover:border-teal-500/40 transition-all duration-300 overflow-hidden group cursor-pointer h-full flex flex-col"
               >
-                <div className="h-32 bg-slate-100 relative overflow-hidden">
+                <div className="h-32 bg-slate-100 dark:bg-slate-800 relative overflow-hidden transition-colors duration-500">
                   {group.cover_image_url ? (
                     <img src={group.cover_image_url} alt={group.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
@@ -82,15 +89,15 @@ export default function GroupsPage() {
                 </div>
                 
                 <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="font-bold text-xl text-slate-900 line-clamp-1">{group.name}</h3>
-                  <p className="text-sm text-slate-500 mt-1 line-clamp-2 flex-1">
+                  <h3 className="font-bold text-xl text-slate-900 dark:text-white line-clamp-1 group-hover:text-[#1D9E75] dark:group-hover:text-teal-400 transition-colors duration-300">{group.name}</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 flex-1 transition-colors duration-500">
                     {group.description || "No description provided."}
                   </p>
                   
-                  <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+                  <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between transition-colors duration-500">
                     <div className="flex -space-x-2">
                       {group.group_members?.slice(0, 3).map((member: any) => (
-                        <div key={member.user_id} className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-500 overflow-hidden">
+                        <div key={member.user_id} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 border-2 border-white dark:border-slate-900 flex items-center justify-center text-xs font-bold text-slate-500 dark:text-slate-400 overflow-hidden transition-colors duration-500">
                           {member.user?.avatar_url ? (
                             <img src={member.user.avatar_url} alt="Profile" className="w-full h-full object-cover" />
                           ) : (
@@ -99,12 +106,12 @@ export default function GroupsPage() {
                         </div>
                       ))}
                       {(group.group_members?.length || 0) > 3 && (
-                        <div className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-500">
+                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-white dark:border-slate-900 flex items-center justify-center text-xs font-bold text-slate-500 dark:text-slate-400 transition-colors duration-500">
                           +{(group.group_members?.length || 0) - 3}
                         </div>
                       )}
                     </div>
-                    <span className="text-xs font-semibold text-[#1D9E75] bg-teal-50 px-2 py-1 rounded-full">
+                    <span className="text-xs font-semibold text-[#1D9E75] dark:text-teal-400 bg-teal-50 dark:bg-teal-950/30 px-2 py-1 rounded-full transition-colors duration-500">
                       Active
                     </span>
                   </div>

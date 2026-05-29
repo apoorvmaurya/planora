@@ -68,18 +68,18 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+    <div className="premium-page-wrapper">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-md w-full bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100"
+        className="premium-card"
       >
         <div className="text-center mb-8">
           <Link href="/" className="text-3xl font-bold tracking-tight inline-block mb-2">
             Plan<span className="text-[#1D9E75]">ora</span>
           </Link>
-          <p className="text-slate-500">Welcome back! Please enter your details.</p>
+          <p className="text-slate-500 dark:text-slate-400">Welcome back! Please enter your details.</p>
         </div>
 
         <Form {...form}>
@@ -89,7 +89,7 @@ export default function LoginPage() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-slate-700 dark:text-slate-300">Email</FormLabel>
                   <FormControl>
                     <Input type="email" id="email" autoComplete="email" placeholder="name@example.com" {...field} />
                   </FormControl>
@@ -102,7 +102,7 @@ export default function LoginPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className="text-slate-700 dark:text-slate-300">Password</FormLabel>
                   <FormControl>
                     <Input type="password" id="password" autoComplete="current-password" placeholder="••••••••" {...field} />
                   </FormControl>
@@ -112,7 +112,7 @@ export default function LoginPage() {
             />
             <Button
               type="submit"
-              className="w-full bg-[#1D9E75] hover:bg-[#15805e] text-white py-6 rounded-xl font-bold"
+              className="w-full btn-teal-primary"
               disabled={isLoading}
             >
               {isLoading ? "Signing in..." : "Sign In"}
@@ -122,17 +122,17 @@ export default function LoginPage() {
 
         <div className="relative my-8">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-slate-200" />
+            <span className="w-full border-t border-slate-200 dark:border-slate-800" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-2 text-slate-500">Or continue with</span>
+            <span className="bg-white dark:bg-slate-900 px-2 text-slate-500 dark:text-slate-400">Or continue with</span>
           </div>
         </div>
 
         <Button
           type="button"
           variant="outline"
-          className="w-full py-6 rounded-xl font-semibold border-slate-200 text-slate-700 hover:bg-slate-50"
+          className="w-full btn-slate-outline"
           onClick={handleGoogleLogin}
         >
           <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -157,7 +157,7 @@ export default function LoginPage() {
           Google
         </Button>
 
-        <p className="text-center text-sm text-slate-500 mt-8">
+        <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-8">
           Don&apos;t have an account?{" "}
           <Link href="/signup" className="text-[#1D9E75] font-semibold hover:underline">
             Sign up

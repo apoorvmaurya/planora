@@ -98,26 +98,26 @@ export default function MemoriesPage() {
     setTimeout(() => setCopiedLink(false), 2000)
   }
 
-  if (!plan) return <div className="text-center py-20 text-slate-500">Loading memories...</div>
+  if (!plan) return <div className="text-center py-20 text-slate-500 dark:text-slate-450 transition-colors duration-500">Loading memories...</div>
 
   return (
     <div className="max-w-6xl mx-auto pb-20 space-y-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3 transition-colors duration-550">
             Trip Memories
             {plan.status === 'completed' && (
-              <span className="bg-amber-100 text-amber-700 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+              <span className="bg-amber-100 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 text-xs px-2 py-1 rounded-full flex items-center gap-1 transition-colors duration-500">
                 <Sparkles className="w-3 h-3" /> Completed
               </span>
             )}
           </h1>
-          <p className="text-slate-500 mt-1">Relive the best moments from {plan.destination_name}.</p>
+          <p className="text-slate-500 dark:text-slate-450 transition-colors duration-500">Relive the best moments from {plan.destination_name}.</p>
         </div>
         
         <div className="flex gap-3">
           {plan.share_token && (
-            <Button variant="outline" onClick={handleShare} className="rounded-xl flex items-center gap-2 border-slate-200">
+            <Button variant="outline" onClick={handleShare} className="rounded-xl flex items-center gap-2 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300">
               {copiedLink ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Share2 className="w-4 h-4" />}
               {copiedLink ? 'Copied Link!' : 'Share Publicly'}
             </Button>
@@ -136,28 +136,28 @@ export default function MemoriesPage() {
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm relative overflow-hidden"
+          className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-800/80 shadow-sm relative overflow-hidden transition-colors duration-500"
         >
           <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#1D9E75]" />
           <div className="flex gap-4 items-start">
-            <div className="bg-teal-50 p-3 rounded-2xl text-[#1D9E75] shrink-0 hidden sm:block">
+            <div className="bg-teal-50 dark:bg-teal-950/20 p-3 rounded-2xl text-[#1D9E75] dark:text-teal-400 shrink-0 hidden sm:block transition-colors duration-500">
               <Sparkles className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 text-lg mb-2">AI Trip Recap</h3>
-              <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">{plan.recap_text}</p>
+              <h3 className="font-bold text-slate-900 dark:text-white text-lg mb-2 transition-colors duration-500">AI Trip Recap</h3>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap transition-colors duration-500">{plan.recap_text}</p>
             </div>
           </div>
         </motion.div>
       )}
 
       {memories.length === 0 ? (
-        <div className="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
-          <div className="w-16 h-16 mx-auto bg-slate-200 text-slate-400 rounded-full flex items-center justify-center mb-4">
+        <div className="text-center py-20 bg-slate-50 dark:bg-slate-900/30 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800 transition-colors duration-500">
+          <div className="w-16 h-16 mx-auto bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 rounded-full flex items-center justify-center mb-4 transition-colors duration-500">
             <ImagePlus className="w-8 h-8" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900">No memories yet</h3>
-          <p className="text-slate-500 mt-1 max-w-sm mx-auto">Upload the first photo to start building your trip&apos;s shared album.</p>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white transition-colors duration-550">No memories yet</h3>
+          <p className="text-slate-500 dark:text-slate-450 mt-1 max-w-sm mx-auto transition-colors duration-500">Upload the first photo to start building your trip's shared album.</p>
         </div>
       ) : (
         <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
@@ -171,7 +171,7 @@ export default function MemoriesPage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.05 }}
-                className="break-inside-avoid bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden group"
+                className="break-inside-avoid bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800/80 overflow-hidden group transition-colors duration-500"
               >
                 <div className="relative">
                   <img src={memory.photo_url} alt="Trip memory" className="w-full object-cover" />
@@ -192,15 +192,15 @@ export default function MemoriesPage() {
                 
                 <div className="p-4">
                   {memory.caption && (
-                    <p className="text-slate-800 text-sm mb-3">{memory.caption}</p>
+                    <p className="text-slate-800 dark:text-slate-200 text-sm mb-3 transition-colors duration-500">{memory.caption}</p>
                   )}
                   <div className="flex items-center gap-2">
                     <img 
                       src={memory.user?.avatar_url || `https://ui-avatars.com/api/?name=${memory.user?.full_name}`} 
-                      className="w-6 h-6 rounded-full bg-slate-100 object-cover"
+                      className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 object-cover border border-slate-200 dark:border-slate-700"
                       alt="" 
                     />
-                    <span className="text-xs font-medium text-slate-500">{memory.user?.full_name}</span>
+                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400 transition-colors duration-500">{memory.user?.full_name}</span>
                   </div>
                 </div>
               </motion.div>

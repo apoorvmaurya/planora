@@ -74,6 +74,11 @@ export async function POST(req: Request) {
     model: groq('llama-3.3-70b-versatile'),
     schema: itineraryResponseSchema,
     prompt: fullPrompt,
+    providerOptions: {
+      groq: {
+        structuredOutputs: false
+      }
+    },
     async onFinish({ object }) {
       try {
         if (object?.title) {
@@ -81,6 +86,9 @@ export async function POST(req: Request) {
         }
         
         if (object?.days) {
+          // Delete old itinerary items for this plan first to enable clean regeneration
+          await supabase.from('itinerary_items').delete().eq('plan_id', planId)
+
           const itemsToInsert = []
           for (const day of object.days) {
             if (!day) continue

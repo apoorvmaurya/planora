@@ -62,10 +62,10 @@ export function PlansGrid({ plans }: PlansGridProps) {
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${
+              className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-300 ${
                 activeFilter === filter 
-                  ? 'bg-slate-900 text-white shadow-md' 
-                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                  ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 shadow-md' 
+                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
               }`}
             >
               {filter}
@@ -74,12 +74,12 @@ export function PlansGrid({ plans }: PlansGridProps) {
         </div>
         
         <div className="relative w-full sm:w-64 shrink-0">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
           <Input 
             placeholder="Search plans..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-10 rounded-full border-slate-200 bg-white"
+            className="pl-9 h-10 rounded-full border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-500"
           />
         </div>
       </div>
@@ -90,18 +90,18 @@ export function PlansGrid({ plans }: PlansGridProps) {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="text-center py-24 bg-white rounded-3xl border border-slate-100 shadow-sm"
+            className="text-center py-24 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm transition-colors duration-500"
           >
-            <div className="w-20 h-20 mx-auto bg-teal-50 text-[#1D9E75] rounded-full flex items-center justify-center mb-6">
+            <div className="w-20 h-20 mx-auto bg-teal-50 dark:bg-teal-950/20 text-[#1D9E75] dark:text-teal-400 rounded-full flex items-center justify-center mb-6 transition-colors duration-500">
               {activeFilter === 'Drafts' ? <ListTodo className="w-10 h-10" /> : 
                activeFilter === 'Completed' ? <Map className="w-10 h-10" /> :
                <Compass className="w-10 h-10" />}
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">No {activeFilter.toLowerCase()} plans found</h3>
-            <p className="text-slate-500 max-w-md mx-auto mb-8">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 transition-colors duration-550">No {activeFilter.toLowerCase()} plans found</h3>
+            <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-8 transition-colors duration-500">
               {searchQuery ? "Try adjusting your search terms." : "Ready for your next adventure? Start planning a new trip with your group."}
             </p>
-            <Link href="/plans/new" className="inline-flex shrink-0 items-center justify-center bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl px-8 h-12 text-sm font-medium transition-all">
+            <Link href="/plans/new" className="inline-flex shrink-0 items-center justify-center bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl px-8 h-12 text-sm font-medium transition-all shadow-md shadow-teal-500/10">
               Create New Plan
             </Link>
           </motion.div>

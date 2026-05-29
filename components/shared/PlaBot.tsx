@@ -82,38 +82,38 @@ export function PlaBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="w-[350px] h-[480px] bg-white rounded-3xl shadow-2xl border border-slate-100 mb-4 flex flex-col overflow-hidden"
+            className="w-[350px] h-[480px] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 mb-4 flex flex-col overflow-hidden transition-all duration-500"
           >
             {/* Header */}
-            <div className="bg-slate-900 text-white p-4 flex items-center justify-between">
+            <div className="bg-slate-900 dark:bg-slate-950 text-white p-4 flex items-center justify-between transition-colors duration-500">
               <div className="flex items-center gap-2">
                 <div className="bg-[#1D9E75] p-1.5 rounded-lg">
                   <Bot className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="font-bold text-sm">PlaBot</h3>
-                  <p className="text-xs text-slate-400">Ask me anything about Planora</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">Ask me anything about Planora</p>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-white transition-colors">
+              <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 bg-slate-50 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 bg-slate-50 dark:bg-slate-950 space-y-4 transition-colors duration-500">
               {messages.length === 0 ? (
                 <div className="space-y-4">
-                  <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-sm text-slate-700">
+                  <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm text-sm text-slate-700 dark:text-slate-300 transition-colors duration-500">
                     Hi! I&apos;m PlaBot. 👋 I can help answer any questions you have about Planora&apos;s features, upcoming premium plans, or how the AI works. What&apos;s on your mind?
                   </div>
                   <div className="space-y-2">
-                    <p className="text-xs font-semibold text-slate-500 uppercase px-2">Suggested</p>
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase px-2">Suggested</p>
                     {suggestedQuestions.map((q, i) => (
                       <button 
                         key={i}
                         onClick={() => handleSubmit(undefined, q)}
-                        className="block w-full text-left bg-white px-4 py-2 rounded-xl border border-slate-100 text-sm text-[#1D9E75] hover:bg-teal-50 transition-colors"
+                        className="block w-full text-left bg-white dark:bg-slate-900 px-4 py-2 rounded-xl border border-slate-100 dark:border-slate-800 text-sm text-[#1D9E75] hover:bg-teal-50 dark:hover:bg-teal-950/20 transition-all cursor-pointer"
                       >
                         {q}
                       </button>
@@ -124,10 +124,10 @@ export function PlaBot() {
                 <>
                   {messages.map((m, index) => (
                     <div key={index} className={`flex gap-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${m.role === 'user' ? 'bg-slate-900 text-white' : 'bg-[#1D9E75] text-white'}`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${m.role === 'user' ? 'bg-slate-900 dark:bg-slate-800 text-white' : 'bg-[#1D9E75] text-white'}`}>
                         {m.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                       </div>
-                      <div className={`px-4 py-2.5 rounded-2xl max-w-[75%] text-sm ${m.role === 'user' ? 'bg-slate-900 text-white rounded-tr-sm' : 'bg-white border border-slate-100 shadow-sm text-slate-800 rounded-tl-sm whitespace-pre-wrap'}`}>
+                      <div className={`px-4 py-2.5 rounded-2xl max-w-[75%] text-sm ${m.role === 'user' ? 'bg-slate-900 dark:bg-slate-800 text-white rounded-tr-sm' : 'bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm text-slate-800 dark:text-slate-200 rounded-tl-sm whitespace-pre-wrap transition-colors duration-500'}`}>
                         {m.content}
                       </div>
                     </div>
@@ -137,7 +137,7 @@ export function PlaBot() {
                       <div className="w-8 h-8 rounded-full bg-[#1D9E75] text-white flex items-center justify-center shrink-0">
                         <Bot className="w-4 h-4" />
                       </div>
-                      <div className="px-4 py-3 bg-white border border-slate-100 shadow-sm rounded-2xl rounded-tl-sm flex gap-1 items-center">
+                      <div className="px-4 py-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm rounded-2xl rounded-tl-sm flex gap-1 items-center transition-colors duration-500">
                         <div className="w-1.5 h-1.5 bg-[#1D9E75] rounded-full animate-bounce" />
                         <div className="w-1.5 h-1.5 bg-[#1D9E75] rounded-full animate-bounce delay-100" />
                         <div className="w-1.5 h-1.5 bg-[#1D9E75] rounded-full animate-bounce delay-200" />
@@ -150,13 +150,13 @@ export function PlaBot() {
             </div>
 
             {/* Input Area */}
-            <div className="p-3 bg-white border-t border-slate-100">
+            <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 transition-colors duration-500">
               <form onSubmit={handleSubmit} className="relative flex items-center">
                 <Input 
                   value={input} 
                   onChange={(e) => setInput(e.target.value)} 
                   placeholder="Ask a question..." 
-                  className="h-10 pl-4 pr-12 rounded-xl bg-slate-50 border-slate-200 text-sm focus-visible:ring-[#1D9E75]"
+                  className="h-10 pl-4 pr-12 rounded-xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus-visible:ring-[#1D9E75] transition-all"
                 />
                 <Button type="submit" disabled={isLoading || !input.trim()} size="icon" className="absolute right-1 w-8 h-8 rounded-lg bg-[#1D9E75] hover:bg-[#15805e]">
                   <Send className="w-3.5 h-3.5 text-white" />
@@ -171,7 +171,7 @@ export function PlaBot() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-full px-6 py-4 shadow-xl flex items-center gap-3 transition-colors"
+        className="bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-full px-6 py-4 shadow-xl flex items-center gap-3 transition-colors cursor-pointer"
       >
         {isOpen ? <X className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
         <span className="font-bold">Ask PlaBot</span>

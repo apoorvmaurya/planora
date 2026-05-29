@@ -40,7 +40,7 @@ export default function GroupDetailPage() {
   return (
     <div className="space-y-8 pb-12 max-w-5xl mx-auto">
       {/* Header Cover */}
-      <div className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm relative">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm relative">
         <div className="h-64 bg-slate-100 relative">
           {group.cover_image_url ? (
             <img src={group.cover_image_url} alt={group.name} className="w-full h-full object-cover" />
@@ -70,7 +70,7 @@ export default function GroupDetailPage() {
           {/* Plans Section */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-slate-900 flex items-center">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center">
                 <Map className="w-6 h-6 mr-2 text-[#1D9E75]" /> Group Plans
               </h2>
               <Link href={`/plans/new?groupId=${groupId}`}>
@@ -81,8 +81,8 @@ export default function GroupDetailPage() {
             </div>
 
             {plans.length === 0 ? (
-              <div className="bg-white p-8 rounded-3xl border border-slate-100 text-center">
-                <p className="text-slate-500">No plans yet. Start planning a trip!</p>
+              <div className="bg-white dark:bg-slate-900/40 backdrop-blur-md p-8 rounded-3xl border border-slate-100 dark:border-slate-800/80 text-center transition-all duration-500">
+                <p className="text-slate-500 dark:text-slate-400">No plans yet. Start planning a trip!</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -91,25 +91,32 @@ export default function GroupDetailPage() {
                     <motion.div 
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.1 }}
-                      className="bg-white p-5 rounded-3xl border border-slate-100 flex flex-col sm:flex-row gap-4 items-center group cursor-pointer hover:border-[#1D9E75]/30 hover:shadow-md transition-all mb-4"
+                      whileHover={{ scale: 1.015, x: 4 }}
+                      whileTap={{ scale: 0.985 }}
+                      transition={{ 
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 30,
+                        delay: i * 0.05
+                      }}
+                      className="bg-white dark:bg-slate-900/50 backdrop-blur-md p-5 rounded-3xl border border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row gap-4 items-center group cursor-pointer hover:border-[#1D9E75]/40 dark:hover:border-teal-500/40 hover:shadow-lg dark:hover:shadow-teal-950/10 transition-all duration-300 mb-4"
                   >
-                    <div className="w-full sm:w-32 h-24 bg-slate-100 rounded-2xl overflow-hidden shrink-0">
+                    <div className="w-full sm:w-32 h-24 bg-slate-100 dark:bg-slate-800 rounded-2xl overflow-hidden shrink-0 transition-colors duration-500">
                       {plan.cover_image_url ? (
-                        <img src={plan.cover_image_url} alt="Cover" className="w-full h-full object-cover" />
+                        <img src={plan.cover_image_url} alt="Cover" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       ) : (
-                        <div className="w-full h-full bg-teal-50 flex items-center justify-center">
-                          <MapPin className="w-6 h-6 text-teal-200" />
+                        <div className="w-full h-full bg-teal-50 dark:bg-teal-950/20 flex items-center justify-center transition-colors duration-500">
+                          <MapPin className="w-6 h-6 text-teal-200 dark:text-teal-800" />
                         </div>
                       )}
                     </div>
                     <div className="flex-1 w-full">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-bold text-lg text-slate-900 group-hover:text-[#1D9E75] transition-colors">{plan.title}</h3>
-                        <Badge variant="secondary" className="bg-slate-100 text-slate-600">{plan.status}</Badge>
+                        <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100 group-hover:text-[#1D9E75] dark:group-hover:text-teal-400 transition-colors duration-300">{plan.title}</h3>
+                        <Badge variant="secondary" className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 transition-colors duration-500">{plan.status}</Badge>
                       </div>
-                      <p className="text-sm text-slate-500 line-clamp-1 mb-3">{plan.description}</p>
-                      <div className="flex items-center text-xs font-semibold text-slate-400 gap-4">
+                      <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1 mb-3 transition-colors duration-500">{plan.description}</p>
+                      <div className="flex items-center text-xs font-semibold text-slate-400 dark:text-slate-500 gap-4 transition-colors duration-500">
                         <span className="flex items-center"><Calendar className="w-3 h-3 mr-1" /> {new Date(plan.start_date || plan.created_at).toLocaleDateString()}</span>
                       </div>
                     </div>
@@ -123,9 +130,9 @@ export default function GroupDetailPage() {
 
         {/* Members Sidebar */}
         <div className="space-y-6">
-          <div className="bg-white rounded-3xl border border-slate-100 p-6">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-slate-900 flex items-center">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center">
                 <Users className="w-5 h-5 mr-2 text-slate-400" /> Members ({members.length})
               </h3>
               <Button
@@ -133,8 +140,8 @@ export default function GroupDetailPage() {
                 onClick={handleCopyInvite}
                 className={`px-3 rounded-lg h-8 text-xs font-bold transition-colors ${
                   copiedLink
-                    ? 'text-emerald-600 bg-emerald-50'
-                    : 'text-[#1D9E75] hover:text-[#15805e] hover:bg-teal-50'
+                    ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20'
+                    : 'text-[#1D9E75] hover:text-[#15805e] hover:bg-teal-50 dark:hover:bg-teal-950/20'
                 }`}
               >
                 {copiedLink ? (
@@ -149,21 +156,21 @@ export default function GroupDetailPage() {
               {members.map((member: any) => (
                 <div key={member.id} className="flex items-center justify-between group">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 overflow-hidden shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0">
                       {member.user.avatar_url ? (
                         <img src={member.user.avatar_url} alt="avatar" className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center font-bold text-slate-400">
+                        <div className="w-full h-full flex items-center justify-center font-bold text-slate-400 dark:text-slate-500">
                           {member.user.full_name?.charAt(0) || "U"}
                         </div>
                       )}
                     </div>
                     <div>
-                      <p className="font-semibold text-sm text-slate-900 flex items-center gap-1.5">
+                      <p className="font-semibold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                         {member.user.full_name} 
                         {member.role === 'admin' && <Shield className="w-3 h-3 text-[#1D9E75]" />}
                       </p>
-                      <p className="text-xs text-slate-500">@{member.user.username}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">@{member.user.username}</p>
                     </div>
                   </div>
                   
@@ -172,7 +179,7 @@ export default function GroupDetailPage() {
                       variant="ghost" 
                       disabled={isProcessing}
                       onClick={() => removeMember(member.user.id)}
-                      className="opacity-0 group-hover:opacity-100 text-red-500 hover:bg-red-50 hover:text-red-600 h-8 px-2 rounded-lg text-xs"
+                      className="opacity-100 md:opacity-0 md:group-hover:opacity-100 text-red-500 hover:bg-red-50 hover:text-red-600 h-8 px-2 rounded-lg text-xs transition-opacity"
                     >
                       Kick
                     </Button>

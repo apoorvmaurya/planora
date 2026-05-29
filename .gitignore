@@ -47,3 +47,8 @@ next-env.d.ts
 
 .agents*
 skills-lock.json
+
+# scratch scripts and developer tools
+scratch/
+temp/
+*.log

@@ -186,7 +186,7 @@ export function AddMemoryModal({ planId, isOpen, onClose, onSuccess }: AddMemory
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <motion.div 
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+          className="absolute inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm"
           onClick={onClose}
         />
         
@@ -194,11 +194,11 @@ export function AddMemoryModal({ planId, isOpen, onClose, onSuccess }: AddMemory
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="bg-white rounded-3xl shadow-xl w-full max-w-2xl overflow-hidden relative z-10 max-h-[90vh] flex flex-col"
+          className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xl w-full max-w-2xl overflow-hidden relative z-10 max-h-[90vh] flex flex-col transition-all duration-500"
         >
-          <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-slate-900">Add Trip Memories</h2>
-            <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
+          <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between transition-colors duration-500">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white transition-colors duration-500">Add Trip Memories</h2>
+            <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-full text-slate-500 dark:text-slate-400 transition-colors duration-500 cursor-pointer">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -212,8 +212,10 @@ export function AddMemoryModal({ planId, isOpen, onClose, onSuccess }: AddMemory
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
               className={`
-                border-2 border-dashed rounded-3xl p-10 text-center cursor-pointer transition-colors
-                ${dragActive ? 'border-[#1D9E75] bg-teal-50/50' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}
+                border-2 border-dashed rounded-3xl p-10 text-center cursor-pointer transition-all duration-300
+                ${dragActive 
+                  ? 'border-[#1D9E75] bg-teal-50/50 dark:bg-teal-950/20' 
+                  : 'border-slate-200 dark:border-slate-800 hover:border-slate-350 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900/40'}
               `}
             >
               <input
@@ -224,24 +226,24 @@ export function AddMemoryModal({ planId, isOpen, onClose, onSuccess }: AddMemory
                 className="hidden"
                 onChange={handleFileChange}
               />
-              <div className="w-16 h-16 mx-auto bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mb-4">
+              <div className="w-16 h-16 mx-auto bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 rounded-full flex items-center justify-center mb-4 transition-colors duration-500">
                 <UploadCloud className="w-8 h-8" />
               </div>
-              <p className="text-slate-900 font-medium text-lg">Click or drag photos here</p>
-              <p className="text-slate-500 text-sm mt-1">Supports JPG, PNG, WEBP</p>
+              <p className="text-slate-900 dark:text-white font-medium text-lg transition-colors duration-500">Click or drag photos here</p>
+              <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 transition-colors duration-500">Supports JPG, PNG, WEBP</p>
             </div>
 
             {/* Selected Files Preview */}
             {files.length > 0 && (
               <div className="mt-8 space-y-4">
-                <h3 className="font-semibold text-slate-900 text-sm flex items-center gap-2">
-                  <ImageIcon className="w-4 h-4 text-slate-400" />
+                <h3 className="font-semibold text-slate-900 dark:text-white text-sm flex items-center gap-2 transition-colors duration-500">
+                  <ImageIcon className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                   Selected Photos ({files.length})
                 </h3>
                 <div className="space-y-3">
                   {files.map((file, idx) => (
-                    <div key={idx} className="flex gap-4 p-3 bg-slate-50 rounded-2xl relative group">
-                      <div className="w-20 h-20 shrink-0 bg-slate-200 rounded-xl overflow-hidden">
+                    <div key={idx} className="flex gap-4 p-3 bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800 rounded-2xl relative group transition-colors duration-500">
+                      <div className="w-20 h-20 shrink-0 bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden transition-colors duration-500">
                         <img 
                           src={URL.createObjectURL(file)} 
                           alt="preview" 
@@ -249,18 +251,18 @@ export function AddMemoryModal({ planId, isOpen, onClose, onSuccess }: AddMemory
                         />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-slate-700 truncate mb-2">{file.name}</p>
+                        <p className="text-sm font-medium text-slate-750 dark:text-slate-200 truncate mb-2 transition-colors duration-500">{file.name}</p>
                         <input
                           type="text"
                           placeholder="Add a caption..."
                           value={captions[idx] || ''}
                           onChange={e => setCaptions(prev => ({ ...prev, [idx]: e.target.value }))}
-                          className="w-full text-sm bg-white border border-slate-200 rounded-xl px-3 py-2 outline-none focus:border-[#1D9E75] focus:ring-1 focus:ring-[#1D9E75]"
+                          className="w-full text-sm bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl px-3 py-2 outline-none focus:border-[#1D9E75] focus:ring-1 focus:ring-[#1D9E75] transition-all duration-300"
                         />
                       </div>
                       <button 
                         onClick={(e) => { e.stopPropagation(); removeFile(idx); }}
-                        className="absolute -top-2 -right-2 w-6 h-6 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 rounded-full flex items-center justify-center text-slate-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all shadow-sm cursor-pointer"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -271,14 +273,14 @@ export function AddMemoryModal({ planId, isOpen, onClose, onSuccess }: AddMemory
             )}
           </div>
 
-          <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
-            <Button variant="outline" onClick={onClose} disabled={isUploading} className="rounded-xl">
+          <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex justify-end gap-3 transition-colors duration-500">
+            <Button variant="outline" onClick={onClose} disabled={isUploading} className="rounded-xl border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
               Cancel
             </Button>
             <Button 
               onClick={handleUpload} 
               disabled={files.length === 0 || isUploading}
-              className="bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl min-w-[120px]"
+              className="bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl min-w-[120px] shadow-sm hover:shadow cursor-pointer transition-all duration-200"
             >
               {isUploading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Upload Memories'}
             </Button>

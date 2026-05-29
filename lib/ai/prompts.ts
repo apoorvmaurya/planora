@@ -79,5 +79,9 @@ export async function buildPromptContext({
     3. Include estimated costs per activity that sum up reasonably to the total budget.
     4. Provide accurate real-world locations (approximate lat/lng within the destination).
     5. The schedule should reflect the requested pace (${preferences.pace}).
+    6. **Absolute Spatial Coherence & Neighborhood Clustering**: Group daily activities strictly within a single local neighborhood, district, or sub-region of ${destination.name}. Consecutive morning, afternoon, and evening venues must be within short walking distance or less than 20-30 minutes of travel time.
+    7. **No Wild Geographical Jumps**: NEVER suggest visiting far-flung cities, venues, or regions on the same day (e.g., do NOT suggest visiting Delhi in the morning and Chennai in the evening; Chennai is thousands of kilometers away from Delhi). Keep all daily activities strictly local to the destination area.
+    8. **Realistic Chronological Routing**: Schedule activities in a geographically logical sequence (e.g. Morning Activity -> walk to nearby Lunch -> walk to Afternoon Activity) to avoid backtracking or excessive transit.
+    9. **JSON Format**: The output must be returned strictly as a JSON object adhering to the schema.
   `
 }

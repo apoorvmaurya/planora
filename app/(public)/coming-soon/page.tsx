@@ -73,6 +73,7 @@ export default function ComingSoonPage() {
   const [isLoadingSupporters, setIsLoadingSupporters] = useState(true)
   const [totalCount, setTotalCount] = useState(0)
   const [scrolled, setScrolled] = useState(false)
+  const [newlyAddedIds, setNewlyAddedIds] = useState<string[]>([])
 
   const handleScroll = useCallback(() => {
     setScrolled(window.scrollY > 20)
@@ -146,6 +147,7 @@ export default function ComingSoonPage() {
       if (newSupporter) {
         setSupporters((prev) => [newSupporter, ...prev])
         setTotalCount((prev) => prev + 1)
+        setNewlyAddedIds((prev) => [...prev, newSupporter.id])
       }
 
       // Success celebrations
@@ -208,18 +210,12 @@ export default function ComingSoonPage() {
       >
         <motion.div
           animate={{
-            backdropFilter: scrolled ? "blur(20px)" : "blur(12px)",
-            backgroundColor: scrolled
-              ? "rgba(15, 23, 42, 0.85)"
-              : "rgba(15, 23, 42, 0.5)",
-            boxShadow: scrolled
-              ? "0 8px 32px rgba(0,0,0,0.37), 0 0 0 1px rgba(255,255,255,0.08) inset"
-              : "0 4px 16px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.04) inset",
             scale: scrolled ? 0.97 : 1,
           }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="w-full max-w-4xl rounded-full border border-white/5 px-4 sm:px-6 py-3"
-          style={{ WebkitBackdropFilter: scrolled ? "blur(20px)" : "blur(12px)" }}
+          className={`w-full max-w-4xl rounded-full px-4 sm:px-6 py-3 ${
+            scrolled ? "glass-nav-scrolled" : "glass-nav-unscrolled"
+          }`}
         >
           <div className="flex justify-between items-center">
             <Link 
@@ -413,7 +409,7 @@ export default function ComingSoonPage() {
                       .substring(0, 2)
                       .toUpperCase()
                     
-                    const isNewEntry = index === 0 && !isLoadingSupporters;
+                    const isNewEntry = newlyAddedIds.includes(item.id);
 
                     return (
                       <motion.div
@@ -468,7 +464,7 @@ export default function ComingSoonPage() {
       </main>
 
       {/* Footer */}
-      <footer className="z-10 py-8 px-6 text-center border-t border-slate-950 text-xs text-slate-600 max-w-7xl mx-auto w-full flex flex-col sm:flex-row justify-between items-center gap-4">
+      <footer className="z-10 py-8 px-6 text-center border-t border-slate-200 dark:border-slate-900 text-xs text-slate-500 dark:text-slate-400 max-w-7xl mx-auto w-full flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-1.5 justify-center">
           <span>Made with</span>
           <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" />

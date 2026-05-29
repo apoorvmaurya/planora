@@ -145,20 +145,20 @@ export function AddExpenseModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-3xl transition-all duration-500">
         <DialogHeader>
-          <DialogTitle>Add Expense</DialogTitle>
+          <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white transition-colors duration-500">Add Expense</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-4">
           {/* AI Scan Receipt Section */}
-          <div className="bg-emerald-50/50 p-4 rounded-xl border border-dashed border-emerald-200 text-center relative overflow-hidden">
+          <div className="bg-emerald-50/50 dark:bg-emerald-950/20 p-4 rounded-xl border border-dashed border-emerald-200 dark:border-emerald-800/60 text-center relative overflow-hidden transition-colors duration-500">
             <div className="flex flex-col items-center justify-center space-y-2">
-              <div className="p-2.5 bg-emerald-100/80 rounded-full text-emerald-700 animate-pulse">
+              <div className="p-2.5 bg-emerald-100/80 dark:bg-emerald-900/60 rounded-full text-emerald-700 dark:text-emerald-400 animate-pulse transition-colors duration-500">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-sm font-semibold text-emerald-950">AI Receipt Scanner</h4>
-                <p className="text-xs text-emerald-600/80 mt-0.5 font-normal">Upload or take a photo to pre-fill expense details instantly</p>
+                <h4 className="text-sm font-semibold text-emerald-950 dark:text-emerald-350 transition-colors duration-500">AI Receipt Scanner</h4>
+                <p className="text-xs text-emerald-600/80 dark:text-emerald-400/80 mt-0.5 font-normal transition-colors duration-500">Upload or take a photo to pre-fill expense details instantly</p>
               </div>
               <label className="cursor-pointer">
                 <input 
@@ -168,7 +168,7 @@ export function AddExpenseModal({
                   onChange={handleScanReceipt} 
                   disabled={isScanning || isSubmitting} 
                 />
-                <div className="mt-2.5 inline-flex items-center justify-center h-9 px-4 rounded-lg bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700 transition duration-150 disabled:opacity-50">
+                <div className="mt-2.5 inline-flex items-center justify-center h-9 px-4 rounded-lg bg-[#1D9E75] hover:bg-[#15805e] text-white font-medium text-sm transition duration-150 disabled:opacity-50 cursor-pointer shadow-sm hover:shadow">
                   {isScanning ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -184,37 +184,37 @@ export function AddExpenseModal({
               </label>
             </div>
             {scanError && (
-              <p className="text-xs text-red-600 font-medium mt-2 bg-red-50 p-2 rounded border border-red-100">
+              <p className="text-xs text-red-650 font-medium mt-2 bg-red-50 dark:bg-red-950/20 p-2 rounded border border-red-100 dark:border-red-900/30 transition-colors duration-500">
                 {scanError}
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label>Description</Label>
-            <Input {...register("title")} placeholder="E.g., Dinner at Mario's" />
+            <Label className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Description</Label>
+            <Input {...register("title")} placeholder="E.g., Dinner at Mario's" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#1D9E75] transition-all duration-300" />
             {errors.title && <p className="text-sm text-red-500">{errors.title.message}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Amount</Label>
-              <Input type="number" step="0.01" {...register("amount")} placeholder="0.00" />
+              <Label className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Amount</Label>
+              <Input type="number" step="0.01" {...register("amount")} placeholder="0.00" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#1D9E75] transition-all duration-300" />
               {errors.amount && <p className="text-sm text-red-500">{errors.amount.message}</p>}
             </div>
             <div className="space-y-2">
-              <Label>Paid By</Label>
+              <Label className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Paid By</Label>
               <Controller
                 control={control}
                 name="paid_by"
                 render={({ field }) => (
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus:ring-[#1D9E75] transition-all duration-300">
                       <SelectValue placeholder="Select member" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
                       {members.map(m => (
-                        <SelectItem key={m.user.id} value={m.user.id}>
+                        <SelectItem key={m.user.id} value={m.user.id} className="text-slate-900 dark:text-slate-100 cursor-pointer">
                           {m.user.full_name}
                         </SelectItem>
                       ))}
@@ -227,32 +227,32 @@ export function AddExpenseModal({
           </div>
 
           <div className="space-y-3">
-            <Label>Split Options</Label>
+            <Label className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Split Options</Label>
             <RadioGroup value={splitType} onValueChange={(val: string) => handleSplitTypeChange(val as 'equal' | 'custom')} className="flex gap-4">
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="equal" id="equal" />
-                <Label htmlFor="equal">Split equally</Label>
+                <RadioGroupItem value="equal" id="equal" className="transition-all duration-200" />
+                <Label htmlFor="equal" className="text-slate-700 dark:text-slate-350 cursor-pointer transition-colors duration-500">Split equally</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="custom" id="custom" />
-                <Label htmlFor="custom">Custom amounts</Label>
+                <RadioGroupItem value="custom" id="custom" className="transition-all duration-200" />
+                <Label htmlFor="custom" className="text-slate-700 dark:text-slate-350 cursor-pointer transition-colors duration-500">Custom amounts</Label>
               </div>
             </RadioGroup>
           </div>
 
           {splitType === 'custom' && (
-            <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
-              <Label className="text-xs text-slate-500 uppercase">Exact Amounts</Label>
+            <div className="space-y-3 bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors duration-500">
+              <Label className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">Exact Amounts</Label>
               {members.map(m => (
                 <div key={m.user.id} className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-2">
-                    <img src={m.user.avatar_url || `https://ui-avatars.com/api/?name=${m.user.full_name}`} className="w-6 h-6 rounded-full" alt="" />
-                    <span className="text-sm font-medium">{m.user.full_name}</span>
+                    <img src={m.user.avatar_url || `https://ui-avatars.com/api/?name=${m.user.full_name}`} className="w-6 h-6 rounded-full border border-slate-200 dark:border-slate-800 object-cover" alt="" />
+                    <span className="text-sm font-medium text-slate-900 dark:text-slate-100 transition-colors duration-500">{m.user.full_name}</span>
                   </div>
                   <Input 
                     type="number" 
                     step="0.01"
-                    className="w-24 h-8 text-right"
+                    className="w-24 h-8 text-right bg-white dark:bg-slate-950 border-slate-250 dark:border-slate-800 text-slate-900 dark:text-white rounded-lg focus-visible:ring-[#1D9E75] transition-all duration-300"
                     {...register(`split_details.${m.user.id}`)}
                   />
                 </div>
@@ -261,7 +261,7 @@ export function AddExpenseModal({
             </div>
           )}
 
-          <Button type="submit" disabled={isSubmitting} className="w-full bg-[#1D9E75] hover:bg-[#15805e]">
+          <Button type="submit" disabled={isSubmitting} className="w-full bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl h-12 shadow-sm hover:shadow cursor-pointer transition-all duration-200">
             {isSubmitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Save Expense"}
           </Button>
         </form>

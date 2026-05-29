@@ -112,18 +112,18 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-12">
+    <div className="premium-page-wrapper">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-md w-full bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100"
+        className="premium-card"
       >
         <div className="text-center mb-8">
           <Link href="/" className="text-3xl font-bold tracking-tight inline-block mb-2">
             Plan<span className="text-[#1D9E75]">ora</span>
           </Link>
-          <p className="text-slate-500">Create an account to start planning.</p>
+          <p className="text-slate-500 dark:text-slate-400">Create an account to start planning.</p>
         </div>
 
         <Form {...form}>
@@ -133,7 +133,7 @@ export default function SignupPage() {
               name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel className="text-slate-700 dark:text-slate-300">Full Name</FormLabel>
                   <FormControl>
                     <Input id="fullName" autoComplete="name" placeholder="John Doe" {...field} />
                   </FormControl>
@@ -146,7 +146,7 @@ export default function SignupPage() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-slate-700 dark:text-slate-300">Email</FormLabel>
                   <FormControl>
                     <Input type="email" id="email" autoComplete="email" placeholder="name@example.com" {...field} />
                   </FormControl>
@@ -160,7 +160,7 @@ export default function SignupPage() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center justify-between">
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-slate-700 dark:text-slate-300">Password</FormLabel>
                     <button 
                       type="button" 
                       onClick={suggestPassword}
@@ -174,7 +174,7 @@ export default function SignupPage() {
                   </FormControl>
                   {passwordValue && (
                     <div className="mt-2 space-y-1.5">
-                      <div className="flex gap-1 h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div className="flex gap-1 h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                         {[1, 2, 3, 4, 5].map((level) => (
                           <div 
                             key={level} 
@@ -186,7 +186,7 @@ export default function SignupPage() {
                           />
                         ))}
                       </div>
-                      <p className="text-xs text-slate-500 font-medium text-right">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium text-right">
                         {strength === 0 ? "Empty" : strength <= 2 ? "Weak" : strength <= 4 ? "Good" : "Strong"}
                       </p>
                     </div>
@@ -197,7 +197,7 @@ export default function SignupPage() {
             />
             <Button
               type="submit"
-              className="w-full bg-[#1D9E75] hover:bg-[#15805e] text-white py-6 rounded-xl font-bold"
+              className="w-full btn-teal-primary"
               disabled={isLoading}
             >
               {isLoading ? "Creating account..." : "Create Account"}
@@ -207,17 +207,17 @@ export default function SignupPage() {
 
         <div className="relative my-8">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-slate-200" />
+            <span className="w-full border-t border-slate-200 dark:border-slate-800" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-2 text-slate-500">Or continue with</span>
+            <span className="bg-white dark:bg-slate-900 px-2 text-slate-500 dark:text-slate-400">Or continue with</span>
           </div>
         </div>
 
         <Button
           type="button"
           variant="outline"
-          className="w-full py-6 rounded-xl font-semibold border-slate-200 text-slate-700 hover:bg-slate-50"
+          className="w-full btn-slate-outline"
           onClick={handleGoogleLogin}
         >
           <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -242,7 +242,7 @@ export default function SignupPage() {
           Google
         </Button>
 
-        <p className="text-center text-sm text-slate-500 mt-8">
+        <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-8">
           Already have an account?{" "}
           <Link href="/login" className="text-[#1D9E75] font-semibold hover:underline">
             Sign in

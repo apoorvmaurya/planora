@@ -4,6 +4,9 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ServiceWorkerRegister } from "@/components/shared/ServiceWorkerRegister";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from '@vercel/analytics/next';
+
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 
 const dmSans = DM_Sans({
   variable: "--font-sans",
@@ -25,12 +28,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${dmSans.variable} antialiased min-h-[100dvh] flex flex-col overflow-x-hidden w-full max-w-[100vw]`}>
-        <ServiceWorkerRegister />
-        {children}
-        <Toaster />
-        <SpeedInsights />
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${dmSans.variable} antialiased min-h-[100dvh] flex flex-col overflow-x-hidden w-full max-w-[100vw] theme-transition`}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ServiceWorkerRegister />
+          {children}
+          <Toaster />
+          <SpeedInsights />
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   );

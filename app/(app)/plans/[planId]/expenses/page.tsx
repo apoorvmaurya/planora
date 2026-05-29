@@ -9,7 +9,7 @@ import { Plus, Receipt, Download, ArrowRight, Wallet, TrendingUp, AlertCircle } 
 import { Button } from "@/components/ui/button"
 import { AddExpenseModal } from "@/components/shared/AddExpenseModal"
 import { ErrorState } from "@/components/shared/ErrorState"
-import { calculateRawSplits, Expense, Settlement } from "@/lib/utils/splitCalculator"
+import { calculateRawSplits, calculateSimplifiedSplits, Expense, Settlement } from "@/lib/utils/splitCalculator"
 
 export default function ExpensesPage() {
   const params = useParams()
@@ -23,6 +23,7 @@ export default function ExpensesPage() {
   const [settlements, setSettlements] = useState<Settlement[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [simplifyDebts, setSimplifyDebts] = useState(false)
 
   const fetchData = async () => {
     setIsLoading(true)
@@ -65,16 +66,18 @@ export default function ExpensesPage() {
         full_name: m.user.full_name,
         avatar_url: m.user.avatar_url
       }))
-      const newSettlements = calculateRawSplits(expenses, formattedMembers)
+      const newSettlements = simplifyDebts
+        ? calculateSimplifiedSplits(expenses, formattedMembers)
+        : calculateRawSplits(expenses, formattedMembers)
       setSettlements(newSettlements)
     }
-  }, [expenses, members])
+  }, [expenses, members, simplifyDebts])
 
   const handlePrint = () => {
     window.print()
   }
 
-  if (isLoading) return <div className="text-center py-20 text-slate-500">Loading expenses...</div>
+  if (isLoading) return <div className="text-center py-20 text-slate-500 dark:text-slate-450 transition-colors duration-500">Loading expenses...</div>
   if (!plan) return <ErrorState variant="not_found" title="Plan not found" backHref="/plans" backLabel="Back to plans" />
 
   const totalSpent = expenses.reduce((acc, exp) => acc + exp.amount, 0)
@@ -104,14 +107,14 @@ export default function ExpensesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Budget & Expenses</h1>
-          <p className="text-slate-500">Track spending and settle debts</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white transition-colors duration-550">Budget & Expenses</h1>
+          <p className="text-slate-500 dark:text-slate-450 transition-colors duration-500">Track spending and settle debts</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" onClick={handlePrint} className="rounded-xl">
+          <Button variant="outline" onClick={handlePrint} className="rounded-xl border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300">
             <Download className="w-4 h-4 mr-2" /> Export PDF
           </Button>
-          <Button onClick={() => setIsModalOpen(true)} className="rounded-xl bg-[#1D9E75] hover:bg-[#15805e]">
+          <Button onClick={() => setIsModalOpen(true)} className="rounded-xl bg-[#1D9E75] hover:bg-[#15805e] text-white shadow-sm shadow-teal-600/25">
             <Plus className="w-4 h-4 mr-2" /> Add Expense
           </Button>
         </div>
@@ -124,21 +127,21 @@ export default function ExpensesPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-          <p className="text-slate-500 text-sm font-medium mb-1 flex items-center gap-2"><Wallet className="w-4 h-4" /> Total Spent</p>
-          <p className="text-3xl font-bold text-slate-900">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm transition-colors duration-500">
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1 flex items-center gap-2"><Wallet className="w-4 h-4 text-slate-450 dark:text-slate-450" /> Total Spent</p>
+          <p className="text-3xl font-bold text-slate-900 dark:text-white transition-colors duration-500">
             {plan.currency} <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}>{totalSpent.toFixed(2)}</motion.span>
           </p>
         </div>
-        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-          <p className="text-slate-500 text-sm font-medium mb-1 flex items-center gap-2"><TrendingUp className="w-4 h-4" /> Per Person Avg</p>
-          <p className="text-3xl font-bold text-slate-900">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm transition-colors duration-500">
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-slate-450 dark:text-slate-450" /> Per Person Avg</p>
+          <p className="text-3xl font-bold text-slate-900 dark:text-white transition-colors duration-500">
             {plan.currency} <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}>{perPersonAvg.toFixed(2)}</motion.span>
           </p>
         </div>
-        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-          <p className="text-slate-500 text-sm font-medium mb-1 flex items-center gap-2"><Receipt className="w-4 h-4" /> Remaining Budget</p>
-          <p className={`text-3xl font-bold ${plan.budget_total - totalSpent < 0 ? 'text-red-500' : 'text-slate-900'}`}>
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm transition-colors duration-500">
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1 flex items-center gap-2"><Receipt className="w-4 h-4 text-slate-450 dark:text-slate-450" /> Remaining Budget</p>
+          <p className={`text-3xl font-bold ${plan.budget_total - totalSpent < 0 ? 'text-red-500' : 'text-slate-900 dark:text-white'} transition-colors duration-500`}>
             {plan.currency} {Math.max(0, plan.budget_total - totalSpent).toFixed(2)}
           </p>
           {plan.budget_total - totalSpent < 0 && (
@@ -147,16 +150,16 @@ export default function ExpensesPage() {
             </p>
           )}
         </div>
-        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-center items-center text-center">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm flex flex-col justify-center items-center text-center transition-colors duration-500">
           {topSpender ? (
             <>
-              <p className="text-slate-500 text-xs font-medium mb-2 uppercase tracking-wider">Top Spender</p>
-              <img src={topSpender.avatar_url || `https://ui-avatars.com/api/?name=${topSpender.full_name}`} className="w-10 h-10 rounded-full mb-2" alt="" />
-              <p className="font-bold text-slate-900 text-sm">{topSpender.full_name}</p>
-              <p className="text-xs text-[#1D9E75] font-semibold">Paid {plan.currency}{topSpenderAmount.toFixed(2)}</p>
+              <p className="text-slate-500 dark:text-slate-400 text-xs font-medium mb-2 uppercase tracking-wider">Top Spender</p>
+              <img src={topSpender.avatar_url || `https://ui-avatars.com/api/?name=${topSpender.full_name}`} className="w-10 h-10 rounded-full mb-2 border border-slate-200 dark:border-slate-700" alt="" />
+              <p className="font-bold text-slate-900 dark:text-white text-sm transition-colors duration-500">{topSpender.full_name}</p>
+              <p className="text-xs text-[#1D9E75] dark:text-teal-400 font-semibold">Paid {plan.currency}{topSpenderAmount.toFixed(2)}</p>
             </>
           ) : (
-            <p className="text-slate-400 text-sm">No expenses yet</p>
+            <p className="text-slate-400 dark:text-slate-500 text-sm transition-colors duration-500">No expenses yet</p>
           )}
         </div>
       </div>
@@ -164,27 +167,27 @@ export default function ExpensesPage() {
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Expense List */}
         <div className="lg:col-span-2 space-y-6">
-          <h2 className="text-xl font-bold text-slate-900">All Expenses</h2>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white transition-colors duration-500">All Expenses</h2>
           
-          <div className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 rounded-3xl overflow-hidden shadow-sm transition-colors duration-500">
             {expenses.length === 0 ? (
-              <div className="p-8 text-center text-slate-500 flex flex-col items-center">
-                <Receipt className="w-12 h-12 text-slate-200 mb-4" />
+              <div className="p-8 text-center text-slate-500 dark:text-slate-450 flex flex-col items-center transition-colors duration-500">
+                <Receipt className="w-12 h-12 text-slate-200 dark:text-slate-700 mb-4" />
                 <p>No expenses added yet.</p>
-                <p className="text-sm">Add your first expense to see the split.</p>
+                <p className="text-sm text-slate-455">Add your first expense to see the split.</p>
               </div>
             ) : (
-              <div className="divide-y divide-slate-100">
+              <div className="divide-y divide-slate-100 dark:divide-slate-800">
                 {expenses.map((exp: any) => (
-                  <div key={exp.id} className="p-4 sm:p-6 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                  <div key={exp.id} className="p-4 sm:p-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-850/30 transition-colors duration-500">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-teal-50 text-[#1D9E75] flex items-center justify-center shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-teal-50 dark:bg-teal-950/20 text-[#1D9E75] dark:text-teal-400 flex items-center justify-center shrink-0 transition-colors duration-500">
                         <Receipt className="w-5 h-5" />
                       </div>
-                      <div>
-                        <p className="font-bold text-slate-900">{exp.title}</p>
-                        <div className="flex items-center gap-2 text-sm text-slate-500 mt-1">
-                          <img src={exp.payer?.avatar_url || `https://ui-avatars.com/api/?name=${exp.payer?.full_name}`} className="w-4 h-4 rounded-full" alt="" />
+                      <div className="min-w-0">
+                        <p className="font-bold text-slate-900 dark:text-white transition-colors duration-500 truncate">{exp.title}</p>
+                        <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mt-1 transition-colors duration-500">
+                          <img src={exp.payer?.avatar_url || `https://ui-avatars.com/api/?name=${exp.payer?.full_name}`} className="w-4 h-4 rounded-full border border-slate-200 dark:border-slate-700" alt="" />
                           <span>Paid by {exp.payer?.full_name}</span>
                           <span>•</span>
                           <span className="capitalize">{exp.split_type} split</span>
@@ -193,8 +196,8 @@ export default function ExpensesPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-lg text-slate-900">{plan.currency} {exp.amount.toFixed(2)}</p>
+                    <div className="text-right shrink-0">
+                      <p className="font-bold text-lg text-slate-900 dark:text-white transition-colors duration-500">{plan.currency} {exp.amount.toFixed(2)}</p>
                     </div>
                   </div>
                 ))}
@@ -205,8 +208,38 @@ export default function ExpensesPage() {
 
         {/* Settlements */}
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-slate-900">Who Owes Who</h2>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white transition-colors duration-500">Who Owes Who</h2>
           
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-500">
+              <div>
+                <p className="font-bold text-sm text-slate-800 dark:text-slate-200">Simplify Debts</p>
+                <p className="text-xs text-slate-500">Minimize transactions between members</p>
+              </div>
+              <button
+                onClick={() => setSimplifyDebts(!simplifyDebts)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none cursor-pointer ${
+                  simplifyDebts ? "bg-[#1D9E75]" : "bg-slate-200 dark:bg-slate-800"
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    simplifyDebts ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
+            
+            {simplifyDebts && (
+              <div className="bg-teal-500/10 dark:bg-teal-500/5 border border-teal-500/20 rounded-2xl p-3.5 text-xs text-teal-800 dark:text-teal-400 flex items-start gap-2.5">
+                <AlertCircle className="w-4 h-4 shrink-0 text-[#1D9E75]" />
+                <div>
+                  <span className="font-bold">✨ Premium Preview:</span> Simplified Settlements is in early preview for all users and will soon be a Premium feature.
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-lg relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#1D9E75]/20 rounded-bl-full pointer-events-none" />
             

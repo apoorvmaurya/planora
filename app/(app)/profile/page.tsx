@@ -95,7 +95,7 @@ export default function ProfilePage() {
   return (
     <div className="pb-12 max-w-4xl mx-auto space-y-8">
       {/* Cover & Header */}
-      <div className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm shadow-slate-200/50">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-100 dark:border-slate-800/80 shadow-sm shadow-slate-200/50 dark:shadow-none transition-colors duration-500">
         <div className="h-48 bg-gradient-to-r from-teal-400 via-[#1D9E75] to-emerald-600 relative group cursor-pointer">
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
             <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white font-medium flex items-center gap-2">
@@ -106,11 +106,11 @@ export default function ProfilePage() {
         
         <div className="px-8 pb-8 relative">
           <div className="flex flex-col sm:flex-row gap-6 sm:items-end -mt-16 sm:-mt-20 mb-6">
-            <div className="w-32 h-32 rounded-full border-4 border-white bg-slate-100 shadow-md relative overflow-hidden flex-shrink-0 z-10">
+            <div className="w-32 h-32 rounded-full border-4 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-800 shadow-md relative overflow-hidden flex-shrink-0 z-10 transition-colors duration-500">
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-slate-400 bg-slate-200 uppercase">
+                <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-slate-400 bg-slate-200 dark:bg-slate-700 uppercase">
                   {profile?.full_name?.charAt(0) || "U"}
                 </div>
               )}
@@ -118,15 +118,15 @@ export default function ProfilePage() {
             
             <div className="flex-1 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight transition-colors duration-550">
                   {profile?.full_name || "New Traveler"}
                 </h1>
-                <p className="text-slate-500 font-medium">@{profile?.username || "traveler"}</p>
+                <p className="text-slate-500 dark:text-slate-400 font-medium">@{profile?.username || "traveler"}</p>
               </div>
               <Button 
                 onClick={() => setIsEditSheetOpen(true)}
                 variant="outline" 
-                className="rounded-xl border-slate-200 hover:bg-slate-50 font-semibold"
+                className="rounded-xl border-slate-200 dark:border-slate-850 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold"
               >
                 <Edit2 className="w-4 h-4 mr-2" />
                 Edit Profile
@@ -136,10 +136,10 @@ export default function ProfilePage() {
 
           <div className="space-y-6">
             {profile?.bio && (
-              <p className="text-slate-700 max-w-2xl">{profile.bio}</p>
+              <p className="text-slate-700 dark:text-slate-300 max-w-2xl transition-colors duration-500">{profile.bio}</p>
             )}
 
-            <div className="flex flex-wrap items-center gap-6 text-sm font-medium text-slate-500">
+            <div className="flex flex-wrap items-center gap-6 text-sm font-medium text-slate-500 dark:text-slate-400">
               {(profile?.city || profile?.country) && (
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-[#1D9E75]" />
@@ -151,7 +151,7 @@ export default function ProfilePage() {
             {profile?.travel_preferences && (
               <div className="flex flex-wrap gap-2">
                 {[...(profile.travel_preferences.budget || []), ...(profile.travel_preferences.style || []), ...(profile.travel_preferences.company || [])].map((pref, i) => (
-                  <Badge key={i} variant="secondary" className="bg-teal-50 text-[#1D9E75] hover:bg-teal-100 border-none rounded-lg px-3 py-1">
+                  <Badge key={i} variant="secondary" className="bg-teal-50 dark:bg-teal-950/20 text-[#1D9E75] dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-teal-950/45 border-none rounded-lg px-3 py-1 transition-colors duration-500">
                     {pref}
                   </Badge>
                 ))}
@@ -166,14 +166,14 @@ export default function ProfilePage() {
         {statItems.map((stat, i) => {
           const Icon = stat.icon;
           return (
-            <div key={i} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50 flex flex-col items-center justify-center text-center">
+            <div key={i} className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm shadow-slate-200/50 dark:shadow-none flex flex-col items-center justify-center text-center transition-colors duration-500">
               <Icon className="w-6 h-6 text-slate-400 mb-2" />
               {isLoading ? (
                 <div className="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin text-slate-400 mb-1" />
               ) : (
-                <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white transition-colors duration-500">{stat.value}</p>
               )}
-              <p className="text-sm font-medium text-slate-500">{stat.label}</p>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
             </div>
           )
         })}
@@ -181,23 +181,23 @@ export default function ProfilePage() {
 
       {/* Trip Memories */}
       <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-slate-900">Recent Trip Memories</h2>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white transition-colors duration-500">Recent Trip Memories</h2>
         
         {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="aspect-[4/5] rounded-2xl bg-slate-100 animate-pulse" />
+              <div key={i} className="aspect-[4/5] rounded-2xl bg-slate-100 dark:bg-slate-800/80 animate-pulse" />
             ))}
           </div>
         ) : tripMemories.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 border border-slate-100 border-dashed text-center flex flex-col items-center">
-            <div className="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center mb-4">
-              <Camera className="w-8 h-8 text-[#1D9E75]" />
+          <div className="bg-white dark:bg-slate-900/50 rounded-3xl p-12 border border-slate-100 dark:border-slate-800 border-dashed text-center flex flex-col items-center transition-colors duration-500">
+            <div className="w-16 h-16 bg-teal-50 dark:bg-teal-950/20 rounded-full flex items-center justify-center mb-4">
+              <Camera className="w-8 h-8 text-[#1D9E75] dark:text-teal-400" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">No memories yet</h3>
-            <p className="text-slate-500 max-w-sm mb-6">Capture moments from your trips and they will appear here as a beautiful gallery.</p>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 transition-colors duration-550">No memories yet</h3>
+            <p className="text-slate-500 dark:text-slate-400 max-w-sm mb-6 transition-colors duration-500">Capture moments from your trips and they will appear here as a beautiful gallery.</p>
             <Link href="/plans">
-              <Button className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl text-white font-semibold">
+              <Button className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl text-white font-semibold shadow-md shadow-teal-550/20">
                 Go to Plans
               </Button>
             </Link>

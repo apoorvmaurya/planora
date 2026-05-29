@@ -30,7 +30,7 @@ export default async function AppLayout({
 
   return (
     <UserProvider initialProfile={profile}>
-      <div className="min-h-screen bg-slate-50">
+      <div className="premium-page-root">
         <Sidebar />
         <main className="md:ml-64 pt-20 md:pt-0 min-h-screen">
           <PushPermissionBanner />

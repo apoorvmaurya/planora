@@ -203,10 +203,10 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-md md:max-w-xl w-full p-0 flex flex-col bg-white">
-        <SheetHeader className="px-6 py-4 border-b border-slate-100">
-          <SheetTitle>Edit Profile</SheetTitle>
-          <SheetDescription>Update your personal information and preferences.</SheetDescription>
+      <SheetContent className="sm:max-w-md md:max-w-xl w-full p-0 flex flex-col bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 transition-colors duration-500">
+        <SheetHeader className="px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 transition-colors duration-500">
+          <SheetTitle className="text-slate-900 dark:text-white">Edit Profile</SheetTitle>
+          <SheetDescription className="text-slate-500 dark:text-slate-400">Update your personal information and preferences.</SheetDescription>
         </SheetHeader>
         
         <ScrollArea className="flex-1 min-h-0 px-6">
@@ -214,11 +214,11 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
             {/* Avatar Upload */}
             <div className="flex flex-col items-center gap-4">
               <div className="relative group">
-                <div className="w-24 h-24 rounded-full bg-slate-100 border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden cursor-pointer hover:border-[#1D9E75] hover:bg-teal-50 transition-colors">
+                <div className="w-24 h-24 rounded-full bg-slate-100 dark:bg-slate-900 border-2 border-dashed border-slate-300 dark:border-slate-800 flex items-center justify-center overflow-hidden cursor-pointer hover:border-[#1D9E75] hover:bg-teal-50 dark:hover:bg-teal-950/20 transition-all duration-300">
                   {avatarPreview ? (
                     <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
                   ) : (
-                    <Upload className="w-8 h-8 text-slate-400 group-hover:text-[#1D9E75]" />
+                    <Upload className="w-8 h-8 text-slate-400 dark:text-slate-500 group-hover:text-[#1D9E75] dark:group-hover:text-teal-400" />
                   )}
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
                     <Upload className="w-6 h-6 text-white" />
@@ -240,9 +240,9 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
                   name="fullName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Full Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Jane Doe" {...field} />
+                        <Input placeholder="Jane Doe" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#1D9E75] transition-all duration-300" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -254,9 +254,9 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Username</FormLabel>
                       <FormControl>
-                        <Input placeholder="janedoe" {...field} />
+                        <Input placeholder="janedoe" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#1D9E75] transition-all duration-300" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -268,11 +268,11 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
                   name="bio"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Bio</FormLabel>
+                      <FormLabel className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Bio</FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="Tell us about your travel style..." 
-                          className="resize-none h-24"
+                          className="resize-none h-24 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#1D9E75] transition-all duration-300"
                           {...field} 
                         />
                       </FormControl>
@@ -282,26 +282,26 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
                 />
 
                 <div className="space-y-2 relative">
-                  <FormLabel>Location</FormLabel>
+                  <FormLabel className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Location</FormLabel>
                   <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
                     <Input 
                       placeholder="Search for your city..." 
-                      className="pl-9"
+                      className="pl-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#1D9E75] transition-all duration-300"
                       value={locationQuery}
                       onChange={(e) => setLocationQuery(e.target.value)}
                     />
                     {isSearchingLocation && (
-                      <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 animate-spin" />
+                      <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 animate-spin" />
                     )}
                   </div>
                   
                   {locationResults.length > 0 && (
-                    <div className="absolute z-10 w-full mt-1 bg-white rounded-xl shadow-lg border border-slate-100 max-h-60 overflow-y-auto">
+                    <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-900 rounded-xl shadow-lg dark:shadow-none border border-slate-100 dark:border-slate-800 max-h-60 overflow-y-auto">
                       {locationResults.map((loc, i) => (
                         <div 
                           key={i} 
-                          className="p-3 hover:bg-slate-50 cursor-pointer border-b border-slate-50 last:border-0 text-sm"
+                          className="p-3 hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer border-b border-slate-50 dark:border-slate-800/40 last:border-0 text-sm text-slate-900 dark:text-slate-200 transition-colors duration-200"
                           onClick={() => handleSelectLocation(loc)}
                         >
                           {loc.display_name}
@@ -311,37 +311,37 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
                   )}
                 </div>
 
-                <div className="pt-4 border-t border-slate-100">
-                  <h3 className="font-semibold text-slate-900 mb-4">Travel Preferences</h3>
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 transition-colors duration-500">
+                  <h3 className="font-semibold text-slate-900 dark:text-white mb-4 transition-colors duration-500">Travel Preferences</h3>
                   
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <FormLabel className="text-sm font-medium text-slate-500">Budget Level</FormLabel>
+                      <FormLabel className="text-sm font-medium text-slate-500 dark:text-slate-400 transition-colors duration-500">Budget Level</FormLabel>
                       <div className="flex flex-wrap gap-2">
                         {['Budget', 'Mid-range', 'Luxury'].map(item => (
-                          <div key={item} className="flex items-center space-x-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                          <div key={item} className="flex items-center space-x-2 bg-slate-50 dark:bg-slate-905/40 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 transition-colors duration-500">
                             <Checkbox 
                               id={`budget-${item}`} 
                               checked={preferences.budget?.includes(item)}
                               onCheckedChange={() => togglePref('budget', item)}
                             />
-                            <label htmlFor={`budget-${item}`} className="text-sm cursor-pointer">{item}</label>
+                            <label htmlFor={`budget-${item}`} className="text-sm cursor-pointer text-slate-800 dark:text-slate-300">{item}</label>
                           </div>
                         ))}
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <FormLabel className="text-sm font-medium text-slate-500">Travel Style</FormLabel>
+                      <FormLabel className="text-sm font-medium text-slate-500 dark:text-slate-400 transition-colors duration-500">Travel Style</FormLabel>
                       <div className="flex flex-wrap gap-2">
                         {['Adventure', 'Relaxed', 'Cultural', 'Nightlife'].map(item => (
-                          <div key={item} className="flex items-center space-x-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                          <div key={item} className="flex items-center space-x-2 bg-slate-50 dark:bg-slate-905/40 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 transition-colors duration-500">
                             <Checkbox 
                               id={`style-${item}`} 
                               checked={preferences.style?.includes(item)}
                               onCheckedChange={() => togglePref('style', item)}
                             />
-                            <label htmlFor={`style-${item}`} className="text-sm cursor-pointer">{item}</label>
+                            <label htmlFor={`style-${item}`} className="text-sm cursor-pointer text-slate-800 dark:text-slate-300">{item}</label>
                           </div>
                         ))}
                       </div>
@@ -349,30 +349,30 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
                   </div>
                 </div>
 
-                <div className="pt-6 mt-6 border-t border-slate-100 space-y-4">
+                <div className="pt-6 mt-6 border-t border-slate-100 dark:border-slate-800/80 space-y-4 transition-colors duration-500">
                   <h3 className="font-semibold text-rose-600 mb-1">Danger Zone</h3>
-                  <p className="text-xs text-slate-500 leading-relaxed">Permanently delete your profile, trips, and all collaborative data. This action is irreversible.</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed transition-colors duration-500">Permanently delete your profile, trips, and all collaborative data. This action is irreversible.</p>
                   
                   <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                     <DialogTrigger render={
-                      <Button type="button" variant="outline" className="border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 w-full md:w-auto font-semibold">
+                      <Button type="button" variant="outline" className="border-rose-200 dark:border-rose-950/40 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 hover:text-rose-700 w-full md:w-auto font-semibold cursor-pointer">
                         Delete Account
                       </Button>
                     } />
-                    <DialogContent>
+                    <DialogContent className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-3xl">
                       <DialogHeader>
                         <DialogTitle className="text-rose-600">Delete Account Permanently?</DialogTitle>
-                        <DialogDescription className="pt-2 text-slate-600 leading-relaxed">
+                        <DialogDescription className="pt-2 text-slate-600 dark:text-slate-400 leading-relaxed">
                           Are you absolutely sure you want to delete your Planora account? This will permanently delete your profile, trips, travel preferences, and remove you from all travel groups. 
                           <br /><br />
                           <strong>This action is irreversible.</strong>
                         </DialogDescription>
                       </DialogHeader>
                       <DialogFooter className="mt-4 gap-2">
-                        <Button type="button" variant="outline" onClick={() => setIsDeleteDialogOpen(false)} disabled={isDeletingAccount}>
+                        <Button type="button" variant="outline" onClick={() => setIsDeleteDialogOpen(false)} disabled={isDeletingAccount} className="rounded-xl cursor-pointer">
                           Cancel
                         </Button>
-                        <Button type="button" className="bg-rose-600 hover:bg-rose-700 text-white font-bold" onClick={handleDeleteAccount} disabled={isDeletingAccount}>
+                        <Button type="button" className="bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl cursor-pointer" onClick={handleDeleteAccount} disabled={isDeletingAccount}>
                           {isDeletingAccount ? "Deleting..." : "Yes, Delete Permanently"}
                         </Button>
                       </DialogFooter>
@@ -385,11 +385,11 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
           </div>
         </ScrollArea>
         
-        <div className="p-6 border-t border-slate-100 bg-slate-50/50 mt-auto">
+        <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/60 mt-auto transition-colors duration-500">
           <Button 
             type="submit" 
             form="profile-form" 
-            className="w-full bg-[#1D9E75] hover:bg-[#15805e]"
+            className="w-full bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl h-12 shadow-sm hover:shadow cursor-pointer transition-all duration-200"
             disabled={isUpdating}
           >
             {isUpdating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}

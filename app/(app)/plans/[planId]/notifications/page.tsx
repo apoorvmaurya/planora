@@ -87,7 +87,7 @@ export default function NotificationsPage() {
     }
   }
 
-  if (isLoading) return <div className="text-center py-20 text-slate-500">Loading settings...</div>
+  if (isLoading) return <div className="text-center py-20 text-slate-500 dark:text-slate-450 transition-colors duration-500">Loading settings...</div>
   if (!plan) return <ErrorState variant="not_found" title="Plan not found" backHref="/plans" backLabel="Back to plans" />
 
   const triggers = [
@@ -117,41 +117,41 @@ export default function NotificationsPage() {
       title: 'Day-of Morning Brief',
       description: 'An energetic morning push on the day the trip starts.',
       icon: <MapPin className="w-5 h-5" />,
-      preview: `Trip Day! It&apos;s finally here. Let&apos;s conquer ${plan.destination_name}! 🗺️`
+      preview: `Trip Day! It's finally here. Let's conquer ${plan.destination_name}! 🗺️`
     }
   ]
 
   return (
     <div className="max-w-3xl mx-auto pb-20 space-y-8 px-4 sm:px-0">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">Momentum Engine</h1>
-        <p className="text-slate-500 mt-1 flex items-center gap-2">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white transition-colors duration-550">Momentum Engine</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-1 flex flex-wrap items-center gap-2 transition-colors duration-500">
           Manage AI-powered push notifications for this trip. 
-          <span className="inline-flex items-center gap-1 text-[#1D9E75] bg-teal-50 px-2 py-0.5 rounded-full text-xs font-semibold">
+          <span className="inline-flex items-center gap-1 text-[#1D9E75] dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 px-2 py-0.5 rounded-full text-xs font-semibold transition-colors duration-500">
             <Sparkles className="w-3 h-3" /> Powered by AI
           </span>
         </p>
       </div>
 
-      <div className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm divide-y divide-slate-100">
+      <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm divide-y divide-slate-100 dark:divide-slate-800 transition-colors duration-500">
         {triggers.map((trigger, i) => (
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
             key={trigger.key} 
-            className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 hover:bg-slate-50 transition-colors"
+            className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 hover:bg-slate-50 dark:hover:bg-slate-800/35 transition-colors duration-500"
           >
             <div className="flex gap-4 items-start flex-1">
-              <div className="bg-slate-100 p-3 rounded-2xl text-slate-600 shrink-0">
+              <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl text-slate-600 dark:text-slate-350 shrink-0 transition-colors duration-500">
                 {trigger.icon}
               </div>
-              <div>
-                <h3 className="font-bold text-slate-900">{trigger.title}</h3>
-                <p className="text-sm text-slate-500 mt-1">{trigger.description}</p>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-slate-900 dark:text-white transition-colors duration-500">{trigger.title}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 transition-colors duration-500">{trigger.description}</p>
                 
-                <div className="mt-4 bg-slate-900 text-white p-4 rounded-2xl shadow-lg inline-block relative max-w-sm">
-                  <div className="absolute -top-2 left-4 w-4 h-4 bg-slate-900 rotate-45" />
+                <div className="mt-4 bg-slate-900 dark:bg-slate-950 text-white p-4 rounded-2xl shadow-lg inline-block relative max-w-sm border border-slate-800">
+                  <div className="absolute -top-2 left-4 w-4 h-4 bg-slate-900 dark:bg-slate-950 border-t border-l border-slate-850 dark:border-slate-800 rotate-45" />
                   <div className="flex items-center gap-2 mb-1">
                     <img src="/icon-192.png" className="w-4 h-4 rounded-sm bg-white" alt="" />
                     <span className="text-[10px] font-bold text-white/60 uppercase tracking-wider">Planora</span>
@@ -163,8 +163,8 @@ export default function NotificationsPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between sm:flex-col sm:items-end gap-3 shrink-0 pt-4 sm:pt-0 border-t sm:border-0 border-slate-100">
-              <span className="text-sm font-medium text-slate-500">
+            <div className="flex items-center justify-between sm:flex-col sm:items-end gap-3 shrink-0 pt-4 sm:pt-0 border-t sm:border-0 border-slate-100 dark:border-slate-800">
+              <span className="text-sm font-medium text-slate-500 dark:text-slate-400 transition-colors duration-500">
                 {preferences[trigger.key] ? 'Opted out' : 'Enabled'}
               </span>
               <Switch 

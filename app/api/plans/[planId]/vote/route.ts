@@ -1,19 +1,9 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { generateObject } from 'ai'
-import { z } from 'zod'
+import { generateText } from 'ai'
 import { groq } from '@ai-sdk/groq'
 import { forwardGeocode } from "@/lib/locationiq/geocode"
-
-const itineraryItemSchema = z.object({
-  title: z.string().describe('Short title for the activity'),
-  description: z.string().describe('Detailed description'),
-  time_of_day: z.enum(['Morning', 'Afternoon', 'Evening', 'Night']),
-  location_name: z.string().describe('Name of the venue or location'),
-  category: z.enum(['activity', 'food', 'transport', 'accommodation', 'leisure']),
-  duration_minutes: z.number().describe('Estimated duration in minutes'),
-  estimated_cost: z.number().describe('Estimated cost in plan currency'),
-})
+import { safeJsonParse } from "@/lib/utils/jsonParser"
 
 export async function POST(req: Request, { params }: { params: Promise<{ planId: string }> }) {
   const { planId } = await params
@@ -64,9 +54,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ planId:
         const { data: item } = await supabase.from('itinerary_items').select('*').eq('id', item_id).single()
         if (item) {
           try {
-            const { object: newItemData } = await generateObject({
+            const { text } = await generateText({
               model: groq('llama-3.3-70b-versatile'),
-              schema: itineraryItemSchema,
               prompt: `You are an expert travel planner AI for Planora.
 The group is traveling to ${plan.destination_name}.
 They previously had an itinerary item for ${item.time_of_day}:
@@ -74,13 +63,25 @@ Title: ${item.title}
 Description: ${item.description}
 Cost: ${item.estimated_cost} ${plan.currency}
 
-This item has resulted in a tied vote. Please generate a SINGLE alternative itinerary item that fits the same time of day (${item.time_of_day}) and similar budget. It should be completely different from "${item.title}".`,
+This item has resulted in a tied vote. Please generate a SINGLE alternative itinerary item that fits the same time of day (${item.time_of_day}) and similar budget. It should be completely different from "${item.title}".
+Return the output strictly as a JSON object adhering to this schema:
+{
+  "title": "Short title for the activity",
+  "description": "Detailed description",
+  "time_of_day": "Morning" | "Afternoon" | "Evening" | "Night",
+  "location_name": "Name of the venue or location",
+  "category": "activity" | "food" | "transport" | "accommodation" | "leisure",
+  "duration_minutes": number,
+  "estimated_cost": number
+}`,
             })
+
+            const newItemData = safeJsonParse(text)
 
             let lat = 0
             let lng = 0
             try {
-              const coords = await forwardGeocode(newItemData.location_name)
+              const coords = await forwardGeocode(newItemData.location_name, plan?.destination_name)
               if (coords) {
                 lat = coords.lat
                 lng = coords.lng

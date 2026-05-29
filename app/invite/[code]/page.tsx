@@ -54,37 +54,37 @@ export default function InvitePage() {
   }, [code])
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+    <div className="premium-page-wrapper">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="bg-white rounded-3xl border border-slate-100 shadow-xl max-w-md w-full p-8 text-center"
+        className="premium-card text-center"
       >
         {status === "loading" && (
           <div className="space-y-4">
-            <div className="w-16 h-16 mx-auto bg-teal-50 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto bg-teal-50 dark:bg-teal-950/30 rounded-full flex items-center justify-center">
               <Loader2 className="w-8 h-8 text-[#1D9E75] animate-spin" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900">Joining group...</h2>
-            <p className="text-slate-500">Hang tight, we&apos;re adding you to the group.</p>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Joining group...</h2>
+            <p className="text-slate-500 dark:text-slate-400">Hang tight, we&apos;re adding you to the group.</p>
           </div>
         )}
 
         {status === "success" && (
           <div className="space-y-6">
-            <div className="w-16 h-16 mx-auto bg-emerald-50 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto bg-emerald-50 dark:bg-emerald-950/30 rounded-full flex items-center justify-center">
               <CheckCircle2 className="w-8 h-8 text-emerald-500" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">You&apos;re in! 🎉</h2>
-              <p className="text-slate-500">
-                You&apos;ve joined <strong className="text-slate-900">{groupName}</strong>. Start planning your trip together.
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">You&apos;re in! 🎉</h2>
+              <p className="text-slate-500 dark:text-slate-400">
+                You&apos;ve joined <strong className="text-slate-900 dark:text-slate-100">{groupName}</strong>. Start planning your trip together.
               </p>
             </div>
             <Button
               onClick={() => router.push(`/groups/${groupId}`)}
-              className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl h-12 px-8 w-full"
+              className="w-full btn-teal-primary"
             >
               Go to group <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
@@ -93,16 +93,16 @@ export default function InvitePage() {
 
         {status === "already" && (
           <div className="space-y-6">
-            <div className="w-16 h-16 mx-auto bg-blue-50 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto bg-blue-50 dark:bg-blue-950/30 rounded-full flex items-center justify-center">
               <Users className="w-8 h-8 text-blue-500" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Already a member</h2>
-              <p className="text-slate-500">You&apos;re already part of this group.</p>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Already a member</h2>
+              <p className="text-slate-500 dark:text-slate-400">You&apos;re already part of this group.</p>
             </div>
             <Button
               onClick={() => router.push(`/groups/${groupId}`)}
-              className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl h-12 px-8 w-full"
+              className="w-full btn-teal-primary"
             >
               Go to group <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
@@ -111,19 +111,19 @@ export default function InvitePage() {
 
         {status === "error" && (
           <div className="space-y-6">
-            <div className="w-16 h-16 mx-auto bg-red-50 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto bg-red-50 dark:bg-red-950/30 rounded-full flex items-center justify-center">
               <XCircle className="w-8 h-8 text-red-500" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Couldn&apos;t join</h2>
-              <p className="text-slate-500">{errorMsg}</p>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Couldn&apos;t join</h2>
+              <p className="text-slate-500 dark:text-slate-400">{errorMsg}</p>
             </div>
             <div className="flex gap-3">
               <Link href="/dashboard" className="flex-1">
-                <Button variant="outline" className="rounded-xl h-12 w-full">Dashboard</Button>
+                <Button variant="outline" className="w-full btn-slate-outline">Dashboard</Button>
               </Link>
               <Link href="/login" className="flex-1">
-                <Button className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl h-12 w-full">Login</Button>
+                <Button className="w-full btn-teal-primary">Login</Button>
               </Link>
             </div>
           </div>

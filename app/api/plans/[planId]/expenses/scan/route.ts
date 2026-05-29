@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { generateObject } from 'ai'
+import { generateText } from 'ai'
 import { groq } from '@ai-sdk/groq'
-import { z } from 'zod'
+import { safeJsonParse } from "@/lib/utils/jsonParser"
 
 export const maxDuration = 60
 
@@ -20,20 +20,6 @@ function checkRateLimit(userId: string): { limited: boolean; retryAfter: number 
   rateLimitStore.set(userId, now)
   return { limited: false, retryAfter: 0 }
 }
-
-const receiptSchema = z.object({
-  merchant: z.string().describe('The name of the merchant/store'),
-  total: z.number().describe('The total receipt amount as a number'),
-  currency: z.string().describe('The currency code if found, e.g. USD, EUR, INR. Otherwise default empty.'),
-  description: z.string().describe('A summary of items purchased or description'),
-  date: z.string().describe('The date of the transaction if found in ISO format (YYYY-MM-DD), otherwise empty string'),
-  suggestedSplits: z.array(
-    z.object({
-      itemName: z.string().describe('Name of the item on the receipt'),
-      cost: z.number().describe('The price of the item')
-    })
-  ).optional().describe('Individual items with their cost')
-})
 
 export async function POST(
   req: Request,
@@ -95,16 +81,29 @@ export async function POST(
     const base64Image = buffer.toString('base64')
 
     // Call Groq Vision using Vercel AI SDK
-    const { object } = await generateObject({
+    const { text } = await generateText({
       model: groq('llama-3.2-11b-vision-preview'),
-      schema: receiptSchema,
       messages: [
         {
           role: 'user',
           content: [
             { 
               type: 'text', 
-              text: 'Perform high-fidelity OCR scanning on this receipt image. Extract: merchant name, total amount, transaction date, and currency. Identify individual items for optional group splits.' 
+              text: `Perform high-fidelity OCR scanning on this receipt image. Extract: merchant name, total amount, transaction date, and currency. Identify individual items for optional group splits.
+Return the output strictly as a JSON object adhering to this schema:
+{
+  "merchant": "The name of the merchant/store",
+  "total": number,
+  "currency": "The currency code if found, e.g. USD, EUR, INR. Otherwise default empty.",
+  "description": "A summary of items purchased or description",
+  "date": "The date of the transaction if found in ISO format (YYYY-MM-DD), otherwise empty string",
+  "suggestedSplits": [
+    {
+      "itemName": "Name of the item on the receipt",
+      "cost": number
+    }
+  ]
+}` 
             },
             {
               type: 'image',
@@ -114,6 +113,8 @@ export async function POST(
         }
       ]
     })
+
+    const object = safeJsonParse(text)
 
     return NextResponse.json({ success: true, receipt: object })
 

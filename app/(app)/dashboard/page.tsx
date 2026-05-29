@@ -16,6 +16,7 @@ import {
   Map,
   Compass
 } from "lucide-react"
+import { ScenicImage } from "@/components/shared/ScenicImage"
 
 export default function DashboardPage() {
   const { profile } = useUserStore()
@@ -25,6 +26,16 @@ export default function DashboardPage() {
   const [recentPlans, setRecentPlans] = useState<any[]>([])
   const [upcomingEvent, setUpcomingEvent] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
+  const [avatarErrors, setAvatarErrors] = useState<Record<string, boolean>>({})
+
+  const handleImageError = (id: string) => {
+    setImageErrors(prev => ({ ...prev, [id]: true }))
+  }
+
+  const handleAvatarError = (userId: string) => {
+    setAvatarErrors(prev => ({ ...prev, [userId]: true }))
+  }
 
   useEffect(() => {
     async function loadData() {
@@ -257,10 +268,13 @@ export default function DashboardPage() {
                     className="bg-white dark:bg-slate-900/40 backdrop-blur-md p-4 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm flex flex-col sm:flex-row gap-4 items-center group hover:border-[#1D9E75]/40 dark:hover:border-teal-500/40 hover:shadow-md dark:hover:shadow-teal-950/10 transition-all duration-300 cursor-pointer mb-4"
                   >
                     <div className="w-full sm:w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800/85 shrink-0 transition-colors duration-500 relative">
-                      <img 
-                        src={`https://image.pollinations.ai/prompt/beautiful%20scenic%20travel%20destination%20${encodeURIComponent(plan.destination_name.split(',')[0])}?width=200&height=200&nologo=true`} 
-                        alt={plan.destination_name} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      <ScenicImage 
+                        destination={plan.destination_name}
+                        alt={plan.destination_name}
+                        width={200}
+                        height={200}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        fill
                       />
                     </div>
                     <div className="flex-1 w-full">
@@ -326,8 +340,13 @@ export default function DashboardPage() {
                     <div className="flex -space-x-2">
                       {upcomingEvent.group?.group_members?.slice(0, 3).map((member: any, i: number) => (
                         <div key={i} className="w-8 h-8 rounded-full bg-slate-700 border-2 border-slate-900 flex items-center justify-center text-xs font-bold text-slate-300 overflow-hidden shadow-sm">
-                          {member.user?.avatar_url ? (
-                            <img src={member.user.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                          {member.user?.avatar_url && !avatarErrors[member.user.id] ? (
+                            <img 
+                              src={member.user.avatar_url} 
+                              alt="Profile" 
+                              className="w-full h-full object-cover" 
+                              onError={() => handleAvatarError(member.user.id)}
+                            />
                           ) : (
                             member.user?.full_name?.charAt(0).toUpperCase() || 'U'
                           )}

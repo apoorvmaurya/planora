@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import Image from "next/image"
 import confetti from "canvas-confetti"
+import { ScenicImage } from "@/components/shared/ScenicImage"
 import dynamic from "next/dynamic"
 import { syncOfflineOps, queueOfflineOp, offlineDB } from "@/lib/supabase/offlineSync"
 
@@ -53,6 +54,37 @@ export default function PlanDetailPage() {
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [adminSheetOpen, setAdminSheetOpen] = useState(false)
+  const [avatarErrors, setAvatarErrors] = useState<Record<string, boolean>>({})
+
+  const handleAvatarError = (userId: string) => {
+    setAvatarErrors(prev => ({ ...prev, [userId]: true }))
+  }
+
+  const getInitials = (name?: string) => {
+    if (!name) return "?";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return parts[0].substring(0, 2).toUpperCase();
+  }
+
+  const getAvatarGradient = (name?: string) => {
+    if (!name) return "from-indigo-500 to-purple-600";
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const gradients = [
+      "from-indigo-500 to-purple-600",
+      "from-teal-400 to-emerald-600",
+      "from-blue-500 to-cyan-600",
+      "from-orange-400 to-rose-600",
+      "from-pink-500 to-rose-600",
+      "from-purple-500 to-fuchsia-600"
+    ];
+    return gradients[Math.abs(hash) % gradients.length];
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -393,15 +425,15 @@ export default function PlanDetailPage() {
     "from-orange-400 to-rose-600",
     "from-purple-400 to-fuchsia-600"
   ]
-  const coverUrl = `https://image.pollinations.ai/prompt/beautiful%20scenic%20travel%20destination%20${encodeURIComponent(plan.destination_name.split(',')[0])}?width=1200&height=400&nologo=true`
-
   return (
     <div className="max-w-6xl mx-auto pb-20 space-y-8">
       {/* Header */}
       <div className="bg-slate-900 text-white rounded-3xl relative overflow-hidden shadow-lg h-80 flex flex-col justify-end p-8">
-        <Image 
-          src={coverUrl} 
+        <ScenicImage 
+          destination={plan.destination_name}
           alt={plan.destination_name}
+          width={1200}
+          height={400}
           fill
           priority
           className="object-cover opacity-60 pointer-events-none"
@@ -413,9 +445,26 @@ export default function PlanDetailPage() {
             <div className="flex items-center gap-3 mb-4">
               <span className="bg-white/20 backdrop-blur text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">{plan.status}</span>
               <div className="flex -space-x-2">
-                {members.slice(0, 5).map(m => (
-                  <img key={m.user.id} src={m.user.avatar_url || `https://ui-avatars.com/api/?name=${m.user.full_name}`} className="w-8 h-8 rounded-full border-2 border-slate-900 object-cover" alt="avatar" />
-                ))}
+                {members.slice(0, 5).map(m => {
+                  const hasAvatar = m.user.avatar_url && !avatarErrors[m.user.id];
+                  return hasAvatar ? (
+                    <img 
+                      key={m.user.id} 
+                      src={m.user.avatar_url} 
+                      className="w-8 h-8 rounded-full border-2 border-slate-900 object-cover" 
+                      alt="avatar" 
+                      onError={() => handleAvatarError(m.user.id)}
+                    />
+                  ) : (
+                    <div 
+                      key={m.user.id} 
+                      className={`w-8 h-8 rounded-full border-2 border-slate-900 bg-gradient-to-br ${getAvatarGradient(m.user.full_name)} flex items-center justify-center text-[10px] font-black text-white uppercase select-none`}
+                      title={m.user.full_name}
+                    >
+                      {getInitials(m.user.full_name)}
+                    </div>
+                  );
+                })}
               </div>
             </div>
             <h1 className="text-5xl font-extrabold mb-2">{plan.title}</h1>
@@ -693,11 +742,21 @@ export default function PlanDetailPage() {
                       {members.filter(m => m.user.id !== profile?.id).map(m => (
                         <div key={m.user.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800/60">
                           <div className="flex items-center gap-3 min-w-0">
-                            <img 
-                              src={m.user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.user.full_name || "")}`} 
-                              className="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shrink-0" 
-                              alt="avatar" 
-                            />
+                            {m.user.avatar_url && !avatarErrors[m.user.id] ? (
+                              <img 
+                                src={m.user.avatar_url} 
+                                className="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shrink-0" 
+                                alt="avatar" 
+                                onError={() => handleAvatarError(m.user.id)}
+                              />
+                            ) : (
+                              <div 
+                                className={`w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shrink-0 bg-gradient-to-br ${getAvatarGradient(m.user.full_name)} flex items-center justify-center text-[11px] font-black text-white uppercase select-none`}
+                                title={m.user.full_name}
+                              >
+                                {getInitials(m.user.full_name)}
+                              </div>
+                            )}
                             <div className="min-w-0">
                               <p className="text-sm font-bold text-slate-850 dark:text-slate-250 truncate">{m.user.full_name}</p>
                               <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
@@ -747,7 +806,21 @@ export default function PlanDetailPage() {
                   {members.map(m => (
                     <div key={m.user.id} className="flex items-center justify-between group">
                       <div className="flex items-center gap-3">
-                        <img src={m.user.avatar_url || `https://ui-avatars.com/api/?name=${m.user.full_name}`} className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 object-cover" alt="avatar" />
+                        {m.user.avatar_url && !avatarErrors[m.user.id] ? (
+                          <img 
+                            src={m.user.avatar_url} 
+                            className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 object-cover" 
+                            alt="avatar" 
+                            onError={() => handleAvatarError(m.user.id)}
+                          />
+                        ) : (
+                          <div 
+                            className={`w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 object-cover bg-gradient-to-br ${getAvatarGradient(m.user.full_name)} flex items-center justify-center text-[10px] font-black text-white uppercase select-none`}
+                            title={m.user.full_name}
+                          >
+                            {getInitials(m.user.full_name)}
+                          </div>
+                        )}
                         <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{m.user.full_name}</span>
                       </div>
                       {isAdmin && m.user.id !== profile?.id && plan.group_id && (
@@ -1020,11 +1093,21 @@ export default function PlanDetailPage() {
                     {members.map(m => (
                       <div key={m.user.id} className="flex items-center justify-between bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800/80">
                         <div className="flex items-center gap-3">
-                          <img 
-                            src={m.user.avatar_url || `https://ui-avatars.com/api/?name=${m.user.full_name}`} 
-                            className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 object-cover" 
-                            alt="avatar" 
-                          />
+                          {m.user.avatar_url && !avatarErrors[m.user.id] ? (
+                            <img 
+                              src={m.user.avatar_url} 
+                              className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 object-cover" 
+                              alt="avatar" 
+                              onError={() => handleAvatarError(m.user.id)}
+                            />
+                          ) : (
+                            <div 
+                              className={`w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 object-cover bg-gradient-to-br ${getAvatarGradient(m.user.full_name)} flex items-center justify-center text-[10px] font-black text-white uppercase select-none`}
+                              title={m.user.full_name}
+                            >
+                              {getInitials(m.user.full_name)}
+                            </div>
+                          )}
                           <div>
                             <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{m.user.full_name}</p>
                             <p className="text-xs text-slate-400">@{m.user.username}</p>

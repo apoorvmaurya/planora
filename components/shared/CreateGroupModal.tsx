@@ -45,6 +45,11 @@ export function CreateGroupModal({ open, onOpenChange }: { open: boolean, onOpen
   const [coverFile, setCoverFile] = useState<File | null>(null)
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
   const [selectedFriends, setSelectedFriends] = useState<string[]>([])
+  const [avatarErrors, setAvatarErrors] = useState<Record<string, boolean>>({})
+
+  const handleAvatarError = (userId: string) => {
+    setAvatarErrors(prev => ({ ...prev, [userId]: true }))
+  }
 
   const form = useForm<z.infer<typeof groupSchema>>({
     resolver: zodResolver(groupSchema),
@@ -207,11 +212,18 @@ export function CreateGroupModal({ open, onOpenChange }: { open: boolean, onOpen
                     {friends.map(friend => (
                       <div key={friend.user.id} className="flex items-center space-x-3 p-2 hover:bg-slate-50 dark:hover:bg-slate-900/60 rounded-lg cursor-pointer transition-all duration-200" onClick={() => toggleFriend(friend.user.id)}>
                         <Checkbox checked={selectedFriends.includes(friend.user.id)} className="transition-all duration-200" />
-                        <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden shrink-0 transition-colors duration-500">
-                          {friend.user.avatar_url ? (
-                            <img src={friend.user.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+                        <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden shrink-0 transition-colors duration-500 flex items-center justify-center">
+                          {friend.user.avatar_url && !avatarErrors[friend.user.id] ? (
+                            <img 
+                              src={friend.user.avatar_url} 
+                              alt="avatar" 
+                              className="w-full h-full object-cover" 
+                              onError={() => handleAvatarError(friend.user.id)}
+                            />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center font-bold text-slate-500 dark:text-slate-400">{friend.user.full_name?.charAt(0) || "U"}</div>
+                            <div className="w-full h-full flex items-center justify-center font-bold text-slate-500 dark:text-slate-400 bg-slate-200 dark:bg-slate-700 select-none uppercase">
+                              {friend.user.full_name?.charAt(0) || "U"}
+                            </div>
                           )}
                         </div>
                         <div>

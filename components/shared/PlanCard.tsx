@@ -1,9 +1,9 @@
 "use client"
 
-import React, { memo } from "react"
+import React, { memo, useState } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { motion } from "framer-motion"
+import { ScenicImage } from "./ScenicImage"
 import { CalendarDays, MapPin, Share2, PenSquare, ArrowRight, Wallet, Users } from "lucide-react"
 
 export type PlanCardProps = {
@@ -27,6 +27,37 @@ export type PlanCardProps = {
 }
 
 export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps) {
+  const [avatarErrors, setAvatarErrors] = useState<Record<string, boolean>>({})
+
+  const handleAvatarError = (userId: string) => {
+    setAvatarErrors(prev => ({ ...prev, [userId]: true }))
+  }
+
+  const getInitials = (name?: string) => {
+    if (!name) return "?";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return parts[0].substring(0, 2).toUpperCase();
+  }
+
+  const getAvatarGradient = (name?: string) => {
+    if (!name) return "from-indigo-500 to-purple-600";
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const gradients = [
+      "from-indigo-500 to-purple-600",
+      "from-teal-400 to-emerald-600",
+      "from-blue-500 to-cyan-600",
+      "from-orange-400 to-rose-600",
+      "from-pink-500 to-rose-600",
+      "from-purple-500 to-fuchsia-600"
+    ];
+    return gradients[Math.abs(hash) % gradients.length];
+  }
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'draft': return 'bg-slate-100 text-slate-600'
@@ -58,7 +89,7 @@ export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps)
     return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   }
 
-  const coverUrl = `https://image.pollinations.ai/prompt/beautiful%20scenic%20travel%20destination%20${encodeURIComponent(plan.destination_name.split(',')[0])}?width=800&height=600&nologo=true`
+
   
   // Safety checks for nested group arrays
   const members = plan.group?.group_members || []
@@ -70,9 +101,11 @@ export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps)
       className="group bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800/80 overflow-hidden flex flex-col transition-all hover:shadow-md"
     >
       <div className="h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-800">
-        <Image 
-          src={coverUrl} 
+        <ScenicImage 
+          destination={plan.destination_name}
           alt={plan.destination_name}
+          width={800}
+          height={600}
           fill
           priority
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -110,16 +143,27 @@ export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps)
           <div className="flex items-center justify-between text-sm">
             <span className="text-slate-500 dark:text-slate-400 flex items-center gap-2"><Users className="w-4 h-4 text-slate-400" /> {plan.group?.name || 'Solo Trip'}</span>
             <div className="flex -space-x-2">
-              {members.slice(0, 4).map((m: any, i: number) => (
-                <Image 
-                  key={i} 
-                  src={m.user?.avatar_url || `https://ui-avatars.com/api/?name=${m.user?.full_name}`} 
-                  className="w-6 h-6 rounded-full border-2 border-white dark:border-slate-900 object-cover bg-slate-100 dark:bg-slate-800" 
-                  alt={m.user?.full_name || "Avatar"} 
-                  width={24}
-                  height={24}
-                />
-              ))}
+              {members.slice(0, 4).map((m: any, i: number) => {
+                const name = m.user?.full_name || "User";
+                const hasAvatar = m.user?.avatar_url && !avatarErrors[name];
+                return hasAvatar ? (
+                  <img 
+                    key={i} 
+                    src={m.user.avatar_url} 
+                    className="w-6 h-6 rounded-full border-2 border-white dark:border-slate-900 object-cover bg-slate-100 dark:bg-slate-800" 
+                    alt={name} 
+                    onError={() => handleAvatarError(name)}
+                  />
+                ) : (
+                  <div 
+                    key={i} 
+                    className={`w-6 h-6 rounded-full border-2 border-white dark:border-slate-900 bg-gradient-to-br ${getAvatarGradient(name)} flex items-center justify-center text-[8px] font-black text-white uppercase select-none`}
+                    title={name}
+                  >
+                    {getInitials(name)}
+                  </div>
+                );
+              })}
               {members.length > 4 && (
                 <div className="w-6 h-6 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-850 flex items-center justify-center text-[10px] font-bold text-slate-600 dark:text-slate-300">
                   +{members.length - 4}

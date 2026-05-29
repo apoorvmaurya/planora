@@ -204,13 +204,13 @@ export default function PublicHomePage() {
                   <span>North Goa, India</span>
                 </div>
                 <div className="flex -space-x-2">
-                  {['Sarah', 'John', 'Alex', 'Emily'].map((name, i) => (
-                    <img 
+                  {[{name: 'Sarah', grad: 'from-pink-500 to-rose-600'}, {name: 'John', grad: 'from-blue-500 to-cyan-600'}, {name: 'Alex', grad: 'from-teal-400 to-emerald-600'}, {name: 'Emily', grad: 'from-purple-500 to-fuchsia-600'}].map((person, i) => (
+                    <div 
                       key={i} 
-                      src={`https://ui-avatars.com/api/?name=${name}&background=random&color=fff`} 
-                      className="w-8 h-8 rounded-full border-2 border-white dark:border-slate-900 shadow-sm object-cover" 
-                      alt={name} 
-                    />
+                      className={`w-8 h-8 rounded-full border-2 border-white dark:border-slate-900 shadow-sm bg-gradient-to-br ${person.grad} flex items-center justify-center text-[10px] font-black text-white uppercase select-none`}
+                    >
+                      {person.name.charAt(0)}
+                    </div>
                   ))}
                   <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-white dark:border-slate-900 flex items-center justify-center text-xs font-medium text-slate-500 dark:text-slate-400 shadow-sm">+2</div>
                 </div>

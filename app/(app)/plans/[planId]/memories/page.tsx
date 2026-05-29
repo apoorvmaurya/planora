@@ -21,6 +21,7 @@ export default function MemoriesPage() {
   const [likedMemories, setLikedMemories] = useState<Set<string>>(new Set())
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [copiedLink, setCopiedLink] = useState(false)
+  const [avatarErrors, setAvatarErrors] = useState<Record<string, boolean>>({})
 
   const fetchData = async () => {
     // Fetch Plan
@@ -195,11 +196,18 @@ export default function MemoriesPage() {
                     <p className="text-slate-800 dark:text-slate-200 text-sm mb-3 transition-colors duration-500">{memory.caption}</p>
                   )}
                   <div className="flex items-center gap-2">
-                    <img 
-                      src={memory.user?.avatar_url || `https://ui-avatars.com/api/?name=${memory.user?.full_name}`} 
-                      className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 object-cover border border-slate-200 dark:border-slate-700"
-                      alt="" 
-                    />
+                    {memory.user?.avatar_url && !avatarErrors[memory.id] ? (
+                      <img 
+                        src={memory.user.avatar_url} 
+                        className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 object-cover border border-slate-200 dark:border-slate-700"
+                        alt="" 
+                        onError={() => setAvatarErrors(prev => ({ ...prev, [memory.id]: true }))}
+                      />
+                    ) : (
+                      <div className={`w-6 h-6 rounded-full border border-slate-200 dark:border-slate-700 bg-gradient-to-br ${(() => { const n = memory.user?.full_name || ''; let h = 0; for (let i = 0; i < n.length; i++) h = n.charCodeAt(i) + ((h << 5) - h); const g = ['from-indigo-500 to-purple-600','from-teal-400 to-emerald-600','from-blue-500 to-cyan-600','from-orange-400 to-rose-600','from-pink-500 to-rose-600']; return g[Math.abs(h) % g.length]; })()} flex items-center justify-center text-[8px] font-black text-white uppercase select-none`}>
+                        {(() => { const n = memory.user?.full_name || '?'; const p = n.trim().split(/\s+/); return p.length >= 2 ? (p[0][0] + p[1][0]).toUpperCase() : p[0].substring(0, 2).toUpperCase(); })()}
+                      </div>
+                    )}
                     <span className="text-xs font-medium text-slate-500 dark:text-slate-400 transition-colors duration-500">{memory.user?.full_name}</span>
                   </div>
                 </div>

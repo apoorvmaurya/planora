@@ -204,13 +204,13 @@
 
 /* ── Glassmorphic Consolidated Navbars ── */
 @utility glass-nav-scrolled {
-  @apply bg-white/70 dark:bg-slate-900/65 border border-slate-200/50 dark:border-slate-800/60 shadow-lg transition-all duration-300;
-  backdrop-filter: blur(40px) saturate(220%);
-  -webkit-backdrop-filter: blur(40px) saturate(220%);
-  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.08), 0 0 0 1px rgba(255,255,255,0.4) inset;
+  @apply bg-white/85 dark:bg-slate-950/85 border border-slate-200/60 dark:border-slate-800/80 shadow-lg transition-all duration-300;
+  backdrop-filter: blur(64px) saturate(240%);
+  -webkit-backdrop-filter: blur(64px) saturate(240%);
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.08), 0 0 0 1px rgba(255,255,255,0.45) inset;
 }
 .dark .glass-nav-scrolled {
-  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.08) inset;
 }
 
 @utility glass-nav-unscrolled {

@@ -246,7 +246,13 @@ export function AddExpenseModal({
               {members.map(m => (
                 <div key={m.user.id} className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-2">
-                    <img src={m.user.avatar_url || `https://ui-avatars.com/api/?name=${m.user.full_name}`} className="w-6 h-6 rounded-full border border-slate-200 dark:border-slate-800 object-cover" alt="" />
+                    {m.user.avatar_url ? (
+                      <img src={m.user.avatar_url} className="w-6 h-6 rounded-full border border-slate-200 dark:border-slate-800 object-cover" alt="" />
+                    ) : (
+                      <div className={`w-6 h-6 rounded-full border border-slate-200 dark:border-slate-800 bg-gradient-to-br ${(() => { const n = m.user.full_name || ''; let h = 0; for (let i = 0; i < n.length; i++) h = n.charCodeAt(i) + ((h << 5) - h); const g = ['from-indigo-500 to-purple-600','from-teal-400 to-emerald-600','from-blue-500 to-cyan-600','from-orange-400 to-rose-600']; return g[Math.abs(h) % g.length]; })()} flex items-center justify-center text-[8px] font-black text-white uppercase select-none`}>
+                        {m.user.full_name?.charAt(0) || "U"}
+                      </div>
+                    )}
                     <span className="text-sm font-medium text-slate-900 dark:text-slate-100 transition-colors duration-500">{m.user.full_name}</span>
                   </div>
                   <Input 

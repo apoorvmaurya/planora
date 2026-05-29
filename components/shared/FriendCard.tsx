@@ -1,4 +1,4 @@
-import React, { memo } from "react"
+import React, { memo, useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { MapPin, Check, X, UserMinus, UserPlus, Clock } from "lucide-react"
@@ -26,6 +26,7 @@ export const FriendCard = memo(function FriendCard({
   onRemove,
   isProcessing
 }: FriendCardProps) {
+  const [avatarError, setAvatarError] = useState(false)
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
@@ -41,17 +42,40 @@ export const FriendCard = memo(function FriendCard({
     >
       <div className="flex items-center gap-4 text-left w-full">
         <div className="w-14 h-14 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 flex-shrink-0 overflow-hidden transition-colors duration-500">
-          {user.avatar_url ? (
+          {user.avatar_url && !avatarError ? (
             <Image 
               src={user.avatar_url} 
               alt={user.full_name} 
               width={56}
               height={56}
               className="w-full h-full object-cover" 
+              onError={() => setAvatarError(true)}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-xl font-bold text-slate-400 dark:text-slate-500">
-              {user.full_name?.charAt(0) || "U"}
+            <div className={`w-full h-full flex items-center justify-center text-xl font-black text-white uppercase select-none bg-gradient-to-br ${((name) => {
+              if (!name) return "from-indigo-500 to-purple-600";
+              let hash = 0;
+              for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+              }
+              const gradients = [
+                "from-indigo-500 to-purple-600",
+                "from-teal-400 to-emerald-600",
+                "from-blue-500 to-cyan-600",
+                "from-orange-400 to-rose-600",
+                "from-pink-500 to-rose-600",
+                "from-purple-500 to-fuchsia-600"
+              ];
+              return gradients[Math.abs(hash) % gradients.length];
+            })(user.full_name)}`}>
+              {((name) => {
+                if (!name) return "?";
+                const parts = name.trim().split(/\s+/);
+                if (parts.length >= 2) {
+                  return (parts[0][0] + parts[1][0]).toUpperCase();
+                }
+                return parts[0].substring(0, 2).toUpperCase();
+              })(user.full_name)}
             </div>
           )}
         </div>

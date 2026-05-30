@@ -43,7 +43,9 @@ supabase/.branches/
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# vscode
+.vscode/*
+!.vscode/settings.json
 
 .agents*
 skills-lock.json

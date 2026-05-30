@@ -46,66 +46,48 @@ export function Footer() {
     <footer className="w-full border-t border-slate-200/50 dark:border-slate-800/60 bg-slate-50/80 dark:bg-slate-950/60 backdrop-blur-xl transition-colors duration-500 relative overflow-hidden">
       {/* Subtle ambient glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -bottom-24 left-[10%] w-64 h-64 bg-[#1D9E75]/5 dark:bg-[#1D9E75]/10 rounded-full blur-[100px]" />
+        <div className="absolute -bottom-24 left-[50%] -translate-x-1/2 w-[500px] h-[500px] bg-[#1D9E75]/5 dark:bg-[#1D9E75]/10 rounded-full blur-[120px]" />
         <div className="absolute -top-16 right-[15%] w-48 h-48 bg-blue-500/[0.03] dark:bg-blue-500/[0.08] rounded-full blur-[80px]" />
       </div>
 
       <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
         {/* ===== Main Footer Content ===== */}
         <div className="py-16 sm:py-20 lg:py-24">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16 items-start">
+          <div className="flex flex-col gap-16 lg:gap-20">
             
-            {/* Brand block — Spans 1/3 width on desktop and tablet, full width on mobile */}
-            <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-5">
-              <Link href="/" className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white hover:opacity-90 transition-opacity">
-                Plan<span className="text-[#1D9E75]">ora</span>
-              </Link>
-              <p className="text-slate-500 dark:text-slate-400 text-[15px] leading-[1.7] max-w-sm">
-                Turning &quot;we should hang out&quot; into &quot;here&apos;s the boarding pass&quot;. The ultimate collaborative trip planner.
-              </p>
-              {/* Social Icons */}
-              <div className="flex gap-3 pt-2">
-                {socialLinks.map((social, index) => {
-                  const Icon = social.icon;
-                  return (
-                    <motion.a
-                      key={index}
-                      href={social.href}
-                      aria-label={social.label}
-                      whileHover={{ scale: 1.1, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`w-10 h-10 rounded-full bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/60 dark:border-slate-800/80 flex items-center justify-center text-slate-400 dark:text-slate-500 transition-all duration-300 shadow-sm ${social.color}`}
-                    >
-                      <Icon className="w-[18px] h-[18px]" />
-                    </motion.a>
-                  );
-                })}
+            {/* Top Row: Branding and Links */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-start">
+              
+              {/* Brand block — Spans left side on desktop/tablet, centered on mobile */}
+              <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-5">
+                <Link href="/" className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white hover:opacity-90 transition-opacity">
+                  Plan<span className="text-[#1D9E75]">ora</span>
+                </Link>
+                <p className="text-slate-500 dark:text-slate-400 text-[15px] leading-[1.7] max-w-sm">
+                  Turning &quot;we should hang out&quot; into &quot;here&apos;s the boarding pass&quot;. The ultimate collaborative trip planner.
+                </p>
+                {/* Social Icons */}
+                <div className="flex gap-3 pt-2">
+                  {socialLinks.map((social, index) => {
+                    const Icon = social.icon;
+                    return (
+                      <motion.a
+                        key={index}
+                        href={social.href}
+                        aria-label={social.label}
+                        whileHover={{ scale: 1.1, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`w-10 h-10 rounded-full bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/60 dark:border-slate-800/80 flex items-center justify-center text-slate-400 dark:text-slate-500 transition-all duration-300 shadow-sm ${social.color}`}
+                      >
+                        <Icon className="w-[18px] h-[18px]" />
+                      </motion.a>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
 
-            {/* Newsletter block — Spans 1/3 width, perfectly centered on desktop, tablet, and mobile */}
-            <div className="flex flex-col items-center text-center space-y-5 md:max-w-xs lg:max-w-sm mx-auto w-full">
-              <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs uppercase tracking-[0.15em] mb-1">
-                Stay Updated
-              </h4>
-              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed max-w-[280px]">
-                Join our mailing list to receive the latest updates, templates, and travel guides.
-              </p>
-              <div className="relative flex items-center w-full max-w-sm">
-                <input
-                  type="email"
-                  placeholder="your.email@domain.com"
-                  className="w-full bg-white/70 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-800/80 rounded-xl py-3 pl-4 pr-[4.5rem] text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/30 focus:border-[#1D9E75] dark:focus:border-teal-500 transition-all duration-300 shadow-sm"
-                />
-                <button className="absolute right-1.5 bg-[#1D9E75] hover:bg-[#15805e] text-white text-xs font-bold px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md hover:shadow-[#1D9E75]/20">
-                  Join
-                </button>
-              </div>
-            </div>
-
-            {/* Links block — Spans 1/3 width, Product & Company perfectly side-by-side, aligned to the right on larger screens */}
-            <div className="flex justify-center md:justify-end w-full">
-              <div className="grid grid-cols-2 gap-8 sm:gap-12 w-full max-w-[280px] sm:max-w-xs md:max-w-none">
+              {/* Links block — Spans right side, aligning side-by-side links */}
+              <div className="grid grid-cols-2 gap-8 sm:gap-12 max-w-[280px] sm:max-w-xs mx-auto w-full md:max-w-none md:mx-0 md:justify-end">
                 {/* Product links */}
                 <div className="flex flex-col items-center md:items-start text-center md:text-left">
                   <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs uppercase tracking-[0.15em] mb-5 sm:mb-6">
@@ -148,6 +130,27 @@ export function Footer() {
               </div>
             </div>
 
+            {/* Center Row: Newsletter Section */}
+            <div className="flex flex-col items-center text-center space-y-6 pt-12 border-t border-slate-200/30 dark:border-slate-800/40 w-full max-w-2xl mx-auto">
+              <div className="space-y-2">
+                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-xs uppercase tracking-[0.2em]">
+                  Stay Updated
+                </h4>
+                <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-[15px] leading-relaxed max-w-md">
+                  Join our mailing list to receive the latest updates, templates, and travel guides.
+                </p>
+              </div>
+              <div className="relative flex items-center w-full max-w-md pt-2">
+                <input
+                  type="email"
+                  placeholder="your.email@domain.com"
+                  className="w-full bg-white/70 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-800/80 rounded-xl py-3.5 pl-5 pr-[5.5rem] text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/30 focus:border-[#1D9E75] dark:focus:border-teal-500 transition-all duration-300 shadow-sm"
+                />
+                <button className="absolute right-2 bg-[#1D9E75] hover:bg-[#15805e] text-white text-xs font-bold px-5 py-2.5 rounded-lg transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md hover:shadow-[#1D9E75]/20">
+                  Join
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 

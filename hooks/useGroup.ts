@@ -57,7 +57,8 @@ export function useGroup(groupId?: string) {
     } finally {
       setIsLoading(false)
     }
-  }, [groupId, profile?.id, supabase])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupId, profile?.id])
 
   useEffect(() => {
     fetchGroupDetails()
@@ -85,7 +86,8 @@ export function useGroup(groupId?: string) {
         supabase.removeChannel(channel)
       }
     }
-  }, [fetchGroupDetails, groupId, supabase])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchGroupDetails, groupId])
 
   const addMember = async (userId: string, role = 'member') => {
     setIsProcessing(true)

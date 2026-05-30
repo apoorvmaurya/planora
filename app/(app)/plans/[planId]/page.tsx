@@ -11,6 +11,7 @@ import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, 
 import { Map, Calendar, Users, DollarSign, Train, Plane, Bus, MessageSquare, Loader2, Wallet, Camera, Bell, PenSquare, Trash2, XCircle, CheckCircle2, Share2, UserMinus, Sparkles, Plus, Shield } from "lucide-react"
 import { toast } from "sonner"
 import { ItineraryItemCard } from "@/components/shared/ItineraryItemCard"
+import { UserAvatar } from "@/components/shared/UserAvatar"
 import { ErrorState } from "@/components/shared/ErrorState"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { Input } from "@/components/ui/input"
@@ -54,37 +55,13 @@ export default function PlanDetailPage() {
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [adminSheetOpen, setAdminSheetOpen] = useState(false)
-  const [avatarErrors, setAvatarErrors] = useState<Record<string, boolean>>({})
+  const [mounted, setMounted] = useState(false)
 
-  const handleAvatarError = (userId: string) => {
-    setAvatarErrors(prev => ({ ...prev, [userId]: true }))
-  }
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
-  const getInitials = (name?: string) => {
-    if (!name) return "?";
-    const parts = name.trim().split(/\s+/);
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
-    }
-    return parts[0].substring(0, 2).toUpperCase();
-  }
 
-  const getAvatarGradient = (name?: string) => {
-    if (!name) return "from-indigo-500 to-purple-600";
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-      hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const gradients = [
-      "from-indigo-500 to-purple-600",
-      "from-teal-400 to-emerald-600",
-      "from-blue-500 to-cyan-600",
-      "from-orange-400 to-rose-600",
-      "from-pink-500 to-rose-600",
-      "from-purple-500 to-fuchsia-600"
-    ];
-    return gradients[Math.abs(hash) % gradients.length];
-  }
 
   useEffect(() => {
     async function fetchData() {
@@ -137,7 +114,8 @@ export default function PlanDetailPage() {
       }
     }
     fetchData()
-  }, [planId, supabase, profile?.id])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [planId, profile?.id])
  
   useEffect(() => {
     if (!profile?.id) return
@@ -203,7 +181,8 @@ export default function PlanDetailPage() {
       supabase.removeChannel(roomOne)
       window.removeEventListener('online', handleOnline)
     }
-  }, [planId, supabase, profile])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [planId, profile])
 
   const refreshItinerary = async () => {
     try {
@@ -464,26 +443,17 @@ export default function PlanDetailPage() {
             <div className="flex items-center gap-3 mb-4">
               <span className="bg-white/20 backdrop-blur text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">{plan.status}</span>
               <div className="flex -space-x-2">
-                {members.slice(0, 5).map(m => {
-                  const hasAvatar = m.user.avatar_url && !avatarErrors[m.user.id];
-                  return hasAvatar ? (
-                    <img 
-                      key={m.user.id} 
-                      src={m.user.avatar_url} 
-                      className="w-8 h-8 rounded-full border-2 border-slate-900 object-cover" 
-                      alt="avatar" 
-                      onError={() => handleAvatarError(m.user.id)}
-                    />
-                  ) : (
-                    <div 
-                      key={m.user.id} 
-                      className={`w-8 h-8 rounded-full border-2 border-slate-900 bg-gradient-to-br ${getAvatarGradient(m.user.full_name)} flex items-center justify-center text-[10px] font-black text-white uppercase select-none`}
-                      title={m.user.full_name}
-                    >
-                      {getInitials(m.user.full_name)}
-                    </div>
-                  );
-                })}
+                {members.slice(0, 5).map(m => (
+                  <UserAvatar
+                    key={m.user.id}
+                    avatarUrl={m.user.avatar_url}
+                    name={m.user.full_name}
+                    userId={m.user.id}
+                    size="w-8 h-8"
+                    textSize="text-[10px]"
+                    className="border-2 border-slate-900"
+                  />
+                ))}
               </div>
             </div>
             <h1 className="text-5xl font-extrabold mb-2">{plan.title}</h1>
@@ -800,21 +770,14 @@ export default function PlanDetailPage() {
                       {members.filter(m => m.user.id !== profile?.id).map(m => (
                         <div key={m.user.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800/60">
                           <div className="flex items-center gap-3 min-w-0">
-                            {m.user.avatar_url && !avatarErrors[m.user.id] ? (
-                              <img 
-                                src={m.user.avatar_url} 
-                                className="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shrink-0" 
-                                alt="avatar" 
-                                onError={() => handleAvatarError(m.user.id)}
-                              />
-                            ) : (
-                              <div 
-                                className={`w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shrink-0 bg-gradient-to-br ${getAvatarGradient(m.user.full_name)} flex items-center justify-center text-[11px] font-black text-white uppercase select-none`}
-                                title={m.user.full_name}
-                              >
-                                {getInitials(m.user.full_name)}
-                              </div>
-                            )}
+                            <UserAvatar
+                              avatarUrl={m.user.avatar_url}
+                              name={m.user.full_name}
+                              userId={m.user.id}
+                              size="w-9 h-9"
+                              textSize="text-[11px]"
+                              className="border border-slate-200 dark:border-slate-700 shrink-0"
+                            />
                             <div className="min-w-0">
                               <p className="text-sm font-bold text-slate-850 dark:text-slate-250 truncate">{m.user.full_name}</p>
                               <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
@@ -846,7 +809,9 @@ export default function PlanDetailPage() {
             <div className="space-y-5">
               <div>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-1 flex items-center gap-2"><Calendar className="w-4 h-4" /> Dates</p>
-                <p className="font-bold text-slate-900 dark:text-slate-100" suppressHydrationWarning>{new Date(plan.start_date).toLocaleDateString()} - {new Date(plan.end_date).toLocaleDateString()}</p>
+                <p className="font-bold text-slate-900 dark:text-slate-100">
+                  {mounted ? `${new Date(plan.start_date).toLocaleDateString()} - ${new Date(plan.end_date).toLocaleDateString()}` : ""}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-1 flex items-center gap-2"><DollarSign className="w-4 h-4" /> Total Budget</p>
@@ -864,21 +829,14 @@ export default function PlanDetailPage() {
                   {members.map(m => (
                     <div key={m.user.id} className="flex items-center justify-between group">
                       <div className="flex items-center gap-3">
-                        {m.user.avatar_url && !avatarErrors[m.user.id] ? (
-                          <img 
-                            src={m.user.avatar_url} 
-                            className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 object-cover" 
-                            alt="avatar" 
-                            onError={() => handleAvatarError(m.user.id)}
-                          />
-                        ) : (
-                          <div 
-                            className={`w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 object-cover bg-gradient-to-br ${getAvatarGradient(m.user.full_name)} flex items-center justify-center text-[10px] font-black text-white uppercase select-none`}
-                            title={m.user.full_name}
-                          >
-                            {getInitials(m.user.full_name)}
-                          </div>
-                        )}
+                        <UserAvatar
+                          avatarUrl={m.user.avatar_url}
+                          name={m.user.full_name}
+                          userId={m.user.id}
+                          size="w-8 h-8"
+                          textSize="text-[10px]"
+                          className="border border-slate-200 dark:border-slate-700 object-cover"
+                        />
                         <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{m.user.full_name}</span>
                       </div>
                       {isAdmin && m.user.id !== profile?.id && plan.group_id && (
@@ -1151,21 +1109,14 @@ export default function PlanDetailPage() {
                     {members.map(m => (
                       <div key={m.user.id} className="flex items-center justify-between bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800/80">
                         <div className="flex items-center gap-3">
-                          {m.user.avatar_url && !avatarErrors[m.user.id] ? (
-                            <img 
-                              src={m.user.avatar_url} 
-                              className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 object-cover" 
-                              alt="avatar" 
-                              onError={() => handleAvatarError(m.user.id)}
-                            />
-                          ) : (
-                            <div 
-                              className={`w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 object-cover bg-gradient-to-br ${getAvatarGradient(m.user.full_name)} flex items-center justify-center text-[10px] font-black text-white uppercase select-none`}
-                              title={m.user.full_name}
-                            >
-                              {getInitials(m.user.full_name)}
-                            </div>
-                          )}
+                          <UserAvatar
+                            avatarUrl={m.user.avatar_url}
+                            name={m.user.full_name}
+                            userId={m.user.id}
+                            size="w-8 h-8"
+                            textSize="text-[10px]"
+                            className="border border-slate-200 dark:border-slate-700 object-cover"
+                          />
                           <div>
                             <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{m.user.full_name}</p>
                             <p className="text-xs text-slate-400">@{m.user.username}</p>

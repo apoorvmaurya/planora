@@ -147,6 +147,10 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
       setAvatarFile(file)
+      // Revoke previous ObjectURL to prevent memory leak
+      if (avatarPreview && avatarPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(avatarPreview)
+      }
       setAvatarPreview(URL.createObjectURL(file))
     }
   }

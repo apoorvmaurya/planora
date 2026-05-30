@@ -36,16 +36,33 @@ export async function POST(req: Request) {
   if (!parsed.success) return new Response(JSON.stringify({ error: "Invalid input", details: parsed.error }), { status: 400 })
   const { planId, destination, startDate, endDate, budget, currency, groupId, preferences, saveToDb } = parsed.data
 
-  // Verify plan exists and belongs to user
+  // Verify plan exists
   const { data: plan, error: planError } = await supabase
     .from('plans')
     .select('*')
     .eq('id', planId)
-    .eq('created_by', user.id)
     .single()
 
   if (planError || !plan) {
     return new Response(JSON.stringify({ error: "Plan not found" }), { status: 404 })
+  }
+
+  // Check authorization: must be creator OR a group member
+  let isAuthorized = plan.created_by === user.id
+  if (!isAuthorized && plan.group_id) {
+    const { data: membership } = await supabase
+      .from('group_members')
+      .select('id')
+      .eq('group_id', plan.group_id)
+      .eq('user_id', user.id)
+      .single()
+    if (membership) {
+      isAuthorized = true
+    }
+  }
+
+  if (!isAuthorized) {
+    return new Response(JSON.stringify({ error: "Unauthorized access to plan" }), { status: 403 })
   }
 
   let members: any[] = []

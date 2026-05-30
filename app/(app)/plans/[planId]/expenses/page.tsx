@@ -9,6 +9,7 @@ import { Plus, Receipt, Download, ArrowRight, Wallet, TrendingUp, AlertCircle } 
 import { Button } from "@/components/ui/button"
 import { AddExpenseModal } from "@/components/shared/AddExpenseModal"
 import { ErrorState } from "@/components/shared/ErrorState"
+import { UserAvatar } from "@/components/shared/UserAvatar"
 import { calculateRawSplits, calculateSimplifiedSplits, Expense, Settlement } from "@/lib/utils/splitCalculator"
 import { syncOfflineOps, offlineDB } from "@/lib/supabase/offlineSync"
 
@@ -25,37 +26,11 @@ export default function ExpensesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [simplifyDebts, setSimplifyDebts] = useState(false)
-  const [avatarErrors, setAvatarErrors] = useState<Record<string, boolean>>({})
+  const [mounted, setMounted] = useState(false)
 
-  const handleAvatarError = (userId: string) => {
-    setAvatarErrors(prev => ({ ...prev, [userId]: true }))
-  }
-
-  const getInitials = (name?: string) => {
-    if (!name) return "?";
-    const parts = name.trim().split(/\s+/);
-    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-    return parts[0].substring(0, 2).toUpperCase();
-  }
-
-  const getAvatarGradient = (name?: string) => {
-    if (!name) return "from-indigo-500 to-purple-600";
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    const g = ["from-indigo-500 to-purple-600","from-teal-400 to-emerald-600","from-blue-500 to-cyan-600","from-orange-400 to-rose-600","from-pink-500 to-rose-600","from-purple-500 to-fuchsia-600"];
-    return g[Math.abs(hash) % g.length];
-  }
-
-  const renderAvatar = (avatarUrl: string | undefined | null, name: string | undefined, userId: string, size = "w-8 h-8", textSize = "text-[10px]", extraClass = "") => {
-    if (avatarUrl && !avatarErrors[userId]) {
-      return <img src={avatarUrl} className={`${size} rounded-full object-cover ${extraClass}`} alt="" onError={() => handleAvatarError(userId)} />;
-    }
-    return (
-      <div className={`${size} rounded-full bg-gradient-to-br ${getAvatarGradient(name)} flex items-center justify-center ${textSize} font-black text-white uppercase select-none ${extraClass}`} title={name}>
-        {getInitials(name)}
-      </div>
-    );
-  }
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const fetchData = async () => {
     setIsLoading(true)
@@ -105,7 +80,8 @@ export default function ExpensesPage() {
 
   useEffect(() => {
     fetchData()
-  }, [planId, supabase])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [planId])
 
   useEffect(() => {
     const handleOnline = () => {
@@ -191,7 +167,9 @@ export default function ExpensesPage() {
 
       <div className="hidden print:block mb-8">
         <h1 className="text-3xl font-bold text-slate-900">{plan.title} - Expense Report</h1>
-        <p className="text-slate-500" suppressHydrationWarning>Generated on {new Date().toLocaleDateString()}</p>
+        <p className="text-slate-500">
+          Generated on {mounted ? new Date().toLocaleDateString() : ""}
+        </p>
       </div>
 
       {/* Summary Cards */}
@@ -223,7 +201,14 @@ export default function ExpensesPage() {
           {topSpender ? (
             <>
               <p className="text-slate-500 dark:text-slate-400 text-xs font-medium mb-2 uppercase tracking-wider">Top Spender</p>
-              {renderAvatar(topSpender.avatar_url, topSpender.full_name, topSpenderId || '', 'w-10 h-10', 'text-sm', 'mb-2 border border-slate-200 dark:border-slate-700')}
+              <UserAvatar
+                avatarUrl={topSpender.avatar_url}
+                name={topSpender.full_name}
+                userId={topSpenderId || ''}
+                size="w-10 h-10"
+                textSize="text-sm"
+                className="mb-2 border border-slate-200 dark:border-slate-700"
+              />
               <p className="font-bold text-slate-900 dark:text-white text-sm transition-colors duration-500">{topSpender.full_name}</p>
               <p className="text-xs text-[#1D9E75] dark:text-teal-400 font-semibold">Paid {plan.currency}{topSpenderAmount.toFixed(2)}</p>
             </>
@@ -256,12 +241,21 @@ export default function ExpensesPage() {
                       <div className="min-w-0">
                         <p className="font-bold text-slate-900 dark:text-white transition-colors duration-500 truncate">{exp.title}</p>
                         <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mt-1 transition-colors duration-500">
-                          {renderAvatar(exp.payer?.avatar_url, exp.payer?.full_name, exp.paid_by, 'w-4 h-4', 'text-[6px]', 'border border-slate-200 dark:border-slate-700')}
+                          <UserAvatar
+                            avatarUrl={exp.payer?.avatar_url}
+                            name={exp.payer?.full_name}
+                            userId={exp.paid_by}
+                            size="w-4 h-4"
+                            textSize="text-[6px]"
+                            className="border border-slate-200 dark:border-slate-700"
+                          />
                           <span>Paid by {exp.payer?.full_name}</span>
                           <span>•</span>
                           <span className="capitalize">{exp.split_type} split</span>
                           <span className="hidden sm:inline">•</span>
-                          <span className="hidden sm:inline" suppressHydrationWarning>{new Date(exp.created_at).toLocaleDateString()}</span>
+                          <span className="hidden sm:inline">
+                            {mounted ? new Date(exp.created_at).toLocaleDateString() : ""}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -321,7 +315,14 @@ export default function ExpensesPage() {
                 {settlements.map((s, idx) => (
                   <div key={idx} className="flex items-center justify-between bg-white/10 backdrop-blur rounded-2xl p-4">
                     <div className="flex items-center gap-3">
-                      {renderAvatar(getMemberAvatar(s.from), getMemberName(s.from), s.from, 'w-8 h-8', 'text-[10px]', 'border border-white/20')}
+                      <UserAvatar
+                        avatarUrl={getMemberAvatar(s.from)}
+                        name={getMemberName(s.from)}
+                        userId={s.from}
+                        size="w-8 h-8"
+                        textSize="text-[10px]"
+                        className="border border-white/20"
+                      />
                       <div className="text-sm">
                         <p className="font-bold">{getMemberName(s.from)}</p>
                         <p className="text-white/60 text-xs">owes</p>
@@ -333,7 +334,14 @@ export default function ExpensesPage() {
                     </div>
 
                     <div className="flex items-center gap-3 flex-row-reverse">
-                      {renderAvatar(getMemberAvatar(s.to), getMemberName(s.to), s.to, 'w-8 h-8', 'text-[10px]', 'border border-white/20')}
+                      <UserAvatar
+                        avatarUrl={getMemberAvatar(s.to)}
+                        name={getMemberName(s.to)}
+                        userId={s.to}
+                        size="w-8 h-8"
+                        textSize="text-[10px]"
+                        className="border border-white/20"
+                      />
                       <div className="text-sm text-right">
                         <p className="font-bold">{getMemberName(s.to)}</p>
                         <p className="text-[#1D9E75] font-bold">{plan.currency} {s.amount.toFixed(2)}</p>

@@ -221,20 +221,38 @@
 }
 
 /* ── Glassmorphic Consolidated Navbars ── */
-@utility glass-nav-scrolled {
-  @apply bg-white/85 dark:bg-slate-950/85 border border-slate-200/60 dark:border-slate-800/80 shadow-lg transition-all duration-300;
-  backdrop-filter: blur(64px) saturate(240%);
-  -webkit-backdrop-filter: blur(64px) saturate(240%);
-  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.08), 0 0 0 1px rgba(255,255,255,0.45) inset;
-}
-.dark .glass-nav-scrolled {
-  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.08) inset;
+.glass-nav-scrolled {
+  background-color: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(226, 232, 240, 0.4);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+  backdrop-filter: blur(28px) saturate(220%);
+  -webkit-backdrop-filter: blur(28px) saturate(220%);
 }
 
-@utility glass-nav-unscrolled {
-  @apply bg-transparent border border-transparent shadow-none transition-all duration-500;
-  backdrop-filter: blur(0px) saturate(100%);
-  -webkit-backdrop-filter: blur(0px) saturate(100%);
+.dark .glass-nav-scrolled {
+  background-color: rgba(2, 6, 23, 0.5);
+  border-color: rgba(30, 41, 59, 0.6);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+}
+
+.glass-nav-unscrolled {
+  background-color: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(226, 232, 240, 0.2);
+  box-shadow: 0 4px 20px -6px rgba(0, 0, 0, 0.02), 0 0 0 1px rgba(255, 255, 255, 0.25) inset;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 500ms;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+}
+
+.dark .glass-nav-unscrolled {
+  background-color: rgba(2, 6, 23, 0.3);
+  border-color: rgba(30, 41, 59, 0.3);
+  box-shadow: 0 4px 20px -6px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
 }
 
 /* ── Refracting Fluid Glass Bubbles ── */

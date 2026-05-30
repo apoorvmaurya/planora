@@ -18,6 +18,7 @@ import Link from "next/link"
 import confetti from "canvas-confetti"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
+import { Footer } from "@/components/layout/Footer"
 
 interface Supporter {
   id: string
@@ -74,6 +75,11 @@ export default function ComingSoonPage() {
   const [totalCount, setTotalCount] = useState(0)
   const [scrolled, setScrolled] = useState(false)
   const [newlyAddedIds, setNewlyAddedIds] = useState<string[]>([])
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleScroll = useCallback(() => {
     setScrolled(window.scrollY > 20)
@@ -439,7 +445,7 @@ export default function ComingSoonPage() {
                               {item.name}
                             </h3>
                             <span className="text-[10px] text-slate-500 font-medium shrink-0">
-                              {formatRelativeTime(item.created_at)}
+                              {mounted ? formatRelativeTime(item.created_at) : ""}
                             </span>
                           </div>
                           
@@ -464,14 +470,7 @@ export default function ComingSoonPage() {
       </main>
 
       {/* Footer */}
-      <footer className="z-10 py-8 px-6 text-center border-t border-slate-200 dark:border-slate-900 text-xs text-slate-500 dark:text-slate-400 max-w-7xl mx-auto w-full flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="flex items-center gap-1.5 justify-center">
-          <span>Made with</span>
-          <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" />
-          <span>for better group trips.</span>
-        </div>
-        <p className="font-medium">© 2026 Planora. All rights reserved.</p>
-      </footer>
+      <Footer />
     </div>
   )
 }

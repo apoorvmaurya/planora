@@ -1,8 +1,8 @@
-import React, { memo, useState } from "react"
-import Image from "next/image"
+import React, { memo } from "react"
 import { Button } from "@/components/ui/button"
 import { MapPin, Check, X, UserMinus, UserPlus, Clock } from "lucide-react"
 import { motion } from "framer-motion"
+import { UserAvatar } from "./UserAvatar"
 
 interface FriendCardProps {
   user: any 
@@ -26,7 +26,6 @@ export const FriendCard = memo(function FriendCard({
   onRemove,
   isProcessing
 }: FriendCardProps) {
-  const [avatarError, setAvatarError] = useState(false)
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
@@ -41,44 +40,14 @@ export const FriendCard = memo(function FriendCard({
       className="bg-white dark:bg-slate-900/60 backdrop-blur-md p-5 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm shadow-slate-200/50 dark:shadow-none flex flex-col sm:flex-row gap-4 items-center justify-between transition-colors duration-500"
     >
       <div className="flex items-center gap-4 text-left w-full">
-        <div className="w-14 h-14 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 flex-shrink-0 overflow-hidden transition-colors duration-500">
-          {user.avatar_url && !avatarError ? (
-            <Image 
-              src={user.avatar_url} 
-              alt={user.full_name} 
-              width={56}
-              height={56}
-              className="w-full h-full object-cover" 
-              onError={() => setAvatarError(true)}
-            />
-          ) : (
-            <div className={`w-full h-full flex items-center justify-center text-xl font-black text-white uppercase select-none bg-gradient-to-br ${((name) => {
-              if (!name) return "from-indigo-500 to-purple-600";
-              let hash = 0;
-              for (let i = 0; i < name.length; i++) {
-                hash = name.charCodeAt(i) + ((hash << 5) - hash);
-              }
-              const gradients = [
-                "from-indigo-500 to-purple-600",
-                "from-teal-400 to-emerald-600",
-                "from-blue-500 to-cyan-600",
-                "from-orange-400 to-rose-600",
-                "from-pink-500 to-rose-600",
-                "from-purple-500 to-fuchsia-600"
-              ];
-              return gradients[Math.abs(hash) % gradients.length];
-            })(user.full_name)}`}>
-              {((name) => {
-                if (!name) return "?";
-                const parts = name.trim().split(/\s+/);
-                if (parts.length >= 2) {
-                  return (parts[0][0] + parts[1][0]).toUpperCase();
-                }
-                return parts[0].substring(0, 2).toUpperCase();
-              })(user.full_name)}
-            </div>
-          )}
-        </div>
+        <UserAvatar
+          avatarUrl={user.avatar_url}
+          name={user.full_name}
+          userId={user.id}
+          size="w-14 h-14"
+          textSize="text-xl"
+          className="border border-slate-200 dark:border-slate-800 flex-shrink-0"
+        />
         <div className="flex-1 min-w-0">
           <h3 className="font-bold text-slate-900 dark:text-white truncate transition-colors duration-500">{user.full_name}</h3>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400 truncate transition-colors duration-500">@{user.username}</p>

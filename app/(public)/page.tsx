@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
+import { Footer } from "@/components/layout/Footer";
 
 const TwitterIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" /></svg>
@@ -334,50 +335,9 @@ export default function PublicHomePage() {
             </div>
           </div>
         </section>
-
       </main>
 
-      <footer className="bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-900 pt-20 pb-10 transition-colors duration-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-            <div className="col-span-1 md:col-span-2">
-              <Link href="/" className="text-3xl font-bold tracking-tight mb-6 inline-block text-slate-900 dark:text-slate-50">
-                Plan<span style={{ color: TEAL }}>ora</span>
-              </Link>
-              <p className="text-slate-500 dark:text-slate-400 max-w-sm mb-8 text-lg leading-relaxed">
-                Turning &quot;we should hang out&quot; into &quot;here&apos;s the boarding pass&quot;. The ultimate collaborative trip planner.
-              </p>
-              <div className="flex gap-4">
-                <a href="#" className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] hover:border-[#1D9E75] dark:hover:border-[#1D9E75] transition-all duration-300 hover:shadow-md"><TwitterIcon className="w-5 h-5" /></a>
-                <a href="#" className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] hover:border-[#1D9E75] dark:hover:border-[#1D9E75] transition-all duration-300 hover:shadow-md"><InstagramIcon className="w-5 h-5" /></a>
-                <a href="#" className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] hover:border-[#1D9E75] dark:hover:border-[#1D9E75] transition-all duration-300 hover:shadow-md"><GithubIcon className="w-5 h-5" /></a>
-              </div>
-            </div>
-            <div>
-              <h4 className="font-bold text-slate-900 dark:text-slate-300 mb-6 text-lg">Product</h4>
-              <ul className="space-y-4">
-                <li><Link href="#features" className="text-slate-500 dark:text-slate-400 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] font-medium transition-colors">Features</Link></li>
-                <li><Link href="/coming-soon" className="text-slate-500 dark:text-slate-400 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] font-medium transition-colors">Coming Soon</Link></li>
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] font-medium transition-colors">Templates</a></li>
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] font-medium transition-colors">Guides</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold text-slate-900 dark:text-slate-300 mb-6 text-lg">Company</h4>
-              <ul className="space-y-4">
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] font-medium transition-colors">About</a></li>
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] font-medium transition-colors">Blog</a></li>
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] font-medium transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-[#1D9E75] dark:hover:text-[#1D9E75] font-medium transition-colors">Terms of Service</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-slate-200 dark:border-slate-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-slate-400 dark:text-slate-500 text-sm font-medium">© 2026 Planora. All rights reserved.</p>
-            <p className="text-slate-400 dark:text-slate-500 text-sm font-medium flex items-center gap-1.5">Made with 💖 for better trips.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

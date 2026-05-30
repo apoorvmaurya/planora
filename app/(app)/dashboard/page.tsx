@@ -28,6 +28,11 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
   const [avatarErrors, setAvatarErrors] = useState<Record<string, boolean>>({})
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleImageError = (id: string) => {
     setImageErrors(prev => ({ ...prev, [id]: true }))
@@ -120,7 +125,8 @@ export default function DashboardPage() {
     }
 
     loadData();
-  }, [profile?.id, supabase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.id]);
 
   const summaryCards = [
     { 
@@ -292,7 +298,7 @@ export default function DashboardPage() {
                       <div className="flex flex-wrap gap-4 text-sm text-slate-500 dark:text-slate-400 transition-colors duration-550">
                         <div className="flex items-center gap-1.5">
                           <CalendarDays className="w-4 h-4 text-slate-400 dark:text-slate-500" />
-                          <span className="font-medium">{formatDate(plan.start_date)} - {formatDate(plan.end_date)}</span>
+                          <span className="font-medium">{mounted ? `${formatDate(plan.start_date)} - ${formatDate(plan.end_date)}` : ""}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                           <Users className="w-4 h-4 text-slate-400 dark:text-slate-500" />
@@ -327,13 +333,13 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-2 text-teal-400 dark:text-teal-350 font-bold text-sm mb-4">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/10 dark:bg-teal-400/10 border border-teal-500/20 text-xs uppercase tracking-wider font-extrabold">
                       <Clock className="w-3.5 h-3.5" />
-                      In {getDaysUntil(upcomingEvent.start_date)} days
+                      {mounted ? `In ${getDaysUntil(upcomingEvent.start_date)} days` : "Upcoming"}
                     </span>
                   </div>
                   <h3 className="text-2xl font-black mb-2 text-white group-hover:text-teal-300 transition-colors duration-300 tracking-tight">{upcomingEvent.destination_name || "Upcoming Trip"}</h3>
                   <p className="text-slate-300 dark:text-slate-400 text-sm flex items-center gap-2 mb-6 font-medium">
                     <MapPin className="w-4 h-4 text-teal-400" />
-                    {formatDate(upcomingEvent.start_date)}
+                    {mounted ? formatDate(upcomingEvent.start_date) : ""}
                   </p>
                   
                   <div className="flex items-center justify-between border-t border-white/10 dark:border-slate-800/60 pt-4 mt-2">

@@ -18,6 +18,11 @@ export default function ProfilePage() {
   const [stats, setStats] = useState({ friends: 0, groups: 0, tripsCompleted: 0 })
   const [tripMemories, setTripMemories] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     async function loadProfileData() {
@@ -219,7 +224,7 @@ export default function ProfilePage() {
                     {memory.plan?.destination_name || "Memory"}
                   </p>
                   <p className="text-white/80 text-xs font-medium mt-1">
-                    {formatDate(memory.created_at)}
+                    {mounted ? formatDate(memory.created_at) : ""}
                   </p>
                 </div>
               </motion.div>

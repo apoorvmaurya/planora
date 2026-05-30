@@ -53,10 +53,10 @@ export function Footer() {
       <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
         {/* ===== Main Footer Content ===== */}
         <div className="py-16 sm:py-20 lg:py-24">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16 items-start">
             
-            {/* Brand block — Spans 4/12 width on desktop, 1 col on tablet, full width on mobile */}
-            <div className="md:col-span-1 lg:col-span-4 flex flex-col items-center md:items-start text-center md:text-left space-y-5">
+            {/* Brand block — Spans 1/3 width on desktop and tablet, full width on mobile */}
+            <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-5">
               <Link href="/" className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white hover:opacity-90 transition-opacity">
                 Plan<span className="text-[#1D9E75]">ora</span>
               </Link>
@@ -83,56 +83,12 @@ export function Footer() {
               </div>
             </div>
 
-            {/* Links block — Spans 4/12 width on desktop, 1 col on tablet, full width on mobile */}
-            {/* Inside, it is always a clean 2-column grid so Product and Company are perfectly side-by-side! */}
-            <div className="grid grid-cols-2 gap-8 sm:gap-12 md:col-span-1 lg:col-span-4 max-w-[280px] sm:max-w-xs mx-auto w-full md:max-w-none md:mx-0">
-              {/* Product links */}
-              <div className="flex flex-col items-center md:items-start text-center md:text-left">
-                <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs uppercase tracking-[0.15em] mb-5 sm:mb-6">
-                  Product
-                </h4>
-                <ul className="space-y-4">
-                  {productLinks.map((link) => (
-                    <li key={link.name}>
-                      <Link
-                        href={link.href}
-                        className="relative text-slate-500 dark:text-slate-400 hover:text-[#1D9E75] dark:hover:text-teal-400 font-medium text-sm sm:text-[15px] transition-colors duration-300 group inline-block"
-                      >
-                        {link.name}
-                        <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-[#1D9E75] dark:bg-teal-400 transition-all duration-300 group-hover:w-full rounded-full" />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Company links */}
-              <div className="flex flex-col items-center md:items-start text-center md:text-left">
-                <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs uppercase tracking-[0.15em] mb-5 sm:mb-6">
-                  Company
-                </h4>
-                <ul className="space-y-4">
-                  {companyLinks.map((link) => (
-                    <li key={link.name}>
-                      <Link
-                        href={link.href}
-                        className="relative text-slate-500 dark:text-slate-400 hover:text-[#1D9E75] dark:hover:text-teal-400 font-medium text-sm sm:text-[15px] transition-colors duration-300 group inline-block"
-                      >
-                        {link.name}
-                        <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-[#1D9E75] dark:bg-teal-400 transition-all duration-300 group-hover:w-full rounded-full" />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* Newsletter block — Spans 4/12 width on desktop, full width on tablet/mobile */}
-            <div className="md:col-span-2 lg:col-span-4 flex flex-col items-center md:items-start text-center md:text-left">
-              <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs uppercase tracking-[0.15em] mb-5 sm:mb-6">
+            {/* Newsletter block — Spans 1/3 width, perfectly centered on desktop, tablet, and mobile */}
+            <div className="flex flex-col items-center text-center space-y-5 md:max-w-xs lg:max-w-sm mx-auto w-full">
+              <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs uppercase tracking-[0.15em] mb-1">
                 Stay Updated
               </h4>
-              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-5 max-w-[320px]">
+              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed max-w-[280px]">
                 Join our mailing list to receive the latest updates, templates, and travel guides.
               </p>
               <div className="relative flex items-center w-full max-w-sm">
@@ -144,6 +100,51 @@ export function Footer() {
                 <button className="absolute right-1.5 bg-[#1D9E75] hover:bg-[#15805e] text-white text-xs font-bold px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md hover:shadow-[#1D9E75]/20">
                   Join
                 </button>
+              </div>
+            </div>
+
+            {/* Links block — Spans 1/3 width, Product & Company perfectly side-by-side, aligned to the right on larger screens */}
+            <div className="flex justify-center md:justify-end w-full">
+              <div className="grid grid-cols-2 gap-8 sm:gap-12 w-full max-w-[280px] sm:max-w-xs md:max-w-none">
+                {/* Product links */}
+                <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                  <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs uppercase tracking-[0.15em] mb-5 sm:mb-6">
+                    Product
+                  </h4>
+                  <ul className="space-y-4">
+                    {productLinks.map((link) => (
+                      <li key={link.name}>
+                        <Link
+                          href={link.href}
+                          className="relative text-slate-500 dark:text-slate-400 hover:text-[#1D9E75] dark:hover:text-teal-400 font-medium text-sm sm:text-[15px] transition-colors duration-300 group inline-block"
+                        >
+                          {link.name}
+                          <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-[#1D9E75] dark:bg-teal-400 transition-all duration-300 group-hover:w-full rounded-full" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Company links */}
+                <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                  <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs uppercase tracking-[0.15em] mb-5 sm:mb-6">
+                    Company
+                  </h4>
+                  <ul className="space-y-4">
+                    {companyLinks.map((link) => (
+                      <li key={link.name}>
+                        <Link
+                          href={link.href}
+                          className="relative text-slate-500 dark:text-slate-400 hover:text-[#1D9E75] dark:hover:text-teal-400 font-medium text-sm sm:text-[15px] transition-colors duration-300 group inline-block"
+                        >
+                          {link.name}
+                          <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-[#1D9E75] dark:bg-teal-400 transition-all duration-300 group-hover:w-full rounded-full" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
 

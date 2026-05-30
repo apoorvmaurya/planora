@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { AddExpenseModal } from "@/components/shared/AddExpenseModal"
 import { ErrorState } from "@/components/shared/ErrorState"
 import { calculateRawSplits, calculateSimplifiedSplits, Expense, Settlement } from "@/lib/utils/splitCalculator"
+import { syncOfflineOps, offlineDB } from "@/lib/supabase/offlineSync"
 
 export default function ExpensesPage() {
   const params = useParams()
@@ -58,37 +59,74 @@ export default function ExpensesPage() {
 
   const fetchData = async () => {
     setIsLoading(true)
-    
-    // Fetch plan
-    const { data: pData } = await supabase.from('plans').select('*').eq('id', planId).single()
-    setPlan(pData)
+    try {
+      // Fetch plan
+      const { data: pData, error: pErr } = await supabase.from('plans').select('*').eq('id', planId).single()
+      if (pErr) throw pErr
+      setPlan(pData)
+      await offlineDB.plans.put({ id: planId, data: pData })
 
-    // Fetch members
-    if (pData) {
+      // Fetch members
       if (pData.group_id) {
         const { data: mData } = await supabase.from('group_members').select('user:profiles(*)').eq('group_id', pData.group_id)
         setMembers(mData || [])
-      } else {
-        // Solo plan - use current user as sole member
-        if (profile) {
+      } else if (profile) {
+        setMembers([{ user: profile }])
+      }
+
+      // Fetch expenses
+      const res = await fetch(`/api/plans/${planId}/expenses`)
+      const data = await res.json()
+      if (res.ok) {
+        setExpenses(data.expenses)
+        await offlineDB.expenses.put({ id: planId, planId, data: data.expenses })
+      }
+    } catch (err) {
+      console.warn("Offline or network failed in expenses page, loading from cache:", err)
+      const localPlan = await offlineDB.plans.get(planId)
+      if (localPlan) {
+        setPlan(localPlan.data)
+        if (localPlan.data.group_id) {
+          const { data: mData } = await supabase.from('group_members').select('user:profiles(*)').eq('group_id', localPlan.data.group_id)
+          if (mData) setMembers(mData)
+        } else if (profile) {
           setMembers([{ user: profile }])
         }
       }
+      
+      const localExpenses = await offlineDB.expenses.get(planId)
+      if (localExpenses) {
+        setExpenses(localExpenses.data)
+      }
+    } finally {
+      setIsLoading(false)
     }
-
-    // Fetch expenses
-    const res = await fetch(`/api/plans/${planId}/expenses`)
-    const data = await res.json()
-    if (res.ok) {
-      setExpenses(data.expenses)
-    }
-    
-    setIsLoading(false)
   }
 
   useEffect(() => {
     fetchData()
   }, [planId, supabase])
+
+  useEffect(() => {
+    const handleOnline = () => {
+      syncOfflineOps(planId, async () => {
+        const res = await fetch(`/api/plans/${planId}/expenses`)
+        const data = await res.json()
+        if (res.ok) {
+          setExpenses(data.expenses)
+          await offlineDB.expenses.put({ id: planId, planId, data: data.expenses })
+        }
+      })
+    }
+
+    window.addEventListener('online', handleOnline)
+    if (navigator.onLine) {
+      handleOnline()
+    }
+    return () => {
+      window.removeEventListener('online', handleOnline)
+    }
+  }, [planId])
 
   useEffect(() => {
     if (members.length > 0 && expenses.length >= 0) {
@@ -153,7 +191,7 @@ export default function ExpensesPage() {
 
       <div className="hidden print:block mb-8">
         <h1 className="text-3xl font-bold text-slate-900">{plan.title} - Expense Report</h1>
-        <p className="text-slate-500">Generated on {new Date().toLocaleDateString()}</p>
+        <p className="text-slate-500" suppressHydrationWarning>Generated on {new Date().toLocaleDateString()}</p>
       </div>
 
       {/* Summary Cards */}
@@ -223,7 +261,7 @@ export default function ExpensesPage() {
                           <span>•</span>
                           <span className="capitalize">{exp.split_type} split</span>
                           <span className="hidden sm:inline">•</span>
-                          <span className="hidden sm:inline">{new Date(exp.created_at).toLocaleDateString()}</span>
+                          <span className="hidden sm:inline" suppressHydrationWarning>{new Date(exp.created_at).toLocaleDateString()}</span>
                         </div>
                       </div>
                     </div>

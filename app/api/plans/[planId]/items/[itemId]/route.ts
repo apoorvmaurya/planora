@@ -54,3 +54,28 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ planId
 
   return NextResponse.json({ success: true, item: updatedItem })
 }
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ planId: string, itemId: string }> }
+) {
+  const { planId, itemId } = await params
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  const { data: item } = await supabase.from('itinerary_items').select('*').eq('id', itemId).single()
+  if (!item || item.plan_id !== planId) return NextResponse.json({ error: "Item not found" }, { status: 404 })
+
+  const { error } = await supabase
+    .from('itinerary_items')
+    .delete()
+    .eq('id', itemId)
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  return NextResponse.json({ success: true })
+}

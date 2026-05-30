@@ -177,8 +177,26 @@
 
 /* ── Smooth Premium Theme Switching Transition ── */
 .theme-transition,
-.theme-transition * {
-  transition: background-color 0.5s ease-in-out, border-color 0.5s ease-in-out, color 0.5s ease-in-out, fill 0.5s ease-in-out, stroke 0.5s ease-in-out, box-shadow 0.5s ease-in-out !important;
+.theme-transition .premium-page-root,
+.theme-transition .premium-page-wrapper,
+.theme-transition .premium-card,
+.theme-transition header,
+.theme-transition footer,
+.theme-transition aside,
+.theme-transition nav,
+.theme-transition main,
+.theme-transition div[class*="bg-slate-"],
+.theme-transition div[class*="bg-white"],
+.theme-transition div[class*="bg-card"],
+.theme-transition div[class*="border-slate-"],
+.theme-transition div[class*="border-border"],
+.theme-transition p,
+.theme-transition h1,
+.theme-transition h2,
+.theme-transition h3,
+.theme-transition h4,
+.theme-transition span:not([class*="bg-"]) {
+  transition: background-color 0.5s ease-in-out, border-color 0.5s ease-in-out, color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
 }
 
 /* ── Premium Shared Page Styles ── */

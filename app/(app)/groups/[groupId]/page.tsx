@@ -117,7 +117,7 @@ export default function GroupDetailPage() {
                       </div>
                       <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1 mb-3 transition-colors duration-500">{plan.description}</p>
                       <div className="flex items-center text-xs font-semibold text-slate-400 dark:text-slate-500 gap-4 transition-colors duration-500">
-                        <span className="flex items-center"><Calendar className="w-3 h-3 mr-1" /> {new Date(plan.start_date || plan.created_at).toLocaleDateString()}</span>
+                        <span className="flex items-center" suppressHydrationWarning><Calendar className="w-3 h-3 mr-1" /> {new Date(plan.start_date || plan.created_at).toLocaleDateString()}</span>
                       </div>
                     </div>
                     </motion.div>

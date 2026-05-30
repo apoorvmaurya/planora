@@ -205,6 +205,19 @@ export default function PlanDetailPage() {
     }
   }, [planId, supabase, profile])
 
+  const refreshItinerary = async () => {
+    try {
+      const { data } = await supabase.from('itinerary_items').select('*').eq('plan_id', planId).order('day_number').order('sort_order')
+      if (data) {
+        setItems(data)
+        await offlineDB.items.put({ id: planId, planId, data })
+      }
+    } catch {
+      const localItems = await offlineDB.items.get(planId)
+      if (localItems) setItems(localItems.data)
+    }
+  }
+
   const handleVote = async (itemId: string, vote: string) => {
     if (!profile?.id) return
 
@@ -342,6 +355,12 @@ export default function PlanDetailPage() {
       offlineDB.items.put({ id: planId, planId, data: next })
       return next
     })
+
+    if (!navigator.onLine) {
+      await queueOfflineOp(planId, 'DELETE_ITEM', { item_id: itemId })
+      toast.info("Offline: Deletion queued for sync")
+      return
+    }
 
     try {
       const { error } = await supabase.from('itinerary_items').delete().eq('id', itemId)
@@ -526,6 +545,7 @@ export default function PlanDetailPage() {
                       currentUserId={profile?.id} 
                       isAdmin={isAdmin} 
                       onVote={handleVote} 
+                      onUpdate={refreshItinerary}
                     />
                   ))}
                 </div>
@@ -642,11 +662,49 @@ export default function PlanDetailPage() {
                                 onClick={async () => {
                                   const key = `${profile.id}_${idx}`
                                   setTransitAdding(prev => ({ ...prev, [key]: true }))
+                                  const payload = { title: opt.title, details: opt.details, cost: opt.cost, type: opt.type, day_number: 1 }
+                                  
+                                  if (!navigator.onLine) {
+                                    try {
+                                      const tempItem = {
+                                        id: 'temp-item-' + Date.now(),
+                                        plan_id: planId,
+                                        user_id: profile?.id,
+                                        day_number: 1,
+                                        time_of_day: 'Morning',
+                                        title: `🚀 ${opt.title}`,
+                                        description: opt.details || "",
+                                        location_name: opt.title,
+                                        category: 'transit',
+                                        duration_minutes: opt.type === 'flight' ? 180 : opt.type === 'train' ? 120 : 60,
+                                        estimated_cost: parseFloat(opt.cost?.replace(/[^0-9.]/g, "")) || 0,
+                                        sort_order: 99,
+                                        lat: 0,
+                                        lng: 0
+                                      }
+                                      
+                                      setItems(prev => {
+                                        const next = [...prev, tempItem].sort((a, b) => a.day_number - b.day_number || a.sort_order - b.sort_order)
+                                        offlineDB.items.put({ id: planId, planId, data: next })
+                                        return next
+                                      })
+                                      
+                                      await queueOfflineOp(planId, 'CREATE_ITEM', payload)
+                                      toast.info("Offline: Transit added optimistically and queued for sync")
+                                    } catch (err) {
+                                      console.error("Offline transit creation failed:", err)
+                                      toast.error("Failed to add transit offline")
+                                    } finally {
+                                      setTransitAdding(prev => ({ ...prev, [key]: false }))
+                                    }
+                                    return
+                                  }
+
                                   try {
                                     const res = await fetch(`/api/plans/${planId}/transit/add`, {
                                       method: 'POST',
                                       headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify({ ...opt, day_number: 1 })
+                                      body: JSON.stringify(payload)
                                     })
                                     const data = await res.json()
                                     if (res.ok && data.item) {
@@ -788,7 +846,7 @@ export default function PlanDetailPage() {
             <div className="space-y-5">
               <div>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-1 flex items-center gap-2"><Calendar className="w-4 h-4" /> Dates</p>
-                <p className="font-bold text-slate-900 dark:text-slate-100">{new Date(plan.start_date).toLocaleDateString()} - {new Date(plan.end_date).toLocaleDateString()}</p>
+                <p className="font-bold text-slate-900 dark:text-slate-100" suppressHydrationWarning>{new Date(plan.start_date).toLocaleDateString()} - {new Date(plan.end_date).toLocaleDateString()}</p>
               </div>
               <div>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-1 flex items-center gap-2"><DollarSign className="w-4 h-4" /> Total Budget</p>

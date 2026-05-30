@@ -2,6 +2,7 @@ import { streamObject } from 'ai'
 import { groq } from '@ai-sdk/groq'
 import { createClient } from '@/lib/supabase/server'
 import { buildPromptContext, itineraryResponseSchema } from '@/lib/ai/prompts'
+import { forwardGeocode } from '@/lib/locationiq/geocode'
 
 import { z } from 'zod'
 
@@ -15,6 +16,7 @@ const generateSchema = z.object({
   budget: z.number().positive(),
   currency: z.string().length(3),
   groupId: z.string(),
+  saveToDb: z.boolean().optional(),
   preferences: z.object({
     tripType: z.string(),
     pace: z.string(),
@@ -32,7 +34,7 @@ export async function POST(req: Request) {
   const body = await req.json()
   const parsed = generateSchema.safeParse(body)
   if (!parsed.success) return new Response(JSON.stringify({ error: "Invalid input", details: parsed.error }), { status: 400 })
-  const { planId, destination, startDate, endDate, budget, currency, groupId, preferences } = parsed.data
+  const { planId, destination, startDate, endDate, budget, currency, groupId, preferences, saveToDb } = parsed.data
 
   // Verify plan exists and belongs to user
   const { data: plan, error: planError } = await supabase
@@ -81,6 +83,11 @@ export async function POST(req: Request) {
     },
     async onFinish({ object }) {
       try {
+        if (saveToDb === false) {
+          // Compare & merge drawer handles saving manually on approval
+          return
+        }
+
         if (object?.title) {
           await supabase.from('plans').update({ title: object.title }).eq('id', planId)
         }
@@ -95,6 +102,19 @@ export async function POST(req: Request) {
             let sortOrder = 0
             for (const item of day.itinerary_items || []) {
               if (!item) continue
+              
+              let lat = item.lat
+              let lng = item.lng
+              try {
+                const coords = await forwardGeocode(item.location_name, destination.name)
+                if (coords) {
+                  lat = coords.lat
+                  lng = coords.lng
+                }
+              } catch (e) {
+                console.error("Geocoding failed for generated item in route:", e)
+              }
+
               itemsToInsert.push({
                 plan_id: planId,
                 day_number: day.day_number,
@@ -102,8 +122,8 @@ export async function POST(req: Request) {
                 title: item.title,
                 description: item.description,
                 location_name: item.location_name,
-                lat: item.lat || 0,
-                lng: item.lng || 0,
+                lat: lat || 0,
+                lng: lng || 0,
                 category: item.category,
                 duration_minutes: item.duration_minutes,
                 estimated_cost: item.estimated_cost,

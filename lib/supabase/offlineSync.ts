@@ -3,7 +3,7 @@ import Dexie, { type Table } from 'dexie';
 export interface QueuedOp {
   id?: number;
   planId: string;
-  action: 'VOTE';
+  action: 'VOTE' | 'CREATE_ITEM' | 'EDIT_ITEM' | 'DELETE_ITEM' | 'ADD_EXPENSE';
   payload: any;
   timestamp: number;
 }
@@ -25,18 +25,26 @@ export interface VotesCache {
   data: any[];
 }
 
+export interface ExpensesCache {
+  id: string;
+  planId: string;
+  data: any[];
+}
+
 class PlanoraOfflineDB extends Dexie {
   plans!: Table<PlanCache, string>;
   items!: Table<ItemsCache, string>;
   votes!: Table<VotesCache, string>;
+  expenses!: Table<ExpensesCache, string>;
   syncQueue!: Table<QueuedOp, number>;
 
   constructor() {
     super('PlanoraOfflineDB');
-    this.version(1).stores({
+    this.version(2).stores({
       plans: 'id',
       items: 'id, planId',
       votes: 'id, planId',
+      expenses: 'id, planId',
       syncQueue: '++id, planId',
     });
   }
@@ -75,7 +83,35 @@ export async function syncOfflineOps(planId: string, onSyncComplete: () => Promi
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ item_id, vote })
         });
-        if (!res.ok) throw new Error("Sync request failed");
+        if (!res.ok) throw new Error("Sync VOTE request failed");
+      } else if (op.action === 'CREATE_ITEM') {
+        const res = await fetch(`/api/plans/${planId}/transit/add`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(op.payload)
+        });
+        if (!res.ok) throw new Error("Sync CREATE_ITEM request failed");
+      } else if (op.action === 'EDIT_ITEM') {
+        const { item_id, editData } = op.payload;
+        const res = await fetch(`/api/plans/${planId}/items/${item_id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(editData)
+        });
+        if (!res.ok) throw new Error("Sync EDIT_ITEM request failed");
+      } else if (op.action === 'DELETE_ITEM') {
+        const { item_id } = op.payload;
+        const res = await fetch(`/api/plans/${planId}/items/${item_id}`, {
+          method: 'DELETE'
+        });
+        if (!res.ok) throw new Error("Sync DELETE_ITEM request failed");
+      } else if (op.action === 'ADD_EXPENSE') {
+        const res = await fetch(`/api/plans/${planId}/expenses`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(op.payload)
+        });
+        if (!res.ok) throw new Error("Sync ADD_EXPENSE request failed");
       }
       
       // Delete from local queue after successful sync

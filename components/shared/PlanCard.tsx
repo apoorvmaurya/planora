@@ -130,11 +130,11 @@ export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps)
 
       <div className="p-5 flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-100 dark:border-slate-800/80">
-          <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 font-medium">
+          <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 font-medium" suppressHydrationWarning>
             <CalendarDays className="w-4 h-4 text-slate-400 dark:text-slate-500" />
             {formatDate(plan.start_date)} - {formatDate(plan.end_date)}
           </div>
-          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md" suppressHydrationWarning>
             {getCountdown(plan.start_date, plan.end_date)}
           </span>
         </div>

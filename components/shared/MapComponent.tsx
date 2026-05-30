@@ -92,17 +92,37 @@ export function MapComponent({ items, planDestination }: MapComponentProps) {
  
     // Group items by day to draw paths
     const itemsByDay: Record<number, any[]> = {}
+    const coordsMap = new Map<string, number>()
     
     geocodedItems.forEach((item) => {
       const day = item.day_number || 1
+      
+      // Coordinate collision signature key
+      const coordKey = `${item.lat.toFixed(5)},${item.lng.toFixed(5)}`
+      const count = coordsMap.get(coordKey) || 0
+      coordsMap.set(coordKey, count + 1)
+
+      let displayLat = item.lat
+      let displayLng = item.lng
+
+      // Shift overlapping markers slightly to keep them individually readable
+      if (count > 0) {
+        const angle = (count * 2 * Math.PI) / 8
+        const radius = 0.00018 // ~20 meters dispersion radius
+        displayLat += Math.sin(angle) * radius
+        displayLng += Math.cos(angle) * radius
+      }
+
+      // Add to group for path tracing (using shifted coordinates for visual alignment)
+      const adjustedItem = { ...item, displayLat, displayLng }
       if (!itemsByDay[day]) itemsByDay[day] = []
-      itemsByDay[day].push(item)
- 
+      itemsByDay[day].push(adjustedItem)
+
       // Add custom numbered marker
       const markerColor = dayColors[(day - 1) % dayColors.length]
       
       const customMarkerHtml = `
-        <div class="relative flex items-center justify-center w-8 h-8 rounded-full border-2 border-white shadow-md text-white font-black text-xs" style="background-color: ${markerColor};">
+        <div class="relative flex items-center justify-center w-8 h-8 rounded-full border-2 border-white shadow-md text-white font-black text-xs cursor-pointer hover:scale-110 transition-transform duration-200" style="background-color: ${markerColor};">
           ${day}.${item.time_of_day.substring(0, 1)}
         </div>
       `
@@ -113,26 +133,34 @@ export function MapComponent({ items, planDestination }: MapComponentProps) {
         iconSize: [32, 32],
         iconAnchor: [16, 16],
       })
- 
-      const marker = L.marker([item.lat, item.lng], { icon: customIcon })
+
+      const marker = L.marker([displayLat, displayLng], { icon: customIcon })
         .bindPopup(`
-          <div class="p-2 space-y-1 max-w-[200px]">
-            <div class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+          <div class="p-2.5 space-y-1.5 max-w-[220px]">
+            <div class="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
               <span class="px-2 py-0.5 rounded-full text-white" style="background-color: ${markerColor}">Day ${day}</span>
               <span>${item.time_of_day}</span>
             </div>
-            <h4 class="font-extrabold text-sm text-slate-900 mt-1">${item.title}</h4>
-            <p class="text-xs text-slate-600 line-clamp-2">${item.description || ""}</p>
-            <div class="flex items-center gap-1 text-[10px] font-semibold text-slate-400 pt-1">
+            <h4 class="font-extrabold text-sm text-slate-900 dark:text-white mt-1">${item.title}</h4>
+            <p class="text-xs text-slate-600 dark:text-slate-350 line-clamp-2">${item.description || ""}</p>
+            <div class="flex items-center justify-between gap-1 text-[10px] font-semibold text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800">
               <span class="inline-block truncate">📍 ${item.location_name}</span>
+              <a 
+                href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location_name)}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-indigo-500 hover:text-indigo-600 font-extrabold ml-2 flex items-center gap-0.5 shrink-0"
+              >
+                Directions ↗
+              </a>
             </div>
           </div>
         `, { closeButton: false })
         .addTo(layerGroup)
- 
-      bounds.extend([item.lat, item.lng])
+
+      bounds.extend([displayLat, displayLng])
     })
- 
+
     // Draw connecting paths (Polylines) for each day
     Object.entries(itemsByDay).forEach(([dayNum, dayItems]) => {
       const day = Number(dayNum)
@@ -140,13 +168,13 @@ export function MapComponent({ items, planDestination }: MapComponentProps) {
       const sortedDayItems = [...dayItems].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
       
       if (sortedDayItems.length > 1) {
-        const polylineCoords = sortedDayItems.map((item) => [item.lat, item.lng] as [number, number])
+        const polylineCoords = sortedDayItems.map((item) => [item.displayLat, item.displayLng] as [number, number])
         const polylineColor = dayColors[(day - 1) % dayColors.length]
- 
+
         L.polyline(polylineCoords, {
           color: polylineColor,
           weight: 4,
-          opacity: 0.8,
+          opacity: 0.85,
           dashArray: "8, 8",
           lineJoin: "round",
         }).addTo(layerGroup)

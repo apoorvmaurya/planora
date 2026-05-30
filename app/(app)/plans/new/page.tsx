@@ -19,8 +19,6 @@ import { itineraryResponseSchema } from "@/lib/ai/prompts"
 export default function NewPlanPage() {
   const router = useRouter()
   const supabase = createClient()
-  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
-  
   const [step, setStep] = useState(1)
   const [groups, setGroups] = useState<any[]>([])
   
@@ -32,7 +30,17 @@ export default function NewPlanPage() {
   const [budget, setBudget] = useState("")
   const [currency, setCurrency] = useState("USD")
   
-  const [groupId, setGroupId] = useState(searchParams.get('groupId') || "")
+  const [groupId, setGroupId] = useState("")
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search)
+      const urlGroupId = params.get("groupId")
+      if (urlGroupId) {
+        setGroupId(urlGroupId)
+      }
+    }
+  }, [])
   
   const [tripType, setTripType] = useState("leisure")
   const [pace, setPace] = useState("moderate")

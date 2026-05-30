@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
+import { queueOfflineOp, offlineDB } from "@/lib/supabase/offlineSync"
 
-export const ItineraryItemCard = memo(function ItineraryItemCard({ item, votes, currentUserId, isAdmin, onVote }: any) {
+export const ItineraryItemCard = memo(function ItineraryItemCard({ item, votes, currentUserId, isAdmin, onVote, onUpdate }: any) {
   const upvotes = votes.filter((v: any) => v.vote === 'up')
   const downvotes = votes.filter((v: any) => v.vote === 'down')
   const userVote = votes.find((v: any) => v.user_id === currentUserId)?.vote
@@ -72,6 +73,26 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({ item, votes, 
   }
 
   const handleSaveEdit = async () => {
+    if (!navigator.onLine) {
+      try {
+        const cached = await offlineDB.items.get(item.plan_id)
+        if (cached) {
+          const updatedList = cached.data.map((i: any) => 
+            i.id === item.id ? { ...i, ...editData } : i
+          )
+          await offlineDB.items.put({ id: item.plan_id, planId: item.plan_id, data: updatedList })
+        }
+        await queueOfflineOp(item.plan_id, 'EDIT_ITEM', { item_id: item.id, editData })
+        toast.info("Offline: Changes queued for sync")
+        setIsEditing(false)
+        onUpdate?.()
+      } catch (err) {
+        console.error("Offline edit save failed:", err)
+        toast.error("Error updating item offline")
+      }
+      return
+    }
+
     try {
       const res = await fetch(`/api/plans/${item.plan_id}/items/${item.id}`, {
         method: 'PATCH',
@@ -79,8 +100,23 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({ item, votes, 
         body: JSON.stringify(editData)
       })
       if (!res.ok) throw new Error("Failed to update item")
+      
+      // Update local cache
+      try {
+        const cached = await offlineDB.items.get(item.plan_id)
+        if (cached) {
+          const updatedList = cached.data.map((i: any) => 
+            i.id === item.id ? { ...i, ...editData } : i
+          )
+          await offlineDB.items.put({ id: item.plan_id, planId: item.plan_id, data: updatedList })
+        }
+      } catch (e) {
+        console.error("Failed to update items cache:", e)
+      }
+
       toast.success("Item updated successfully!")
       setIsEditing(false)
+      onUpdate?.()
     } catch (err) {
       toast.error("Error updating item")
     }
@@ -168,7 +204,7 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({ item, votes, 
                   <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
                     {item.history.map((hist: any, idx: number) => (
                       <div key={idx} className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800 relative">
-                        <p className="text-xs text-slate-400 dark:text-slate-500 mb-2">Saved on {new Date(hist.saved_at).toLocaleString()}</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mb-2" suppressHydrationWarning>Saved on {new Date(hist.saved_at).toLocaleString()}</p>
                         <h4 className="font-bold text-sm text-slate-900 dark:text-white">{hist.title.replace('[Tie-Breaker]', '')}</h4>
                         <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 mt-1 mb-3">{hist.description}</p>
                         <Button 
@@ -264,7 +300,15 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({ item, votes, 
         
         <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100/50 dark:border-slate-800/60">
           <div className="flex flex-wrap items-center text-xs font-semibold text-slate-500 dark:text-slate-400 gap-4">
-            <span className="flex items-center bg-white dark:bg-slate-900 px-2 py-1 rounded-md shadow-sm border border-slate-100 dark:border-slate-800/80"><MapPin className="w-3 h-3 mr-1.5 text-rose-400" />{item.location_name}</span>
+            <a 
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location_name)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center bg-white dark:bg-slate-900 px-2 py-1 rounded-md shadow-sm border border-slate-100 dark:border-slate-800/80 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            >
+              <MapPin className="w-3 h-3 mr-1.5 text-rose-400" />
+              {item.location_name}
+            </a>
             <span className="bg-white dark:bg-slate-900 px-2 py-1 rounded-md shadow-sm border border-slate-100 dark:border-slate-800/80">{item.duration_minutes}m</span>
             <span className="bg-white dark:bg-slate-900 px-2 py-1 rounded-md shadow-sm border border-slate-100 dark:border-slate-800/80 font-mono">{item.estimated_cost}</span>
           </div>

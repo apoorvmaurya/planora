@@ -16,6 +16,11 @@ type PlansGridProps = {
 export function PlansGrid({ plans }: PlansGridProps) {
   const [activeFilter, setActiveFilter] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
+  const [isMounted, setIsMounted] = useState(false)
+
+  React.useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const filters = ["All", "Upcoming", "In Progress", "Completed", "Drafts"]
 
@@ -28,6 +33,11 @@ export function PlansGrid({ plans }: PlansGridProps) {
     if (!matchesSearch) return false
 
     // 2. Tab filter
+    if (activeFilter === "Drafts") return plan.status === "draft"
+    if (activeFilter === "Completed" && plan.status === "completed") return true
+
+    if (!isMounted) return true
+
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const start = new Date(plan.start_date)
@@ -35,8 +45,7 @@ export function PlansGrid({ plans }: PlansGridProps) {
     const end = new Date(plan.end_date)
     end.setHours(0, 0, 0, 0)
 
-    if (activeFilter === "Drafts") return plan.status === "draft"
-    if (activeFilter === "Completed") return plan.status === "completed" || today > end
+    if (activeFilter === "Completed") return today > end
     if (activeFilter === "In Progress") return today >= start && today <= end
     if (activeFilter === "Upcoming") return plan.status === "confirmed" && today < start
     

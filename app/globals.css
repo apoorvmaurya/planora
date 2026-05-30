@@ -222,37 +222,37 @@
 
 /* ── Glassmorphic Consolidated Navbars ── */
 .glass-nav-scrolled {
-  background-color: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(226, 232, 240, 0.4);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(255, 255, 255, 0.4) inset;
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
-  backdrop-filter: blur(28px) saturate(220%);
-  -webkit-backdrop-filter: blur(28px) saturate(220%);
+  --nav-backdrop-filter: blur(28px) saturate(220%);
+  background-color: rgba(255, 255, 255, 0.55) !important;
+  border: 1px solid rgba(226, 232, 240, 0.4) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(255, 255, 255, 0.4) inset !important;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  -webkit-backdrop-filter: var(--nav-backdrop-filter) !important;
+  backdrop-filter: var(--nav-backdrop-filter) !important;
 }
 
 .dark .glass-nav-scrolled {
-  background-color: rgba(2, 6, 23, 0.5);
-  border-color: rgba(30, 41, 59, 0.6);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+  --nav-backdrop-filter: blur(28px) saturate(220%);
+  background-color: rgba(15, 23, 42, 0.65) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.08) inset !important;
 }
 
 .glass-nav-unscrolled {
-  background-color: rgba(255, 255, 255, 0.35);
-  border: 1px solid rgba(226, 232, 240, 0.2);
-  box-shadow: 0 4px 20px -6px rgba(0, 0, 0, 0.02), 0 0 0 1px rgba(255, 255, 255, 0.25) inset;
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 500ms;
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  --nav-backdrop-filter-unscrolled: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.35) !important;
+  border: 1px solid rgba(226, 232, 240, 0.2) !important;
+  box-shadow: 0 4px 20px -6px rgba(0, 0, 0, 0.02), 0 0 0 1px rgba(255, 255, 255, 0.25) inset !important;
+  transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  -webkit-backdrop-filter: var(--nav-backdrop-filter-unscrolled) !important;
+  backdrop-filter: var(--nav-backdrop-filter-unscrolled) !important;
 }
 
 .dark .glass-nav-unscrolled {
-  background-color: rgba(2, 6, 23, 0.3);
-  border-color: rgba(30, 41, 59, 0.3);
-  box-shadow: 0 4px 20px -6px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  --nav-backdrop-filter-unscrolled: blur(16px) saturate(180%);
+  background-color: rgba(15, 23, 42, 0.45) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 4px 20px -6px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
 }
 
 /* ── Refracting Fluid Glass Bubbles ── */
@@ -277,28 +277,30 @@
 }
 
 .glass-bubble {
-  position: absolute;
-  border-radius: 50%;
-  backdrop-filter: blur(15px) saturate(240%) brightness(1.08) contrast(1.2) hue-rotate(5deg);
-  -webkit-backdrop-filter: blur(15px) saturate(240%) brightness(1.08) contrast(1.2) hue-rotate(5deg);
-  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.03) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  --bubble-backdrop-filter: blur(15px) saturate(240%) brightness(1.08) contrast(1.2) hue-rotate(5deg);
+  position: absolute !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.03) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
   box-shadow: 
     inset 0 6px 14px rgba(255,255,255,0.45),
     inset 0 -6px 14px rgba(0,0,0,0.03),
-    0 10px 40px rgba(0,0,0,0.05);
-  pointer-events: none;
-  z-index: 0;
-  will-change: transform;
+    0 10px 40px rgba(0,0,0,0.05) !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+  will-change: transform !important;
+  -webkit-backdrop-filter: var(--bubble-backdrop-filter) !important;
+  backdrop-filter: var(--bubble-backdrop-filter) !important;
 }
 
 .dark .glass-bubble {
-  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.01) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  --bubble-backdrop-filter: blur(15px) saturate(240%) brightness(1.08) contrast(1.2) hue-rotate(5deg);
+  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.01) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   box-shadow: 
     inset 0 6px 14px rgba(255,255,255,0.15),
     inset 0 -6px 14px rgba(0,0,0,0.4),
-    0 10px 40px rgba(0,0,0,0.25);
+    0 10px 40px rgba(0,0,0,0.25) !important;
 }
 
 .bubble-anim-1 {

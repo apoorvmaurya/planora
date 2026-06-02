@@ -1,30 +1,24 @@
 import { NextResponse } from "next/server"
-import { Resend } from "resend"
+import { createClient } from "@supabase/supabase-js"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  }
+)
 
 export async function POST(req: Request) {
   try {
-    const { email, inviterName } = await req.json()
+    const { email } = await req.json()
     if (!email) return NextResponse.json({ error: "Email is required" }, { status: 400 })
 
-    const { data, error } = await resend.emails.send({
-      from: "Planora <invites@resend.dev>", 
-      to: [email],
-      subject: `${inviterName} invited you to join Planora!`,
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h1 style="color: #1D9E75;">Planora</h1>
-          <p>Hi there,</p>
-          <p><strong>${inviterName}</strong> has invited you to join Planora, the ultimate collaborative trip planner.</p>
-          <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://planora-plum-beta.vercel.app'}/signup" style="display: inline-block; background-color: #1D9E75; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 16px;">
-            Join Planora
-          </a>
-          <p style="margin-top: 32px; font-size: 12px; color: #666;">
-            If you don&apos;t know ${inviterName}, you can safely ignore this email.
-          </p>
-        </div>
-      `
+    const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
+      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'https://planora-plum-beta.vercel.app'}/auth/callback?next=/onboarding`
     })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
@@ -33,3 +27,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }
+

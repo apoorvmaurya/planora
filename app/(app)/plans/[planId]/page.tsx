@@ -480,7 +480,7 @@ export default function PlanDetailPage() {
       {/* Online Users */}
       {onlineUsers.length > 0 && (
         <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 font-medium">
-          <div className="w-2 h-2 rounded-full bg-[#1D9E75] animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-[#16795A] animate-pulse" />
           <span>Live viewing:</span>
           {onlineUsers.map(u => (
             <span key={u.id} className="text-slate-900 dark:text-slate-100 font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">{u.name}</span>
@@ -493,12 +493,12 @@ export default function PlanDetailPage() {
           <Tabs defaultValue={days[0]?.toString() || "1"} className="w-full">
             <TabsList className="flex flex-wrap h-auto bg-transparent mb-6 gap-2">
               {days.map((dayNum: any) => (
-                <TabsTrigger key={dayNum} value={dayNum.toString()} className="data-[state=active]:bg-[#1D9E75] data-[state=active]:text-white bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full px-6 py-2 transition-all duration-300 cursor-pointer">
+                <TabsTrigger key={dayNum} value={dayNum.toString()} className="data-[state=active]:bg-[#16795A] data-[state=active]:text-white bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full px-6 py-2 transition-all duration-300 cursor-pointer">
                   Day {dayNum}
                 </TabsTrigger>
               ))}
               {days.length > 0 && (
-                <TabsTrigger value="map" className="data-[state=active]:bg-[#1D9E75] data-[state=active]:text-white bg-teal-50/50 dark:bg-teal-950/20 text-[#1D9E75] dark:text-teal-400 rounded-full px-6 py-2 font-bold flex items-center gap-1.5 border border-teal-100 dark:border-teal-900/30 transition-all duration-300 cursor-pointer">
+                <TabsTrigger value="map" className="data-[state=active]:bg-[#16795A] data-[state=active]:text-white bg-teal-50/50 dark:bg-teal-950/20 text-[#16795A] dark:text-teal-400 rounded-full px-6 py-2 font-bold flex items-center gap-1.5 border border-teal-100 dark:border-teal-900/30 transition-all duration-300 cursor-pointer">
                   🗺️ Map View
                 </TabsTrigger>
               )}
@@ -566,7 +566,7 @@ export default function PlanDetailPage() {
                             <Button 
                               onClick={handleSaveCity} 
                               disabled={isSavingCity} 
-                              className="bg-[#1D9E75] hover:bg-[#15805e] h-10 rounded-xl shrink-0 font-bold px-4"
+                              className="bg-[#16795A] hover:bg-[#115E46] h-10 rounded-xl shrink-0 font-bold px-4"
                             >
                               {isSavingCity ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save"}
                             </Button>
@@ -619,7 +619,7 @@ export default function PlanDetailPage() {
                             <div key={idx} className="flex items-start gap-3 bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100/50 dark:border-slate-800/60 w-full min-w-0 overflow-hidden">
                               {opt.type === 'flight' ? <Plane className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" /> : 
                                opt.type === 'train' ? <Train className="w-5 h-5 text-orange-500 mt-0.5 shrink-0" /> : 
-                               <Bus className="w-5 h-5 text-[#1D9E75] mt-0.5 shrink-0" />}
+                               <Bus className="w-5 h-5 text-[#16795A] mt-0.5 shrink-0" />}
                               <div className="flex-1 min-w-0 space-y-1">
                                 <p className="font-bold text-sm text-slate-900 dark:text-slate-100 break-words leading-snug">{opt.title}</p>
                                 <p className="text-xs text-slate-500 dark:text-slate-400 break-words leading-relaxed">{opt.details}</p>
@@ -690,7 +690,7 @@ export default function PlanDetailPage() {
                                   } catch { toast.error('Failed to add') }
                                   finally { setTransitAdding(prev => ({ ...prev, [key]: false })) }
                                 }}
-                                className="shrink-0 text-[#1D9E75] hover:bg-teal-50 dark:hover:bg-teal-950/20 p-1.5 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+                                className="shrink-0 text-[#16795A] hover:bg-teal-50 dark:hover:bg-teal-950/20 p-1.5 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
                                 title="Add to Day 1"
                               >
                                 {transitAdding[`${profile.id}_${idx}`] ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
@@ -713,7 +713,7 @@ export default function PlanDetailPage() {
                         <Button 
                           onClick={handleSaveCity} 
                           disabled={isSavingCity} 
-                          className="bg-[#1D9E75] hover:bg-[#15805e] h-10 rounded-xl font-bold px-4 cursor-pointer"
+                          className="bg-[#16795A] hover:bg-[#115E46] h-10 rounded-xl font-bold px-4 cursor-pointer"
                         >
                           {isSavingCity ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save"}
                         </Button>
@@ -752,7 +752,7 @@ export default function PlanDetailPage() {
               <div className="bg-white dark:bg-slate-900/50 backdrop-blur-md p-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 transition-colors duration-500 flex flex-col w-full min-w-0 overflow-hidden">
                 <div>
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/60 flex items-center justify-center text-[#1D9E75] font-bold">
+                    <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/60 flex items-center justify-center text-[#16795A] font-bold">
                       👥
                     </div>
                     <div>
@@ -786,7 +786,7 @@ export default function PlanDetailPage() {
                             </div>
                           </div>
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0 ${
-                            m.user.city ? 'bg-teal-50 dark:bg-teal-950/20 text-[#1D9E75]' : 'bg-slate-100 dark:bg-slate-800 text-slate-450'
+                            m.user.city ? 'bg-teal-50 dark:bg-teal-950/20 text-[#16795A]' : 'bg-slate-100 dark:bg-slate-800 text-slate-450'
                           }`}>
                             {m.user.city ? 'Ready' : 'Pending'}
                           </span>
@@ -887,7 +887,7 @@ export default function PlanDetailPage() {
                 {plan.status === 'draft' && (
                   <Button
                     variant="outline"
-                    className="w-full justify-start rounded-xl border-teal-200 dark:border-teal-900/50 text-[#1D9E75] hover:bg-teal-50 dark:hover:bg-teal-950/20 hover:text-[#15805e]"
+                    className="w-full justify-start rounded-xl border-teal-200 dark:border-teal-900/50 text-[#16795A] hover:bg-teal-50 dark:hover:bg-teal-950/20 hover:text-[#115E46]"
                     onClick={async () => {
                       const res = await fetch(`/api/plans/${planId}/confirm`, { method: 'POST' })
                       if (res.ok) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); toast.success('Plan confirmed!'); setPlan((p: any) => ({ ...p, status: 'confirmed' })) }
@@ -1013,7 +1013,7 @@ export default function PlanDetailPage() {
         <Sheet open={adminSheetOpen} onOpenChange={setAdminSheetOpen}>
           <SheetContent className="sm:max-w-md md:max-w-xl w-full p-0 flex flex-col bg-white dark:bg-slate-900 border-l border-slate-100 dark:border-slate-800">
             <SheetHeader className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex flex-row items-center gap-3 space-y-0">
-              <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/20 flex items-center justify-center text-[#1D9E75]">
+              <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/20 flex items-center justify-center text-[#16795A]">
                 <Shield className="w-5 h-5" />
               </div>
               <div>
@@ -1029,7 +1029,7 @@ export default function PlanDetailPage() {
                   <p className="text-xs text-slate-400 dark:text-slate-400 uppercase font-bold tracking-wider mb-1">Current Status</p>
                   <p className="font-bold text-slate-800 dark:text-slate-200 capitalize">{plan.status}</p>
                 </div>
-                <span className="bg-[#1D9E75]/10 text-[#1D9E75] text-xs font-extrabold px-3 py-1.5 rounded-full uppercase tracking-wider">{plan.status}</span>
+                <span className="bg-[#16795A]/10 text-[#16795A] text-xs font-extrabold px-3 py-1.5 rounded-full uppercase tracking-wider">{plan.status}</span>
               </div>
 
               {/* Quick Actions */}
@@ -1039,7 +1039,7 @@ export default function PlanDetailPage() {
                 {plan.status === 'draft' && (
                   <Button
                     variant="outline"
-                    className="w-full justify-start rounded-xl h-12 border-teal-200 dark:border-teal-900/50 text-[#1D9E75] hover:bg-teal-50 dark:hover:bg-teal-950/20"
+                    className="w-full justify-start rounded-xl h-12 border-teal-200 dark:border-teal-900/50 text-[#16795A] hover:bg-teal-50 dark:hover:bg-teal-950/20"
                     onClick={async () => {
                       setAdminSheetOpen(false)
                       const res = await fetch(`/api/plans/${planId}/confirm`, { method: 'POST' })
@@ -1144,7 +1144,7 @@ export default function PlanDetailPage() {
             <div className="p-6 border-t border-slate-100 dark:border-slate-800 mt-auto bg-slate-50/50 dark:bg-slate-900/50">
               <Button 
                 onClick={() => setAdminSheetOpen(false)}
-                className="w-full bg-[#1D9E75] hover:bg-[#15805e]"
+                className="w-full bg-[#16795A] hover:bg-[#115E46]"
               >
                 Close Panel
               </Button>

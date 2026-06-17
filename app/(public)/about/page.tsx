@@ -69,7 +69,7 @@ export default function AboutPage() {
             Back to Home
           </Link>
           <div className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Plan<span className="text-[#1D9E75]">ora</span>
+            Plan<span className="text-[#16795A]">ora</span>
           </div>
         </motion.div>
       </motion.nav>
@@ -81,7 +81,7 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-[#1D9E75]/10 border border-[#1D9E75]/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider text-[#1D9E75] uppercase"
+            className="inline-flex items-center gap-2 bg-[#16795A]/10 border border-[#16795A]/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider text-[#16795A] uppercase"
           >
             <Compass className="w-3.5 h-3.5" />
             Our Mission
@@ -92,7 +92,7 @@ export default function AboutPage() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15]"
           >
-            We believe group trips should <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1D9E75] to-emerald-500">actually happen.</span>
+            We believe group trips should <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#16795A] to-emerald-500">actually happen.</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -128,7 +128,7 @@ export default function AboutPage() {
             className="bg-white/80 dark:bg-slate-900/60 backdrop-blur-xl border border-white dark:border-slate-800/85 p-8 rounded-3xl shadow-xl space-y-6"
           >
             <div className="flex items-start gap-4">
-              <div className="bg-teal-100 dark:bg-teal-950/45 p-3 rounded-2xl text-[#1D9E75]">
+              <div className="bg-teal-100 dark:bg-teal-950/45 p-3 rounded-2xl text-[#16795A]">
                 <MapPin className="w-6 h-6" />
               </div>
               <div>
@@ -137,7 +137,7 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <div className="bg-teal-100 dark:bg-teal-950/45 p-3 rounded-2xl text-[#1D9E75]">
+              <div className="bg-teal-100 dark:bg-teal-950/45 p-3 rounded-2xl text-[#16795A]">
                 <Users className="w-6 h-6" />
               </div>
               <div>
@@ -167,7 +167,7 @@ export default function AboutPage() {
                   transition={{ delay: i * 0.05 }}
                   className="bg-white/40 dark:bg-slate-900/30 backdrop-blur-md border border-slate-100 dark:border-slate-900/80 p-8 rounded-3xl hover:shadow-lg transition-all duration-300 group"
                 >
-                  <div className="bg-[#1D9E75]/10 group-hover:bg-[#1D9E75] w-12 h-12 rounded-xl flex items-center justify-center text-[#1D9E75] group-hover:text-white transition-all duration-300 mb-6">
+                  <div className="bg-[#16795A]/10 group-hover:bg-[#16795A] w-12 h-12 rounded-xl flex items-center justify-center text-[#16795A] group-hover:text-white transition-all duration-300 mb-6">
                     <Icon className="w-5 h-5" />
                   </div>
                   <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{value.title}</h3>

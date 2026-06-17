@@ -36,7 +36,7 @@ export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps)
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'draft': return 'bg-slate-100 text-slate-600'
-      case 'confirmed': return 'bg-teal-100 text-[#1D9E75]'
+      case 'confirmed': return 'bg-teal-100 text-[#16795A]'
       case 'completed': return 'bg-purple-100 text-purple-700'
       case 'cancelled': return 'bg-red-100 text-red-600'
       default: return 'bg-slate-100 text-slate-600'
@@ -154,7 +154,7 @@ export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps)
           ) : (
             <Link 
               href={`/plans/${plan.id}`} 
-              className="flex-1 w-full py-2 bg-[#1D9E75]/10 hover:bg-[#1D9E75]/20 text-[#1D9E75] text-sm font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-200"
+              className="flex-1 w-full py-2 bg-[#16795A]/10 hover:bg-[#16795A]/20 text-[#16795A] text-sm font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-200"
             >
               View Plan <ArrowRight className="w-4 h-4" />
             </Link>

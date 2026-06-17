@@ -1,28 +1,25 @@
-import { streamText, convertToModelMessages } from 'ai'
+import { streamText } from 'ai'
 import { groq } from '@ai-sdk/groq'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
+import { rateLimit } from '@/lib/security/rateLimiter'
+import { runInputGuardrail } from '@/lib/security/guardrails'
 
 export const maxDuration = 30
 
 export async function POST(req: Request) {
   const ip = req.headers.get('x-forwarded-for') || 'anonymous'
 
-  const supabase = await createClient()
-  const oneMinuteAgo = new Date(Date.now() - 60000).toISOString()
+  // Centralized Rate Limiter check
+  const rateLimitResult = await rateLimit({
+    ipAddress: ip,
+    endpoint: '/api/plabot',
+    limit: 10,
+    windowMs: 60000
+  })
 
-  const { count } = await supabase
-    .from('request_logs')
-    .select('*', { count: 'exact', head: true })
-    .eq('ip_address', ip)
-    .eq('endpoint', '/api/plabot')
-    .gte('created_at', oneMinuteAgo)
-
-  if (count && count >= 10) {
-    return new Response("Rate limit exceeded.", { status: 429 })
+  if (!rateLimitResult.success) {
+    return new Response("Rate limit exceeded. Please wait a minute before sending another message.", { status: 429 })
   }
-
-  await supabase.from('request_logs').insert({ ip_address: ip, endpoint: '/api/plabot' })
 
   const body = await req.json()
   const schema = z.object({
@@ -34,15 +31,27 @@ export async function POST(req: Request) {
 
   const { messages } = parsed.data
 
+  // Extract and validate last user message
+  const lastUserMessage = messages.filter((m: any) => m.role === 'user').slice(-1)[0]?.content || ""
+  const lastUserMessageText = typeof lastUserMessage === 'string'
+    ? lastUserMessage
+    : Array.isArray(lastUserMessage)
+      ? lastUserMessage.map((part: any) => part.text || "").join(" ")
+      : ""
+
+  const guard = await runInputGuardrail(lastUserMessageText)
+  if (!guard.safe) {
+    return new Response(guard.reason || "Request blocked by safety guardrails.", { status: 400 })
+  }
+
   const systemPrompt = `
     You are PlaBot, the slightly sarcastic but genuinely helpful assistant for Planora — a group trip planning app. 
     
     Behavior Rules:
-    1. If the user asks about Planora, answer their questions accurately and informatively, but with a witty, snarky, and Gen-Z slang flavor but NEVER overdo Gen-z slang . Keep it concise.
-    2. If the user asks about ANYTHING ELSE that is completely unrelated to Planora or travel planning, you MUST NOT refuse to answer!
-       - Instead, FIRST mock or sarcastically roast them for asking a travel planner bot such a question.
-       - SECOND, after the sarcastic redirection/roast, you MUST actually and fully answer their question with accurate and helpful information! Do not skip the answer under any circumstances. Always make sure they get the exact info they asked for.
-       - Third, sound like you are annoyed of them asking unrelated questions, if they repeat anymore unrelated questions then sound frustrated but never cross the line, instead, roast them to come back to the Planora.
+    1. If the user asks about Planora, answer their questions accurately and informatively, but with a witty, snarky, and Gen-Z slang flavor but NEVER overdo Gen-z slang. Keep it concise.
+    2. You MUST strictly refuse to answer any questions completely unrelated to travel, trip planning, or Planora features.
+       - If they ask off-topic questions (e.g. coding, essays, general academic questions), sarcastically roast them for asking a travel bot such a question, and refuse to answer. Suggest they ask about trip planning or Planora instead.
+       - Under no circumstances should you provide general programming assistance, write code, perform general creative writing, or serve as a general assistant.
     
      Keep all answers under 120 words. Be witty, snarky, playfully smart, and sarcastic.
     
@@ -66,6 +75,7 @@ export async function POST(req: Request) {
     model: groq('llama-3.3-70b-versatile'),
     system: systemPrompt,
     messages: messages,
+    maxOutputTokens: 400,
   })
 
   return result.toTextStreamResponse()

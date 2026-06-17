@@ -3,6 +3,8 @@ import { groq } from '@ai-sdk/groq'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { forwardGeocode } from '@/lib/locationiq/geocode'
+import { rateLimit } from '@/lib/security/rateLimiter'
+import { runInputGuardrail } from '@/lib/security/guardrails'
 
 export const maxDuration = 60
 
@@ -13,6 +15,31 @@ export async function POST(req: Request, { params }: { params: Promise<{ planId:
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return new Response("Unauthorized", { status: 401 })
+
+  // Rate Limiting by User ID
+  const rateLimitResult = await rateLimit({
+    userId: user.id,
+    endpoint: `/api/plans/[planId]/chat`,
+    limit: 15,
+    windowMs: 60000
+  })
+
+  if (!rateLimitResult.success) {
+    return new Response("Rate limit exceeded. Please wait a minute before sending another message.", { status: 429 })
+  }
+
+  // Input Guardrail Validation
+  const lastUserMessage = messages.filter((m: any) => m.role === 'user').slice(-1)[0]?.content || ""
+  const lastUserMessageText = typeof lastUserMessage === 'string'
+    ? lastUserMessage
+    : Array.isArray(lastUserMessage)
+      ? lastUserMessage.map((part: any) => part.text || "").join(" ")
+      : ""
+
+  const guard = await runInputGuardrail(lastUserMessageText)
+  if (!guard.safe) {
+    return new Response(guard.reason || "Request blocked by safety guardrails.", { status: 400 })
+  }
   
   const { data: plan } = await supabase.from('plans').select('*').eq('id', planId).single()
   const { data: items } = await supabase
@@ -48,9 +75,9 @@ Rules:
     2. NEVER bombard the user with the entire day's schedule or mock outlines at the beginning.
     3. NEVER call database tools until the user has explicitly approved the full plan in Phase 3.
 - For general questions (packing, weather, tips), just answer — do not use tools.
+- You MUST strictly refuse to answer any questions completely unrelated to travel, trip planning, or Planora features. Under no circumstances should you write code, perform general creative writing, or serve as a general assistant.
 - Be concise, upbeat, and extremely helpful!`
 
-  const lastUserMessage = messages.filter((m: any) => m.role === 'user').slice(-1)[0]?.content || ""
   const isReplanTrigger = /replan|resuggest|regenerate|re-suggest|replan/i.test(lastUserMessage)
   const toolChoice = isReplanTrigger ? 'none' : 'auto'
 
@@ -61,6 +88,7 @@ Rules:
     stopWhen: stepCountIs(5),
     toolChoice,
     temperature: 0.1,
+    maxOutputTokens: 800,
     tools: {
       add_item: tool({
         description: 'Add a new itinerary item to the plan.',

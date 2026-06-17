@@ -67,7 +67,7 @@ export default function PrivacyPolicyPage() {
             Back to Home
           </Link>
           <div className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Plan<span className="text-[#1D9E75]">ora</span>
+            Plan<span className="text-[#16795A]">ora</span>
           </div>
         </motion.div>
       </motion.nav>
@@ -80,7 +80,7 @@ export default function PrivacyPolicyPage() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-[#1D9E75]/10 border border-[#1D9E75]/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider text-[#1D9E75] uppercase"
+            className="inline-flex items-center gap-2 bg-[#16795A]/10 border border-[#16795A]/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider text-[#16795A] uppercase"
           >
             <Shield className="w-3.5 h-3.5" />
             Privacy Center
@@ -119,7 +119,7 @@ export default function PrivacyPolicyPage() {
                     href={`#${sec.id}`}
                     className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
                       isActive
-                        ? "bg-[#1D9E75]/10 text-[#1D9E75] dark:text-teal-400"
+                        ? "bg-[#16795A]/10 text-[#16795A] dark:text-teal-400"
                         : "text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-850"
                     }`}
                   >
@@ -137,7 +137,7 @@ export default function PrivacyPolicyPage() {
             {/* Section 1 */}
             <div id="introduction" className="scroll-mt-24 space-y-6">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <FileText className="w-5 h-5 text-[#1D9E75]" /> 1. Introduction
+                <FileText className="w-5 h-5 text-[#16795A]" /> 1. Introduction
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
@@ -149,7 +149,7 @@ export default function PrivacyPolicyPage() {
                   </p>
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
-                  <span className="font-extrabold text-[#1D9E75] uppercase tracking-wider block">In Plain English</span>
+                  <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
                   <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
                     This document explains what data Planora collects from you, how we keep it safe, and what we do with it. By using Planora, you agree to these rules.
                   </p>
@@ -160,7 +160,7 @@ export default function PrivacyPolicyPage() {
             {/* Section 2 */}
             <div id="information-collected" className="scroll-mt-24 space-y-6">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Database className="w-5 h-5 text-[#1D9E75]" /> 2. Information We Collect
+                <Database className="w-5 h-5 text-[#16795A]" /> 2. Information We Collect
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
@@ -174,7 +174,7 @@ export default function PrivacyPolicyPage() {
                   </ul>
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
-                  <span className="font-extrabold text-[#1D9E75] uppercase tracking-wider block">In Plain English</span>
+                  <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
                   <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
                     We collect the name and email you sign up with, the details of the trips you plan, the expenses you add, photos you upload, and standard technical details from your device.
                   </p>
@@ -185,7 +185,7 @@ export default function PrivacyPolicyPage() {
             {/* Section 3 */}
             <div id="data-usage" className="scroll-mt-24 space-y-6">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Eye className="w-5 h-5 text-[#1D9E75]" /> 3. How We Use Data
+                <Eye className="w-5 h-5 text-[#16795A]" /> 3. How We Use Data
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
@@ -199,7 +199,7 @@ export default function PrivacyPolicyPage() {
                   </ul>
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
-                  <span className="font-extrabold text-[#1D9E75] uppercase tracking-wider block">In Plain English</span>
+                  <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
                   <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
                     We use your details to make sure you and your friends can plan trips in real-time, generate routes using AI, split expenses, and receive timely push notifications.
                   </p>
@@ -210,7 +210,7 @@ export default function PrivacyPolicyPage() {
             {/* Section 4 */}
             <div id="data-sharing" className="scroll-mt-24 space-y-6">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Shield className="w-5 h-5 text-[#1D9E75]" /> 4. Information Sharing
+                <Shield className="w-5 h-5 text-[#16795A]" /> 4. Information Sharing
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
@@ -223,7 +223,7 @@ export default function PrivacyPolicyPage() {
                   </ul>
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
-                  <span className="font-extrabold text-[#1D9E75] uppercase tracking-wider block">In Plain English</span>
+                  <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
                   <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
                     We never sell your data. We share your profile name with friends you plan trips with, and securely sync data with our hosting partners (like Supabase).
                   </p>
@@ -234,7 +234,7 @@ export default function PrivacyPolicyPage() {
             {/* Section 5 */}
             <div id="security" className="scroll-mt-24 space-y-6">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Lock className="w-5 h-5 text-[#1D9E75]" /> 5. Data Security
+                <Lock className="w-5 h-5 text-[#16795A]" /> 5. Data Security
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
@@ -246,7 +246,7 @@ export default function PrivacyPolicyPage() {
                   </p>
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
-                  <span className="font-extrabold text-[#1D9E75] uppercase tracking-wider block">In Plain English</span>
+                  <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
                   <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
                     We use state-of-the-art security filters so only group members can see group trips. While we do our best to encrypt and protect data, internet transfers always carry some small risk.
                   </p>

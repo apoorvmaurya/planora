@@ -278,7 +278,7 @@ export function AddExpenseModal({
                   onChange={handleScanReceipt} 
                   disabled={isScanning || isSubmitting} 
                 />
-                <div className="mt-2.5 inline-flex items-center justify-center h-9 px-4 rounded-lg bg-[#1D9E75] hover:bg-[#15805e] text-white font-medium text-sm transition duration-150 disabled:opacity-50 cursor-pointer shadow-sm hover:shadow">
+                <div className="mt-2.5 inline-flex items-center justify-center h-9 px-4 rounded-lg bg-[#16795A] hover:bg-[#115E46] text-white font-medium text-sm transition duration-150 disabled:opacity-50 cursor-pointer shadow-sm hover:shadow">
                   {isScanning ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -349,14 +349,14 @@ export function AddExpenseModal({
 
           <div className="space-y-2">
             <Label className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Description</Label>
-            <Input {...register("title")} placeholder="E.g., Dinner at Mario's" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#1D9E75] transition-all duration-300" />
+            <Input {...register("title")} placeholder="E.g., Dinner at Mario's" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#16795A] transition-all duration-300" />
             {errors.title && <p className="text-sm text-red-500">{errors.title.message}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Amount</Label>
-              <Input type="number" step="0.01" {...register("amount")} placeholder="0.00" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#1D9E75] transition-all duration-300" />
+              <Input type="number" step="0.01" {...register("amount")} placeholder="0.00" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#16795A] transition-all duration-300" />
               {errors.amount && <p className="text-sm text-red-500">{errors.amount.message}</p>}
             </div>
             <div className="space-y-2">
@@ -366,7 +366,7 @@ export function AddExpenseModal({
                 name="paid_by"
                 render={({ field }) => (
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus:ring-[#1D9E75] transition-all duration-300">
+                    <SelectTrigger className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus:ring-[#16795A] transition-all duration-300">
                       <SelectValue placeholder="Select member" />
                     </SelectTrigger>
                     <SelectContent className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
@@ -415,7 +415,7 @@ export function AddExpenseModal({
                   <Input 
                     type="number" 
                     step="0.01"
-                    className="w-24 h-8 text-right bg-white dark:bg-slate-950 border-slate-250 dark:border-slate-800 text-slate-900 dark:text-white rounded-lg focus-visible:ring-[#1D9E75] transition-all duration-300"
+                    className="w-24 h-8 text-right bg-white dark:bg-slate-950 border-slate-250 dark:border-slate-800 text-slate-900 dark:text-white rounded-lg focus-visible:ring-[#16795A] transition-all duration-300"
                     {...register(`split_details.${m.user.id}`)}
                   />
                 </div>
@@ -424,7 +424,7 @@ export function AddExpenseModal({
             </div>
           )}
 
-          <Button type="submit" disabled={isSubmitting} className="w-full bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl h-12 shadow-sm hover:shadow cursor-pointer transition-all duration-200">
+          <Button type="submit" disabled={isSubmitting} className="w-full bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl h-12 shadow-sm hover:shadow cursor-pointer transition-all duration-200">
             {isSubmitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Save Expense"}
           </Button>
         </form>

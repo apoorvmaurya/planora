@@ -52,7 +52,7 @@ export function InviteModal({ open, onOpenChange }: { open: boolean, onOpenChang
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 transition-all duration-500">
         <DialogHeader>
-          <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/20 text-[#1D9E75] dark:text-teal-400 flex items-center justify-center mb-4 transition-colors duration-500">
+          <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/20 text-[#16795A] dark:text-teal-400 flex items-center justify-center mb-4 transition-colors duration-500">
             <Mail className="w-6 h-6" />
           </div>
           <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white transition-colors duration-500">Invite a friend</DialogTitle>
@@ -68,12 +68,12 @@ export function InviteModal({ open, onOpenChange }: { open: boolean, onOpenChang
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="rounded-xl h-12 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus-visible:ring-[#1D9E75] transition-all duration-300"
+            className="rounded-xl h-12 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus-visible:ring-[#16795A] transition-all duration-300"
           />
           <Button 
             type="submit" 
             disabled={isSending} 
-            className="w-full rounded-xl h-12 bg-[#1D9E75] hover:bg-[#15805e] text-white shadow-sm hover:shadow cursor-pointer transition-all duration-200"
+            className="w-full rounded-xl h-12 bg-[#16795A] hover:bg-[#115E46] text-white shadow-sm hover:shadow cursor-pointer transition-all duration-200"
           >
             {isSending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             Send Invite

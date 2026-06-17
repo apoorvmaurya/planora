@@ -125,7 +125,7 @@ export default function MemoriesPage() {
           )}
           <Button 
             onClick={() => setIsModalOpen(true)}
-            className="rounded-xl bg-[#1D9E75] hover:bg-[#15805e] text-white flex items-center gap-2"
+            className="rounded-xl bg-[#16795A] hover:bg-[#115E46] text-white flex items-center gap-2"
           >
             <ImagePlus className="w-4 h-4" />
             Add Memory
@@ -139,9 +139,9 @@ export default function MemoriesPage() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-800/80 shadow-sm relative overflow-hidden transition-colors duration-500"
         >
-          <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#1D9E75]" />
+          <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#16795A]" />
           <div className="flex gap-4 items-start">
-            <div className="bg-teal-50 dark:bg-teal-950/20 p-3 rounded-2xl text-[#1D9E75] dark:text-teal-400 shrink-0 hidden sm:block transition-colors duration-500">
+            <div className="bg-teal-50 dark:bg-teal-950/20 p-3 rounded-2xl text-[#16795A] dark:text-teal-400 shrink-0 hidden sm:block transition-colors duration-500">
               <Sparkles className="w-6 h-6" />
             </div>
             <div>

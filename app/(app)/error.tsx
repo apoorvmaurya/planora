@@ -26,7 +26,7 @@ export default function AppError({
       </p>
       <Button 
         onClick={() => reset()}
-        className="bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl px-8 h-12"
+        className="bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl px-8 h-12"
       >
         Try again
       </Button>

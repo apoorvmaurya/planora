@@ -121,7 +121,7 @@ export default function GroupSettingsPage() {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <Loader2 className="w-10 h-10 text-[#1D9E75] animate-spin" />
+        <Loader2 className="w-10 h-10 text-[#16795A] animate-spin" />
         <p className="text-slate-500 dark:text-slate-400 font-medium">Loading settings...</p>
       </div>
     )
@@ -151,7 +151,7 @@ export default function GroupSettingsPage() {
           Only group administrators can access the group settings.
         </p>
         <Link href={`/groups/${groupId}`}>
-          <Button className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl mt-4">
+          <Button className="bg-[#16795A] hover:bg-[#115E46] rounded-xl mt-4">
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Group
           </Button>
         </Link>
@@ -311,11 +311,11 @@ export default function GroupSettingsPage() {
 
       {/* Breadcrumb / Back button */}
       <div className="flex items-center justify-between">
-        <Link href={`/groups/${groupId}`} className="flex items-center text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-[#1D9E75] dark:hover:text-teal-400 transition-colors group">
+        <Link href={`/groups/${groupId}`} className="flex items-center text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-[#16795A] dark:hover:text-teal-400 transition-colors group">
           <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
           Back to {group.name}
         </Link>
-        <span className="text-xs bg-teal-50 dark:bg-teal-950/30 text-[#1D9E75] dark:text-teal-400 px-3 py-1 rounded-full font-bold uppercase tracking-wider">
+        <span className="text-xs bg-teal-50 dark:bg-teal-950/30 text-[#16795A] dark:text-teal-400 px-3 py-1 rounded-full font-bold uppercase tracking-wider">
           Admin Settings
         </span>
       </div>
@@ -329,7 +329,7 @@ export default function GroupSettingsPage() {
             onClick={() => setActiveTab("general")}
             className={`w-full text-left px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-3 ${
               activeTab === "general"
-                ? "bg-[#1D9E75] text-white shadow-lg shadow-[#1D9E75]/30"
+                ? "bg-[#16795A] text-white shadow-lg shadow-[#16795A]/30"
                 : "text-slate-650 dark:text-slate-450 hover:bg-slate-105 dark:hover:bg-slate-800/50"
             }`}
           >
@@ -339,7 +339,7 @@ export default function GroupSettingsPage() {
             onClick={() => setActiveTab("members")}
             className={`w-full text-left px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-3 ${
               activeTab === "members"
-                ? "bg-[#1D9E75] text-white shadow-lg shadow-[#1D9E75]/30"
+                ? "bg-[#16795A] text-white shadow-lg shadow-[#16795A]/30"
                 : "text-slate-650 dark:text-slate-455 hover:bg-slate-105 dark:hover:bg-slate-800/50"
             }`}
           >
@@ -349,7 +349,7 @@ export default function GroupSettingsPage() {
             onClick={() => setActiveTab("invite")}
             className={`w-full text-left px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-3 ${
               activeTab === "invite"
-                ? "bg-[#1D9E75] text-white shadow-lg shadow-[#1D9E75]/30"
+                ? "bg-[#16795A] text-white shadow-lg shadow-[#16795A]/30"
                 : "text-slate-650 dark:text-slate-450 hover:bg-slate-105 dark:hover:bg-slate-800/50"
             }`}
           >
@@ -390,16 +390,16 @@ export default function GroupSettingsPage() {
                   {/* Cover Image Upload */}
                   <div className="space-y-2">
                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Group Cover Photo</label>
-                    <div className="relative group w-full h-48 bg-slate-100 dark:bg-slate-950/80 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-850 flex items-center justify-center overflow-hidden cursor-pointer hover:border-[#1D9E75] dark:hover:border-teal-400 transition-colors">
+                    <div className="relative group w-full h-48 bg-slate-100 dark:bg-slate-950/80 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-850 flex items-center justify-center overflow-hidden cursor-pointer hover:border-[#16795A] dark:hover:border-teal-400 transition-colors">
                       {coverPreview ? (
                         <>
                           <img src={coverPreview} alt="Cover Preview" className="w-full h-full object-cover" />
                           <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span className="text-white text-xs font-bold bg-[#1D9E75] px-3 py-1.5 rounded-full shadow">Change Image</span>
+                            <span className="text-white text-xs font-bold bg-[#16795A] px-3 py-1.5 rounded-full shadow">Change Image</span>
                           </div>
                         </>
                       ) : (
-                        <div className="flex flex-col items-center text-slate-400 dark:text-slate-500 group-hover:text-[#1D9E75] transition-colors">
+                        <div className="flex flex-col items-center text-slate-400 dark:text-slate-500 group-hover:text-[#16795A] transition-colors">
                           <ImageIcon className="w-8 h-8 mb-2" />
                           <span className="text-sm font-medium">Upload new cover image</span>
                         </div>
@@ -421,7 +421,7 @@ export default function GroupSettingsPage() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Enter group name"
-                      className="h-12 rounded-xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-850 text-slate-900 dark:text-white focus-visible:ring-[#1D9E75] transition-colors"
+                      className="h-12 rounded-xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-850 text-slate-900 dark:text-white focus-visible:ring-[#16795A] transition-colors"
                       required
                     />
                   </div>
@@ -435,7 +435,7 @@ export default function GroupSettingsPage() {
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder="What is this group planning?"
                       rows={4}
-                      className="resize-none rounded-xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-850 text-slate-900 dark:text-white focus-visible:ring-[#1D9E75] transition-colors"
+                      className="resize-none rounded-xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-850 text-slate-900 dark:text-white focus-visible:ring-[#16795A] transition-colors"
                     />
                   </div>
                 </div>
@@ -444,7 +444,7 @@ export default function GroupSettingsPage() {
                   <Button
                     type="submit"
                     disabled={isUpdating}
-                    className="bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl px-6 h-12 shadow shadow-[#1D9E75]/25 flex items-center gap-2 cursor-pointer"
+                    className="bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl px-6 h-12 shadow shadow-[#16795A]/25 flex items-center gap-2 cursor-pointer"
                   >
                     {isUpdating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                     Save Changes
@@ -471,7 +471,7 @@ export default function GroupSettingsPage() {
                   {inviteableFriends.length > 0 && (
                     <div className="bg-teal-50/40 dark:bg-teal-950/10 border border-teal-100/50 dark:border-teal-900/20 p-4 rounded-2xl">
                       <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2">
-                        <UserPlus className="w-4 h-4 text-[#1D9E75]" /> Invite Friends (Pending Confirmation)
+                        <UserPlus className="w-4 h-4 text-[#16795A]" /> Invite Friends (Pending Confirmation)
                       </h4>
                       <p className="text-xs text-slate-400 dark:text-slate-550 mb-3">Invited friends will see a request on their dashboard and must accept it to join.</p>
                       <div className="flex flex-wrap gap-2">
@@ -493,7 +493,7 @@ export default function GroupSettingsPage() {
                             <Button
                               size="sm"
                               onClick={() => handleInviteFriend(friend.user.id)}
-                              className="bg-[#1D9E75]/10 text-[#1D9E75] hover:bg-[#1D9E75] hover:text-white rounded-lg h-7 px-2.5 font-bold border-0 cursor-pointer"
+                              className="bg-[#16795A]/10 text-[#16795A] hover:bg-[#16795A] hover:text-white rounded-lg h-7 px-2.5 font-bold border-0 cursor-pointer"
                             >
                               Invite
                             </Button>
@@ -527,7 +527,7 @@ export default function GroupSettingsPage() {
                             <div>
                               <p className="font-semibold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                                 {member.user.full_name}
-                                {member.role === "admin" && <Shield className="w-3.5 h-3.5 text-[#1D9E75]" />}
+                                {member.role === "admin" && <Shield className="w-3.5 h-3.5 text-[#16795A]" />}
                               </p>
                               <p className="text-xs text-slate-505 dark:text-slate-400">@{member.user.username}</p>
                             </div>
@@ -629,7 +629,7 @@ export default function GroupSettingsPage() {
                       className={`rounded-xl px-5 h-12 font-bold cursor-pointer transition-colors ${
                         copiedLink
                           ? "bg-emerald-600 hover:bg-emerald-700 text-white"
-                          : "bg-[#1D9E75] hover:bg-[#15805e] text-white"
+                          : "bg-[#16795A] hover:bg-[#115E46] text-white"
                       }`}
                     >
                       {copiedLink ? (

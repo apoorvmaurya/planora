@@ -213,7 +213,7 @@
 }
 
 @utility btn-teal-primary {
-  @apply bg-[#1D9E75] hover:bg-[#15805e] text-white py-6 rounded-xl font-bold transition-all duration-200 shadow-sm shadow-[#1D9E75]/30 hover:shadow-md hover:shadow-[#1D9E75]/40 disabled:opacity-50 cursor-pointer flex items-center justify-center;
+  @apply bg-[#16795A] hover:bg-[#115E46] text-white py-6 rounded-xl font-bold transition-all duration-200 shadow-sm shadow-[#16795A]/30 hover:shadow-md hover:shadow-[#16795A]/40 disabled:opacity-50 cursor-pointer flex items-center justify-center;
 }
 
 @utility btn-slate-outline {

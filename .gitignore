@@ -54,3 +54,7 @@ skills-lock.json
 scratch/
 temp/
 *.log
+
+# OS-specific
+Thumbs.db
+.eslintcache

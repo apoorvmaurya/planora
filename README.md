@@ -26,6 +26,8 @@
 | **Trip Memories** | Shared collaborative photo dump to relive the best moments of your journey. |
 | **Transit Weaver** | AI-generated transit suggestions (flights, trains, cabs) for each group member, insertable directly into your itinerary. |
 | **PWA Support** | Installable Progressive Web App with offline caching via Serwist and push notifications via Web Push. |
+| **Input Guardrails & Rate Limiting** | Dynamic protection against prompt injections, code generation, and academic spam with a centralized IP-based rate limiter. |
+| **Fail-Safe Image Loader** | Dual-tier rendering that fetches scenic photos from `image.pollinations.ai` and falls back to curated Unsplash travel images if the AI API is rate-limited. |
 
 ---
 

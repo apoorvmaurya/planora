@@ -160,7 +160,7 @@ export default function FriendsPage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500" />
             <Input 
               placeholder="Search by name or @username..." 
-              className="pl-12 h-14 rounded-2xl text-lg bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus-visible:ring-[#1D9E75] transition-all duration-300"
+              className="pl-12 h-14 rounded-2xl text-lg bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus-visible:ring-[#16795A] transition-all duration-300"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />

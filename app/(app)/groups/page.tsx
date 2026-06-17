@@ -152,7 +152,7 @@ export default function GroupsPage() {
         
         <Button 
           onClick={() => setIsModalOpen(true)}
-          className="bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl h-11 px-6 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+          className="bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl h-11 px-6 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
         >
           <Plus className="w-4 h-4 mr-2" />
           Create group
@@ -169,7 +169,7 @@ export default function GroupsPage() {
             className="bg-white/80 dark:bg-slate-900/60 backdrop-blur-xl border border-teal-100 dark:border-teal-900/30 rounded-3xl p-6 shadow-sm space-y-4"
           >
             <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
-              <Mail className="w-5 h-5 text-[#1D9E75]" />
+              <Mail className="w-5 h-5 text-[#16795A]" />
               <h2>Group Invitations ({invitations.length})</h2>
             </div>
             
@@ -210,7 +210,7 @@ export default function GroupsPage() {
                     <Button
                       size="sm"
                       onClick={() => handleAcceptInvite(invite)}
-                      className="bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl h-9 px-3 font-bold shadow-sm cursor-pointer"
+                      className="bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl h-9 px-3 font-bold shadow-sm cursor-pointer"
                     >
                       <Check className="w-4 h-4 mr-1" /> Join
                     </Button>
@@ -228,7 +228,7 @@ export default function GroupsPage() {
       ) : groups.length === 0 ? (
         <div className="text-center py-20 bg-white dark:bg-slate-900/40 rounded-3xl border border-slate-100 dark:border-slate-800/80 border-dashed transition-all duration-500">
           <div className="w-20 h-20 bg-teal-50 dark:bg-teal-950/20 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors duration-500">
-            <Users className="w-10 h-10 text-[#1D9E75] dark:text-teal-400" />
+            <Users className="w-10 h-10 text-[#16795A] dark:text-teal-400" />
           </div>
           <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2 transition-colors duration-500">No groups yet</h3>
           <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto mb-6 transition-colors duration-500">
@@ -236,7 +236,7 @@ export default function GroupsPage() {
           </p>
           <Button 
             onClick={() => setIsModalOpen(true)}
-            className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl cursor-pointer"
+            className="bg-[#16795A] hover:bg-[#115E46] rounded-xl cursor-pointer"
           >
             Create your first group
           </Button>
@@ -256,7 +256,7 @@ export default function GroupsPage() {
                   damping: 30,
                   delay: i * 0.05
                 }}
-                className="bg-white dark:bg-slate-900/60 backdrop-blur-md rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm hover:shadow-lg dark:shadow-none hover:border-[#1D9E75]/40 dark:hover:border-teal-500/40 transition-all duration-300 overflow-hidden group cursor-pointer h-full flex flex-col"
+                className="bg-white dark:bg-slate-900/60 backdrop-blur-md rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm hover:shadow-lg dark:shadow-none hover:border-[#16795A]/40 dark:hover:border-teal-500/40 transition-all duration-300 overflow-hidden group cursor-pointer h-full flex flex-col"
               >
                 <div className="h-32 bg-slate-100 dark:bg-slate-800 relative overflow-hidden transition-colors duration-500">
                   {group.cover_image_url ? (
@@ -267,7 +267,7 @@ export default function GroupsPage() {
                 </div>
                 
                 <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="font-bold text-xl text-slate-900 dark:text-white line-clamp-1 group-hover:text-[#1D9E75] dark:group-hover:text-teal-400 transition-colors duration-300">{group.name}</h3>
+                  <h3 className="font-bold text-xl text-slate-900 dark:text-white line-clamp-1 group-hover:text-[#16795A] dark:group-hover:text-teal-400 transition-colors duration-300">{group.name}</h3>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 flex-1 transition-colors duration-500">
                     {group.description || "No description provided."}
                   </p>
@@ -289,7 +289,7 @@ export default function GroupsPage() {
                         </div>
                       )}
                     </div>
-                    <span className="text-xs font-semibold text-[#1D9E75] dark:text-teal-400 bg-teal-50 dark:bg-teal-950/30 px-2 py-1 rounded-full transition-colors duration-500">
+                    <span className="text-xs font-semibold text-[#16795A] dark:text-teal-400 bg-teal-50 dark:bg-teal-950/30 px-2 py-1 rounded-full transition-colors duration-500">
                       Active
                     </span>
                   </div>

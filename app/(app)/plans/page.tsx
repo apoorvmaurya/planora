@@ -33,7 +33,7 @@ export default async function PlansPage() {
           <p className="text-slate-500 mt-1">Manage your upcoming trips, drafts, and past memories.</p>
         </div>
         
-        <Link href="/plans/new" className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#1D9E75] hover:bg-[#15805e] text-white gap-2 h-11 px-6 shadow-sm text-sm font-medium transition-all">
+        <Link href="/plans/new" className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#16795A] hover:bg-[#115E46] text-white gap-2 h-11 px-6 shadow-sm text-sm font-medium transition-all">
           <Plus className="w-5 h-5" />
           New Trip
         </Link>

@@ -65,7 +65,7 @@ export default function BlogPage() {
       category: "Travel Guides",
       date: "May 15, 2026",
       readTime: "8 min read",
-      gradient: "from-[#1D9E75] to-teal-450",
+      gradient: "from-[#16795A] to-teal-450",
       author: "Sarah Jenkins"
     },
     {
@@ -133,7 +133,7 @@ export default function BlogPage() {
             Back to Home
           </Link>
           <div className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Plan<span className="text-[#1D9E75]">ora</span>
+            Plan<span className="text-[#16795A]">ora</span>
           </div>
         </motion.div>
       </motion.nav>
@@ -146,7 +146,7 @@ export default function BlogPage() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-[#1D9E75]/10 border border-[#1D9E75]/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider text-[#1D9E75] uppercase"
+            className="inline-flex items-center gap-2 bg-[#16795A]/10 border border-[#16795A]/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider text-[#16795A] uppercase"
           >
             <BookOpen className="w-3.5 h-3.5" />
             Planora Chronicles
@@ -180,7 +180,7 @@ export default function BlogPage() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all border ${
                     selectedCategory === cat
-                      ? "bg-[#1D9E75] border-[#1D9E75] text-white shadow shadow-[#1D9E75]/25"
+                      ? "bg-[#16795A] border-[#16795A] text-white shadow shadow-[#16795A]/25"
                       : "bg-white/40 dark:bg-slate-900/30 border-slate-200 dark:border-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-350"
                   }`}
                 >
@@ -197,7 +197,7 @@ export default function BlogPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search articles..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-full text-sm bg-white/40 dark:bg-slate-900/30 backdrop-blur-md border border-slate-200 dark:border-slate-850 focus:outline-none focus:border-[#1D9E75] focus:ring-1 focus:ring-[#1D9E75] text-slate-900 dark:text-white transition-all duration-350"
+                className="w-full pl-10 pr-4 py-2.5 rounded-full text-sm bg-white/40 dark:bg-slate-900/30 backdrop-blur-md border border-slate-200 dark:border-slate-850 focus:outline-none focus:border-[#16795A] focus:ring-1 focus:ring-[#16795A] text-slate-900 dark:text-white transition-all duration-350"
               />
             </div>
           </div>
@@ -208,7 +208,7 @@ export default function BlogPage() {
           {filteredPosts.length === 0 ? (
             <div className="text-center py-20 bg-white/40 dark:bg-slate-900/20 backdrop-blur-md rounded-3xl border border-dashed border-slate-200 dark:border-slate-850">
               <p className="text-slate-500 dark:text-slate-400 font-semibold">No articles match your search parameters.</p>
-              <button onClick={() => { setSearchQuery(""); setSelectedCategory("All"); }} className="text-xs font-bold text-[#1D9E75] uppercase tracking-wider mt-4">Reset Filters</button>
+              <button onClick={() => { setSearchQuery(""); setSelectedCategory("All"); }} className="text-xs font-bold text-[#16795A] uppercase tracking-wider mt-4">Reset Filters</button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -233,7 +233,7 @@ export default function BlogPage() {
 
                   <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                     <div className="space-y-2">
-                      <h3 className="font-bold text-lg leading-snug text-slate-900 dark:text-white group-hover:text-[#1D9E75] dark:group-hover:text-teal-400 transition-colors duration-300">
+                      <h3 className="font-bold text-lg leading-snug text-slate-900 dark:text-white group-hover:text-[#16795A] dark:group-hover:text-teal-400 transition-colors duration-300">
                         {post.title}
                       </h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-3 leading-relaxed">
@@ -254,7 +254,7 @@ export default function BlogPage() {
 
         {/* Newsletter Signup Form */}
         <section className="bg-slate-900 dark:bg-slate-950 text-white rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-2xl border border-slate-800/20 dark:border-slate-800/80">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#1D9E75]/20 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#16795A]/20 to-transparent pointer-events-none" />
           <div className="relative z-10 max-w-2xl mx-auto text-center space-y-6">
             <h2 className="text-2xl sm:text-4xl font-bold tracking-tight">Stay updated with Planora</h2>
             <p className="text-slate-450 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
@@ -268,12 +268,12 @@ export default function BlogPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 disabled={isSubmitting}
-                className="flex-1 bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm placeholder:text-slate-650 focus:outline-none focus:border-[#1D9E75] focus:ring-1 focus:ring-[#1D9E75] transition-all"
+                className="flex-1 bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm placeholder:text-slate-650 focus:outline-none focus:border-[#16795A] focus:ring-1 focus:ring-[#16795A] transition-all"
               />
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-[#1D9E75] hover:bg-[#15805e] text-white font-bold h-12 rounded-xl px-6 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-[#1D9E75]/20 shrink-0"
+                className="bg-[#16795A] hover:bg-[#115E46] text-white font-bold h-12 rounded-xl px-6 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-[#16795A]/20 shrink-0"
               >
                 {isSubmitting ? (
                   <>

@@ -77,7 +77,7 @@ export default function LoginPage() {
       >
         <div className="text-center mb-8">
           <Link href="/" className="text-3xl font-bold tracking-tight inline-block mb-2">
-            Plan<span className="text-[#1D9E75]">ora</span>
+            Plan<span className="text-[#16795A]">ora</span>
           </Link>
           <p className="text-slate-500 dark:text-slate-400">Welcome back! Please enter your details.</p>
         </div>
@@ -159,7 +159,7 @@ export default function LoginPage() {
 
         <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-8">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-[#1D9E75] font-semibold hover:underline">
+          <Link href="/signup" className="text-[#16795A] font-semibold hover:underline">
             Sign up
           </Link>
         </p>

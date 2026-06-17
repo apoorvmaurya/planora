@@ -67,7 +67,7 @@ export default function TermsOfServicePage() {
             Back to Home
           </Link>
           <div className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Plan<span className="text-[#1D9E75]">ora</span>
+            Plan<span className="text-[#16795A]">ora</span>
           </div>
         </motion.div>
       </motion.nav>
@@ -80,7 +80,7 @@ export default function TermsOfServicePage() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-[#1D9E75]/10 border border-[#1D9E75]/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider text-[#1D9E75] uppercase"
+            className="inline-flex items-center gap-2 bg-[#16795A]/10 border border-[#16795A]/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider text-[#16795A] uppercase"
           >
             <Scale className="w-3.5 h-3.5" />
             User Agreement
@@ -119,7 +119,7 @@ export default function TermsOfServicePage() {
                     href={`#${sec.id}`}
                     className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
                       isActive
-                        ? "bg-[#1D9E75]/10 text-[#1D9E75] dark:text-teal-400"
+                        ? "bg-[#16795A]/10 text-[#16795A] dark:text-teal-400"
                         : "text-slate-550 hover:bg-slate-50 dark:hover:bg-slate-850"
                     }`}
                   >
@@ -137,7 +137,7 @@ export default function TermsOfServicePage() {
             {/* Section 1 */}
             <div id="agreement" className="scroll-mt-24 space-y-6">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-[#1D9E75]" /> 1. Agreement of Terms
+                <BookOpen className="w-5 h-5 text-[#16795A]" /> 1. Agreement of Terms
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
@@ -149,7 +149,7 @@ export default function TermsOfServicePage() {
                   </p>
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
-                  <span className="font-extrabold text-[#1D9E75] uppercase tracking-wider block">In Plain English</span>
+                  <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
                   <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
                     By logging into or using Planora, you are entering a legally binding agreement. Stop using the service if you don&apos;t agree to these rules.
                   </p>
@@ -160,7 +160,7 @@ export default function TermsOfServicePage() {
             {/* Section 2 */}
             <div id="accounts" className="scroll-mt-24 space-y-6">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <UserCheck className="w-5 h-5 text-[#1D9E75]" /> 2. User Accounts
+                <UserCheck className="w-5 h-5 text-[#16795A]" /> 2. User Accounts
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
@@ -172,7 +172,7 @@ export default function TermsOfServicePage() {
                   </p>
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
-                  <span className="font-extrabold text-[#1D9E75] uppercase tracking-wider block">In Plain English</span>
+                  <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
                   <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
                     Keep your profile information accurate and secure. You are responsible for all activity on your account.
                   </p>
@@ -183,7 +183,7 @@ export default function TermsOfServicePage() {
             {/* Section 3 */}
             <div id="user-conduct" className="scroll-mt-24 space-y-6">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <AlertCircle className="w-5 h-5 text-[#1D9E75]" /> 3. Rules of Conduct
+                <AlertCircle className="w-5 h-5 text-[#16795A]" /> 3. Rules of Conduct
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
@@ -197,7 +197,7 @@ export default function TermsOfServicePage() {
                   </ul>
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
-                  <span className="font-extrabold text-[#1D9E75] uppercase tracking-wider block">In Plain English</span>
+                  <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
                   <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
                     Be a good group member. Don&apos;t spam, write abusive posts, upload illegal photos, list fake expense statements, or attempt to hack our servers.
                   </p>
@@ -208,7 +208,7 @@ export default function TermsOfServicePage() {
             {/* Section 4 */}
             <div id="limitation" className="scroll-mt-24 space-y-6">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <ShieldAlert className="w-5 h-5 text-[#1D9E75]" /> 4. Liability Limits
+                <ShieldAlert className="w-5 h-5 text-[#16795A]" /> 4. Liability Limits
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
@@ -220,7 +220,7 @@ export default function TermsOfServicePage() {
                   </p>
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
-                  <span className="font-extrabold text-[#1D9E75] uppercase tracking-wider block">In Plain English</span>
+                  <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
                   <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
                     We offer Planora &quot;as-is&quot;. We are not liable for database hiccups, bugs in AI routes, or friends failing to pay their split travel bills.
                   </p>
@@ -231,7 +231,7 @@ export default function TermsOfServicePage() {
             {/* Section 5 */}
             <div id="termination" className="scroll-mt-24 space-y-6">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Scale className="w-5 h-5 text-[#1D9E75]" /> 5. Termination
+                <Scale className="w-5 h-5 text-[#16795A]" /> 5. Termination
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
@@ -243,7 +243,7 @@ export default function TermsOfServicePage() {
                   </p>
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
-                  <span className="font-extrabold text-[#1D9E75] uppercase tracking-wider block">In Plain English</span>
+                  <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
                   <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
                     We reserve the right to ban users who disrupt the platform or break the rules, without warning.
                   </p>

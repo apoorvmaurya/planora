@@ -18,7 +18,7 @@ interface MapComponentProps {
 }
  
 const dayColors = [
-  "#1D9E75", // Day 1: Planora Teal
+  "#16795A", // Day 1: Planora Teal
   "#2563EB", // Day 2: Royal Blue
   "#EA580C", // Day 3: Vivid Orange
   "#7C3AED", // Day 4: Deep Violet
@@ -195,9 +195,9 @@ export function MapComponent({ items, planDestination }: MapComponentProps) {
       {/* Premium Visual Layout Header Indicator */}
       <div className="absolute top-4 left-4 right-4 z-[1000] flex flex-col gap-2 pointer-events-none">
         <div className="flex items-center gap-2.5 bg-slate-900/90 backdrop-blur-md px-4 py-2.5 rounded-full border border-slate-800 text-white shadow-xl max-w-lg self-center pointer-events-auto transition-all duration-300">
-          <Sparkles className="w-4 h-4 text-[#1D9E75] shrink-0 animate-pulse" />
+          <Sparkles className="w-4 h-4 text-[#16795A] shrink-0 animate-pulse" />
           <p className="text-xs font-semibold leading-none">
-            <span className="text-[#1D9E75] font-black uppercase mr-1">✨ Premium Preview:</span>
+            <span className="text-[#16795A] font-black uppercase mr-1">✨ Premium Preview:</span>
             Map routing is in early preview and will soon be exclusive to Pro plans.
           </p>
         </div>
@@ -206,7 +206,7 @@ export function MapComponent({ items, planDestination }: MapComponentProps) {
       {/* Empty State Overlay */}
       {geocodedItems.length === 0 && (
         <div className="absolute inset-0 bg-slate-50/90 dark:bg-slate-950/95 backdrop-blur-sm z-[999] flex flex-col items-center justify-center p-6 text-center pointer-events-auto">
-          <div className="w-16 h-16 rounded-full bg-teal-50 dark:bg-teal-950/20 text-[#1D9E75] flex items-center justify-center mb-4">
+          <div className="w-16 h-16 rounded-full bg-teal-50 dark:bg-teal-950/20 text-[#16795A] flex items-center justify-center mb-4">
             <MapPin className="w-8 h-8" />
           </div>
           <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">No Geolocated Items</h3>

@@ -158,7 +158,7 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({ item, votes, 
           isPersonal 
             ? 'bg-indigo-50/15 dark:bg-indigo-950/10 border-indigo-200 dark:border-indigo-900/40 shadow-xl shadow-indigo-100/10 dark:shadow-none' 
             : isTieBreaker 
-              ? 'bg-white/80 dark:bg-slate-900/60 border-[#1D9E75] shadow-teal-500/10 shadow-xl' 
+              ? 'bg-white/80 dark:bg-slate-900/60 border-[#16795A] shadow-teal-500/10 shadow-xl' 
               : 'bg-white/80 dark:bg-slate-900/60 border-slate-100 dark:border-slate-800/80 shadow-xl dark:shadow-teal-950/5'
         } hover:shadow-2xl`}
       >
@@ -273,7 +273,7 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({ item, votes, 
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button onClick={handleSaveEdit} className="bg-[#1D9E75] hover:bg-[#15805e]">
+                    <Button onClick={handleSaveEdit} className="bg-[#16795A] hover:bg-[#115E46]">
                       <Save className="w-4 h-4 mr-2" /> Save Changes
                     </Button>
                   </DialogFooter>
@@ -287,7 +287,7 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({ item, votes, 
                 disabled={isSuggesting}
                 variant="outline"
                 size="sm"
-                className="h-8 text-xs font-bold text-[#1D9E75] border-teal-200 bg-teal-50 hover:bg-teal-100 hover:text-[#15805e] transition-colors shrink-0"
+                className="h-8 text-xs font-bold text-[#16795A] border-teal-200 bg-teal-50 hover:bg-teal-100 hover:text-[#115E46] transition-colors shrink-0"
               >
                 {isSuggesting ? <Loader2 className="w-3 h-3 mr-1.5 animate-spin" /> : <Sparkles className="w-3 h-3 mr-1.5" />}
                 Re-suggest

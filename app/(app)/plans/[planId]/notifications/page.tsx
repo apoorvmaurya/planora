@@ -127,7 +127,7 @@ export default function NotificationsPage() {
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white transition-colors duration-550">Momentum Engine</h1>
         <p className="text-slate-500 dark:text-slate-400 mt-1 flex flex-wrap items-center gap-2 transition-colors duration-500">
           Manage AI-powered push notifications for this trip. 
-          <span className="inline-flex items-center gap-1 text-[#1D9E75] dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 px-2 py-0.5 rounded-full text-xs font-semibold transition-colors duration-500">
+          <span className="inline-flex items-center gap-1 text-[#16795A] dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 px-2 py-0.5 rounded-full text-xs font-semibold transition-colors duration-500">
             <Sparkles className="w-3 h-3" /> Powered by AI
           </span>
         </p>
@@ -171,7 +171,7 @@ export default function NotificationsPage() {
                 checked={!preferences[trigger.key]} 
                 onCheckedChange={(checked: boolean) => handleToggle(trigger.key, !checked)}
                 disabled={isSaving}
-                className="data-[state=checked]:bg-[#1D9E75]"
+                className="data-[state=checked]:bg-[#16795A]"
               />
             </div>
           </motion.div>

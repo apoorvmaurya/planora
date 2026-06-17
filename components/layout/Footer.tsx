@@ -46,7 +46,7 @@ export function Footer() {
     <footer className="w-full border-t border-slate-200/50 dark:border-slate-800/60 bg-slate-50/80 dark:bg-slate-950/60 backdrop-blur-xl transition-colors duration-500 relative overflow-hidden">
       {/* Subtle ambient glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -bottom-24 left-[50%] -translate-x-1/2 w-[500px] h-[500px] bg-[#1D9E75]/5 dark:bg-[#1D9E75]/10 rounded-full blur-[120px]" />
+        <div className="absolute -bottom-24 left-[50%] -translate-x-1/2 w-[500px] h-[500px] bg-[#16795A]/5 dark:bg-[#16795A]/10 rounded-full blur-[120px]" />
         <div className="absolute -top-16 right-[15%] w-48 h-48 bg-blue-500/[0.03] dark:bg-blue-500/[0.08] rounded-full blur-[80px]" />
       </div>
 
@@ -61,7 +61,7 @@ export function Footer() {
               {/* Brand block — Spans left side on desktop/tablet, centered on mobile */}
               <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-5">
                 <Link href="/" className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white hover:opacity-90 transition-opacity">
-                  Plan<span className="text-[#1D9E75]">ora</span>
+                  Plan<span className="text-[#16795A]">ora</span>
                 </Link>
                 <p className="text-slate-500 dark:text-slate-400 text-[15px] leading-[1.7] max-w-sm">
                   Turning &quot;we should hang out&quot; into &quot;here&apos;s the boarding pass&quot;. The ultimate collaborative trip planner.
@@ -98,10 +98,10 @@ export function Footer() {
                       <li key={link.name}>
                         <Link
                           href={link.href}
-                          className="relative text-slate-500 dark:text-slate-400 hover:text-[#1D9E75] dark:hover:text-teal-400 font-medium text-sm sm:text-[15px] transition-colors duration-300 group inline-block"
+                          className="relative text-slate-500 dark:text-slate-400 hover:text-[#16795A] dark:hover:text-teal-400 font-medium text-sm sm:text-[15px] transition-colors duration-300 group inline-block"
                         >
                           {link.name}
-                          <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-[#1D9E75] dark:bg-teal-400 transition-all duration-300 group-hover:w-full rounded-full" />
+                          <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-[#16795A] dark:bg-teal-400 transition-all duration-300 group-hover:w-full rounded-full" />
                         </Link>
                       </li>
                     ))}
@@ -118,10 +118,10 @@ export function Footer() {
                       <li key={link.name}>
                         <Link
                           href={link.href}
-                          className="relative text-slate-500 dark:text-slate-400 hover:text-[#1D9E75] dark:hover:text-teal-400 font-medium text-sm sm:text-[15px] transition-colors duration-300 group inline-block"
+                          className="relative text-slate-500 dark:text-slate-400 hover:text-[#16795A] dark:hover:text-teal-400 font-medium text-sm sm:text-[15px] transition-colors duration-300 group inline-block"
                         >
                           {link.name}
-                          <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-[#1D9E75] dark:bg-teal-400 transition-all duration-300 group-hover:w-full rounded-full" />
+                          <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-[#16795A] dark:bg-teal-400 transition-all duration-300 group-hover:w-full rounded-full" />
                         </Link>
                       </li>
                     ))}
@@ -144,9 +144,9 @@ export function Footer() {
                 <input
                   type="email"
                   placeholder="your.email@domain.com"
-                  className="w-full bg-white/70 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-800/80 rounded-xl py-3.5 pl-5 pr-[5.5rem] text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/30 focus:border-[#1D9E75] dark:focus:border-teal-500 transition-all duration-300 shadow-sm"
+                  className="w-full bg-white/70 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-800/80 rounded-xl py-3.5 pl-5 pr-[5.5rem] text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#16795A]/30 focus:border-[#16795A] dark:focus:border-teal-500 transition-all duration-300 shadow-sm"
                 />
-                <button className="absolute right-2 bg-[#1D9E75] hover:bg-[#15805e] text-white text-xs font-bold px-5 py-2.5 rounded-lg transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md hover:shadow-[#1D9E75]/20">
+                <button className="absolute right-2 bg-[#16795A] hover:bg-[#115E46] text-white text-xs font-bold px-5 py-2.5 rounded-lg transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md hover:shadow-[#16795A]/20">
                   Join
                 </button>
               </div>
@@ -158,7 +158,7 @@ export function Footer() {
         <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200/60 dark:via-slate-800/60 to-transparent" />
 
         {/* ===== Bottom Bar ===== */}
-        <div className="py-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-slate-400 dark:text-slate-500">
+        <div className="py-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-slate-500 dark:text-[#8BA0B5]">
           <p className="font-medium">
             © {mounted ? new Date().getFullYear() : 2026} Planora. All rights reserved.
           </p>

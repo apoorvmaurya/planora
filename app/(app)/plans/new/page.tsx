@@ -164,7 +164,7 @@ export default function NewPlanPage() {
             </div>
             <div className="flex items-center gap-2">
               {[1, 2, 3, 4].map(s => (
-                <div key={s} className={`w-3 h-3 rounded-full transition-all duration-300 ${step >= s ? 'bg-[#1D9E75] scale-110' : 'bg-slate-200 dark:bg-slate-800'}`} />
+                <div key={s} className={`w-3 h-3 rounded-full transition-all duration-300 ${step >= s ? 'bg-[#16795A] scale-110' : 'bg-slate-200 dark:bg-slate-800'}`} />
               ))}
             </div>
           </div>
@@ -238,7 +238,7 @@ export default function NewPlanPage() {
                 </div>
 
                 <div className="flex justify-end pt-6">
-                  <Button onClick={() => setStep(2)} disabled={!destination || !startDate || !endDate || !budget} className="bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl h-12 px-8 shadow-sm">
+                  <Button onClick={() => setStep(2)} disabled={!destination || !startDate || !endDate || !budget} className="bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl h-12 px-8 shadow-sm">
                     Next <ChevronRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
@@ -255,7 +255,7 @@ export default function NewPlanPage() {
                     onClick={() => setGroupId('solo')}
                     className={`p-5 rounded-3xl border-2 cursor-pointer transition-all duration-300 ${
                       groupId === 'solo' 
-                        ? 'border-[#1D9E75] bg-teal-50/50 dark:bg-teal-950/20 shadow-md shadow-teal-500/5' 
+                        ? 'border-[#16795A] bg-teal-50/50 dark:bg-teal-950/20 shadow-md shadow-teal-500/5' 
                         : 'border-slate-100 dark:border-slate-800/80 hover:border-slate-200 dark:hover:border-slate-700 bg-white dark:bg-slate-950'
                     }`}
                   >
@@ -271,7 +271,7 @@ export default function NewPlanPage() {
                       onClick={() => setGroupId(group.id)}
                       className={`p-5 rounded-3xl border-2 cursor-pointer transition-all duration-300 ${
                         groupId === group.id 
-                          ? 'border-[#1D9E75] bg-teal-50/50 dark:bg-teal-950/20 shadow-md shadow-teal-500/5' 
+                          ? 'border-[#16795A] bg-teal-50/50 dark:bg-teal-950/20 shadow-md shadow-teal-500/5' 
                           : 'border-slate-100 dark:border-slate-800/80 hover:border-slate-200 dark:hover:border-slate-700 bg-white dark:bg-slate-950'
                       }`}
                     >
@@ -286,7 +286,7 @@ export default function NewPlanPage() {
 
                 <div className="flex justify-between pt-6">
                   <Button variant="ghost" onClick={() => setStep(1)} className="rounded-xl h-12 px-8 border border-slate-200 dark:border-slate-850 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-350 font-semibold transition-colors duration-300">Back</Button>
-                  <Button onClick={() => setStep(3)} disabled={!groupId} className="bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl h-12 px-8 shadow-sm">
+                  <Button onClick={() => setStep(3)} disabled={!groupId} className="bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl h-12 px-8 shadow-sm">
                     Next <ChevronRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
@@ -338,7 +338,7 @@ export default function NewPlanPage() {
 
                 <div className="flex justify-between pt-6">
                   <Button variant="ghost" onClick={() => setStep(2)} className="rounded-xl h-12 px-8 border border-slate-200 dark:border-slate-855 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold transition-colors duration-300">Back</Button>
-                  <Button onClick={() => setStep(4)} className="bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl h-12 px-8 shadow-sm">
+                  <Button onClick={() => setStep(4)} className="bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl h-12 px-8 shadow-sm">
                     Next <ChevronRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
@@ -359,7 +359,7 @@ export default function NewPlanPage() {
                   </div>
                 </div>
 
-                <div className="bg-teal-50 dark:bg-teal-950/20 text-[#1D9E75] dark:text-teal-400 p-4 rounded-xl flex items-start gap-3 text-sm transition-colors duration-500">
+                <div className="bg-teal-50 dark:bg-teal-950/20 text-[#16795A] dark:text-teal-400 p-4 rounded-xl flex items-start gap-3 text-sm transition-colors duration-500">
                   <Sparkles className="w-5 h-5 shrink-0 mt-0.5" />
                   <p>Planora AI will analyze all group members' locations and preferences alongside your inputs to craft a customized itinerary.</p>
                 </div>
@@ -377,14 +377,14 @@ export default function NewPlanPage() {
       ) : (
         <div className="space-y-8">
           <div className="bg-slate-900 dark:bg-gradient-to-br dark:from-[#0b1b17] dark:via-slate-900 dark:to-slate-950 text-white rounded-3xl p-8 text-center relative overflow-hidden shadow-2xl border border-transparent dark:border-slate-800/80 transition-colors duration-500">
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#1D9E75]/10 to-transparent pointer-events-none" />
-            <Sparkles className="w-12 h-12 text-[#1D9E75] dark:text-teal-400 mx-auto mb-4 animate-pulse transition-colors duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#16795A]/10 to-transparent pointer-events-none" />
+            <Sparkles className="w-12 h-12 text-[#16795A] dark:text-teal-400 mx-auto mb-4 animate-pulse transition-colors duration-500" />
             <h2 className="text-2xl font-bold mb-2">Planora AI is crafting your trip...</h2>
             <p className="text-slate-400 dark:text-slate-400 max-w-md mx-auto">Analyzing destinations, checking distances, optimizing budgets, and piecing together the perfect itinerary for your group.</p>
             
             <div className="w-full bg-slate-800 dark:bg-slate-950/80 h-2 rounded-full mt-8 overflow-hidden transition-colors duration-500">
               <motion.div 
-                className="h-full bg-[#1D9E75]"
+                className="h-full bg-[#16795A]"
                 initial={{ width: "0%" }}
                 animate={{ width: isLoading ? "80%" : "100%" }}
                 transition={{ duration: 10, ease: "linear" }}
@@ -414,12 +414,12 @@ export default function NewPlanPage() {
                     {day.itinerary_items?.map((item: any, j: number) => (
                       <div key={j} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                         <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 transition-colors duration-500">
-                          <Check className="w-4 h-4 text-[#1D9E75]" />
+                          <Check className="w-4 h-4 text-[#16795A]" />
                         </div>
                         <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-slate-50 dark:bg-slate-950/30 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/80 transition-colors duration-500">
                           <div className="flex justify-between items-start mb-1 gap-2">
                             <h4 className="font-bold text-slate-900 dark:text-white transition-colors duration-500">{item.title}</h4>
-                            <span className="text-xs font-bold text-[#1D9E75] dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 px-2 py-1 rounded-md shrink-0 transition-colors duration-500">{item.time_of_day}</span>
+                            <span className="text-xs font-bold text-[#16795A] dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 px-2 py-1 rounded-md shrink-0 transition-colors duration-500">{item.time_of_day}</span>
                           </div>
                           <p className="text-sm text-slate-650 dark:text-slate-350 mb-3 transition-colors duration-500">{item.description}</p>
                           <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 transition-colors duration-500">

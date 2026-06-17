@@ -101,7 +101,7 @@ export default function ProfilePage() {
     <div className="pb-12 max-w-4xl mx-auto space-y-8">
       {/* Cover & Header */}
       <div className="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-100 dark:border-slate-800/80 shadow-sm shadow-slate-200/50 dark:shadow-none transition-colors duration-500">
-        <div className="h-48 bg-gradient-to-r from-teal-400 via-[#1D9E75] to-emerald-600 relative group cursor-pointer">
+        <div className="h-48 bg-gradient-to-r from-teal-400 via-[#16795A] to-emerald-600 relative group cursor-pointer">
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
             <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white font-medium flex items-center gap-2">
               <Camera className="w-5 h-5" /> Edit Cover
@@ -147,7 +147,7 @@ export default function ProfilePage() {
             <div className="flex flex-wrap items-center gap-6 text-sm font-medium text-slate-500 dark:text-slate-400">
               {(profile?.city || profile?.country) && (
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-[#1D9E75]" />
+                  <MapPin className="w-4 h-4 text-[#16795A]" />
                   {profile.city}{profile.city && profile.country ? ", " : ""}{profile.country}
                 </div>
               )}
@@ -156,7 +156,7 @@ export default function ProfilePage() {
             {profile?.travel_preferences && (
               <div className="flex flex-wrap gap-2">
                 {[...(profile.travel_preferences.budget || []), ...(profile.travel_preferences.style || []), ...(profile.travel_preferences.company || [])].map((pref, i) => (
-                  <Badge key={i} variant="secondary" className="bg-teal-50 dark:bg-teal-950/20 text-[#1D9E75] dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-teal-950/45 border-none rounded-lg px-3 py-1 transition-colors duration-500">
+                  <Badge key={i} variant="secondary" className="bg-teal-50 dark:bg-teal-950/20 text-[#16795A] dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-teal-950/45 border-none rounded-lg px-3 py-1 transition-colors duration-500">
                     {pref}
                   </Badge>
                 ))}
@@ -197,12 +197,12 @@ export default function ProfilePage() {
         ) : tripMemories.length === 0 ? (
           <div className="bg-white dark:bg-slate-900/50 rounded-3xl p-12 border border-slate-100 dark:border-slate-800 border-dashed text-center flex flex-col items-center transition-colors duration-500">
             <div className="w-16 h-16 bg-teal-50 dark:bg-teal-950/20 rounded-full flex items-center justify-center mb-4">
-              <Camera className="w-8 h-8 text-[#1D9E75] dark:text-teal-400" />
+              <Camera className="w-8 h-8 text-[#16795A] dark:text-teal-400" />
             </div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 transition-colors duration-550">No memories yet</h3>
             <p className="text-slate-500 dark:text-slate-400 max-w-sm mb-6 transition-colors duration-500">Capture moments from your trips and they will appear here as a beautiful gallery.</p>
             <Link href="/plans">
-              <Button className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl text-white font-semibold shadow-md shadow-teal-550/20">
+              <Button className="bg-[#16795A] hover:bg-[#115E46] rounded-xl text-white font-semibold shadow-md shadow-teal-550/20">
                 Go to Plans
               </Button>
             </Link>

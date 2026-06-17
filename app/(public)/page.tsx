@@ -31,7 +31,7 @@ const GithubIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-2-7-2" /></svg>
 );
 
-const TEAL = "#1D9E75";
+const TEAL = "#16795A";
 
 export default function PublicHomePage() {
   const [scrolled, setScrolled] = useState(false);
@@ -93,7 +93,7 @@ export default function PublicHomePage() {
               <Link href="/login" className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 text-sm font-medium transition-colors duration-200 px-3 py-1.5">
                 Login
               </Link>
-              <Link href="/signup" className="bg-[#1D9E75] hover:bg-[#15805e] text-white px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 shadow-sm shadow-[#1D9E75]/30 hover:shadow-md hover:shadow-[#1D9E75]/40">
+              <Link href="/signup" className="bg-[#16795A] hover:bg-[#115E46] text-white px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 shadow-sm shadow-[#16795A]/30 hover:shadow-md hover:shadow-[#16795A]/40">
                 Get started free
               </Link>
             </div>
@@ -137,7 +137,7 @@ export default function PublicHomePage() {
                 <Link href="/coming-soon" onClick={() => setMobileMenuOpen(false)} className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition-colors py-2">Coming Soon</Link>
                 <hr className="border-slate-100 dark:border-slate-900" />
                 <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition-colors py-2">Login</Link>
-                <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="bg-[#1D9E75] hover:bg-[#15805e] text-white text-center px-6 py-3 rounded-full font-semibold transition-all shadow-sm">
+                <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="bg-[#16795A] hover:bg-[#115E46] text-white text-center px-6 py-3 rounded-full font-semibold transition-all shadow-sm">
                   Get started free
                 </Link>
               </div>
@@ -163,7 +163,7 @@ export default function PublicHomePage() {
                 Because group plans shouldn&apos;t die in the group chat. Planora aligns your friends, budgets, and schedules in one magical workspace.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/signup" className="flex items-center justify-center bg-[#1D9E75] hover:bg-[#15805e] text-white px-8 py-3.5 rounded-full font-semibold text-lg transition-all shadow-lg shadow-[#1D9E75]/30 hover:shadow-[#1D9E75]/50">
+                <Link href="/signup" className="flex items-center justify-center bg-[#16795A] hover:bg-[#115E46] text-white px-8 py-3.5 rounded-full font-semibold text-lg transition-all shadow-lg shadow-[#16795A]/30 hover:shadow-[#16795A]/50">
                   Start planning free
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
@@ -221,7 +221,7 @@ export default function PublicHomePage() {
               <motion.div
                 animate={{ y: [0, -10, 0] }}
                 transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut", delay: 0.5 }}
-                className="absolute bottom-[20%] left-[20%] bg-[#1D9E75] text-white p-4 rounded-2xl shadow-xl shadow-[#1D9E75]/30 z-40 flex items-center gap-4"
+                className="absolute bottom-[20%] left-[20%] bg-[#16795A] text-white p-4 rounded-2xl shadow-xl shadow-[#16795A]/30 z-40 flex items-center gap-4"
               >
                 <div className="bg-white/20 p-2 rounded-full shrink-0">
                   <Zap className="w-5 h-5 text-yellow-300" />
@@ -258,9 +258,9 @@ export default function PublicHomePage() {
                   className="bg-slate-50 dark:bg-slate-900 rounded-[2rem] p-8 lg:p-10 border border-slate-100 dark:border-slate-800 text-center relative overflow-hidden group hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-black/40 transition-all duration-300"
                 >
                   <div className="absolute -top-6 -right-6 p-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500 rotate-12">
-                    <Sparkles className="w-32 h-32 text-[#1D9E75]" />
+                    <Sparkles className="w-32 h-32 text-[#16795A]" />
                   </div>
-                  <h3 className="text-5xl lg:text-6xl font-black text-[#1D9E75] mb-4 tracking-tight">{item.stat}</h3>
+                  <h3 className="text-5xl lg:text-6xl font-black text-[#16795A] mb-4 tracking-tight">{item.stat}</h3>
                   <p className="text-xl font-bold text-slate-900 dark:text-slate-50 mb-3">{item.text}</p>
                   <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{item.desc}</p>
                 </motion.div>
@@ -273,7 +273,7 @@ export default function PublicHomePage() {
         <section id="features" className="py-24 bg-slate-50/50 dark:bg-slate-950/20 transition-colors duration-500">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto mb-20">
-              <span className="text-[#1D9E75] font-bold tracking-wider uppercase text-sm mb-3 block">Features</span>
+              <span className="text-[#16795A] font-bold tracking-wider uppercase text-sm mb-3 block">Features</span>
               <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 dark:text-slate-50 mb-6 tracking-tight">Everything you need, nothing you don&apos;t</h2>
             </div>
 
@@ -294,8 +294,8 @@ export default function PublicHomePage() {
                   key={i}
                   className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:shadow-teal-900/5 dark:hover:shadow-black/40 transition-all duration-300 group"
                 >
-                  <div className="bg-teal-50 dark:bg-teal-950/45 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-[#1D9E75] transition-all duration-300">
-                    <feature.icon className="w-7 h-7 text-[#1D9E75] group-hover:text-white transition-colors" />
+                  <div className="bg-teal-50 dark:bg-teal-950/45 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-[#16795A] transition-all duration-300">
+                    <feature.icon className="w-7 h-7 text-[#16795A] group-hover:text-white transition-colors" />
                   </div>
                   <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50 mb-3">{feature.title}</h3>
                   <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{feature.desc}</p>
@@ -307,7 +307,7 @@ export default function PublicHomePage() {
 
         {/* How It Works */}
         <section id="how-it-works" className="bg-slate-900 dark:bg-slate-950 text-white py-24 lg:py-32 rounded-[3rem] mx-4 sm:mx-6 lg:mx-8 my-12 relative overflow-hidden shadow-2xl transition-colors duration-500 border border-slate-800/20 dark:border-slate-800/80">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#1D9E75]/10 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#16795A]/10 to-transparent"></div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center max-w-3xl mx-auto mb-20">
               <h2 className="text-3xl lg:text-5xl font-bold mb-6 tracking-tight">How Planora works</h2>
@@ -325,7 +325,7 @@ export default function PublicHomePage() {
                 { step: "04", title: "Momentum kicks in", desc: "Book and go!" }
               ].map((item, i) => (
                 <div key={i} className="flex flex-col items-center text-center mb-16 md:mb-0 relative group">
-                  <div className="w-24 h-24 bg-slate-800/80 dark:bg-slate-900/80 backdrop-blur-sm border-4 border-slate-900 dark:border-slate-950 rounded-full flex items-center justify-center mb-6 group-hover:bg-[#1D9E75] transition-all duration-300 shadow-xl group-hover:shadow-[#1D9E75]/50 group-hover:scale-110">
+                  <div className="w-24 h-24 bg-slate-800/80 dark:bg-slate-900/80 backdrop-blur-sm border-4 border-slate-900 dark:border-slate-950 rounded-full flex items-center justify-center mb-6 group-hover:bg-[#16795A] transition-all duration-300 shadow-xl group-hover:shadow-[#16795A]/50 group-hover:scale-110">
                     <span className="text-2xl font-black text-slate-300 group-hover:text-white transition-colors">{item.step}</span>
                   </div>
                   <h3 className="text-xl font-bold mb-3">{item.title}</h3>

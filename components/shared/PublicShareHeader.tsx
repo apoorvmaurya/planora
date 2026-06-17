@@ -39,7 +39,7 @@ export function PublicShareHeader() {
       >
         <div className="flex justify-between items-center">
           <Link href="/" className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-            Plan<span className="text-[#1D9E75]">ora</span>
+            Plan<span className="text-[#16795A]">ora</span>
           </Link>
           <div className="flex items-center gap-3">
             {mounted && (
@@ -53,7 +53,7 @@ export function PublicShareHeader() {
             )}
             <Link 
               href="/" 
-              className="text-xs sm:text-sm font-semibold text-[#1D9E75] hover:text-white dark:hover:text-white bg-teal-50 dark:bg-teal-950/40 hover:bg-[#1D9E75] dark:hover:bg-[#1D9E75] px-4 py-2 rounded-full transition-all duration-200"
+              className="text-xs sm:text-sm font-semibold text-[#16795A] hover:text-white dark:hover:text-white bg-teal-50 dark:bg-teal-950/40 hover:bg-[#16795A] dark:hover:bg-[#16795A] px-4 py-2 rounded-full transition-all duration-200"
             >
               Create your own trip
             </Link>

@@ -69,7 +69,7 @@ export default function GuidesPage() {
             Back to Home
           </Link>
           <div className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Plan<span className="text-[#1D9E75]">ora</span>
+            Plan<span className="text-[#16795A]">ora</span>
           </div>
         </motion.div>
       </motion.nav>
@@ -82,7 +82,7 @@ export default function GuidesPage() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-[#1D9E75]/10 border border-[#1D9E75]/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider text-[#1D9E75] uppercase"
+            className="inline-flex items-center gap-2 bg-[#16795A]/10 border border-[#16795A]/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider text-[#16795A] uppercase"
           >
             <HelpCircle className="w-3.5 h-3.5" />
             Knowledge Base
@@ -118,7 +118,7 @@ export default function GuidesPage() {
                   onClick={() => setOpenGuide(isOpen ? null : index)}
                   className="w-full px-6 sm:px-8 py-5 flex items-center justify-between text-left font-bold text-slate-900 dark:text-white group cursor-pointer"
                 >
-                  <span className="text-base sm:text-lg group-hover:text-[#1D9E75] transition-colors">{guide.title}</span>
+                  <span className="text-base sm:text-lg group-hover:text-[#16795A] transition-colors">{guide.title}</span>
                   <ChevronDown
                     className={`w-5 h-5 text-slate-400 group-hover:text-slate-650 transition-transform duration-300 ${
                       isOpen ? "rotate-180" : ""
@@ -155,7 +155,7 @@ export default function GuidesPage() {
               Use our built-in assistant **PlaBot** at the bottom-right corner of the app. It can guide you through trip setups, split math details, or itinerary updates in real-time.
             </p>
           </div>
-          <div className="bg-[#1D9E75]/10 border border-[#1D9E75]/35 px-4 py-2 rounded-2xl text-xs font-bold text-[#1D9E75] uppercase tracking-wide shrink-0">
+          <div className="bg-[#16795A]/10 border border-[#16795A]/35 px-4 py-2 rounded-2xl text-xs font-bold text-[#16795A] uppercase tracking-wide shrink-0">
             <Sparkles className="w-4 h-4 inline-block mr-1.5 align-middle" /> Ask PlaBot
           </div>
         </section>

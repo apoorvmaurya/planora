@@ -66,8 +66,20 @@ Deno.serve(async (req) => {
         const { data: expenses } = await supabase.from('plan_expenses').select('amount').eq('plan_id', plan.id)
         const totalSpent = expenses?.reduce((acc: number, exp: any) => acc + exp.amount, 0) || 0
 
-        const { data: items } = await supabase.from('itinerary_items').select('title, vote_count').eq('plan_id', plan.id).order('vote_count', { ascending: false }).limit(3)
-        const topItems = items?.map((i: any) => i.title).join(', ') || ''
+        const { data: items } = await supabase.from('itinerary_items').select('id, title').eq('plan_id', plan.id)
+        const { data: votes } = await supabase.from('member_votes').select('item_id').eq('plan_id', plan.id).eq('vote', 'up')
+        
+        const voteCounts: Record<string, number> = {}
+        votes?.forEach((v: any) => {
+          voteCounts[v.item_id] = (voteCounts[v.item_id] || 0) + 1
+        })
+        
+        const sortedItems = (items || [])
+          .map((i: any) => ({ ...i, vote_count: voteCounts[i.id] || 0 }))
+          .sort((a: any, b: any) => b.vote_count - a.vote_count)
+          .slice(0, 3)
+          
+        const topItems = sortedItems.map((i: any) => i.title).join(', ') || ''
 
         const days = Math.ceil((new Date(plan.end_date).getTime() - new Date(plan.start_date).getTime()) / (1000 * 60 * 60 * 24)) || 1
 
@@ -166,10 +178,10 @@ Deno.serve(async (req) => {
                 subject: copy.title,
                 html: `
                   <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                    <h1 style="color: #1D9E75;">${copy.title}</h1>
+                    <h1 style="color: #16795A;">${copy.title}</h1>
                     <p style="font-size: 16px; color: #333;">${copy.body}</p>
                     <p style="margin-top: 20px;">
-                      <a href="https://planora-plum-beta.vercel.app/plans/${plan.id}" style="display: inline-block; background-color: #1D9E75; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+                      <a href="https://planora-plum-beta.vercel.app/plans/${plan.id}" style="display: inline-block; background-color: #16795A; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
                         View Itinerary
                       </a>
                     </p>

@@ -2,7 +2,7 @@
   "name": "Planora",
   "short_name": "Planora",
   "description": "Collaborative trip planner",
-  "theme_color": "#1D9E75",
+  "theme_color": "#16795A",
   "background_color": "#ffffff",
   "display": "standalone",
   "start_url": "/dashboard",

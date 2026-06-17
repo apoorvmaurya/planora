@@ -214,7 +214,7 @@ export function AddMemoryModal({ planId, isOpen, onClose, onSuccess }: AddMemory
               className={`
                 border-2 border-dashed rounded-3xl p-10 text-center cursor-pointer transition-all duration-300
                 ${dragActive 
-                  ? 'border-[#1D9E75] bg-teal-50/50 dark:bg-teal-950/20' 
+                  ? 'border-[#16795A] bg-teal-50/50 dark:bg-teal-950/20' 
                   : 'border-slate-200 dark:border-slate-800 hover:border-slate-350 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900/40'}
               `}
             >
@@ -257,7 +257,7 @@ export function AddMemoryModal({ planId, isOpen, onClose, onSuccess }: AddMemory
                           placeholder="Add a caption..."
                           value={captions[idx] || ''}
                           onChange={e => setCaptions(prev => ({ ...prev, [idx]: e.target.value }))}
-                          className="w-full text-sm bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl px-3 py-2 outline-none focus:border-[#1D9E75] focus:ring-1 focus:ring-[#1D9E75] transition-all duration-300"
+                          className="w-full text-sm bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl px-3 py-2 outline-none focus:border-[#16795A] focus:ring-1 focus:ring-[#16795A] transition-all duration-300"
                         />
                       </div>
                       <button 
@@ -280,7 +280,7 @@ export function AddMemoryModal({ planId, isOpen, onClose, onSuccess }: AddMemory
             <Button 
               onClick={handleUpload} 
               disabled={files.length === 0 || isUploading}
-              className="bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl min-w-[120px] shadow-sm hover:shadow cursor-pointer transition-all duration-200"
+              className="bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl min-w-[120px] shadow-sm hover:shadow cursor-pointer transition-all duration-200"
             >
               {isUploading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Upload Memories'}
             </Button>

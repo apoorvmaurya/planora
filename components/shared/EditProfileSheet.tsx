@@ -218,11 +218,11 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
             {/* Avatar Upload */}
             <div className="flex flex-col items-center gap-4">
               <div className="relative group">
-                <div className="w-24 h-24 rounded-full bg-slate-100 dark:bg-slate-900 border-2 border-dashed border-slate-300 dark:border-slate-800 flex items-center justify-center overflow-hidden cursor-pointer hover:border-[#1D9E75] hover:bg-teal-50 dark:hover:bg-teal-950/20 transition-all duration-300">
+                <div className="w-24 h-24 rounded-full bg-slate-100 dark:bg-slate-900 border-2 border-dashed border-slate-300 dark:border-slate-800 flex items-center justify-center overflow-hidden cursor-pointer hover:border-[#16795A] hover:bg-teal-50 dark:hover:bg-teal-950/20 transition-all duration-300">
                   {avatarPreview ? (
                     <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
                   ) : (
-                    <Upload className="w-8 h-8 text-slate-400 dark:text-slate-500 group-hover:text-[#1D9E75] dark:group-hover:text-teal-400" />
+                    <Upload className="w-8 h-8 text-slate-400 dark:text-slate-500 group-hover:text-[#16795A] dark:group-hover:text-teal-400" />
                   )}
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
                     <Upload className="w-6 h-6 text-white" />
@@ -246,7 +246,7 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
                     <FormItem>
                       <FormLabel className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Full Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Jane Doe" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#1D9E75] transition-all duration-300" {...field} />
+                        <Input placeholder="Jane Doe" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#16795A] transition-all duration-300" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -260,7 +260,7 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
                     <FormItem>
                       <FormLabel className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Username</FormLabel>
                       <FormControl>
-                        <Input placeholder="janedoe" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#1D9E75] transition-all duration-300" {...field} />
+                        <Input placeholder="janedoe" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#16795A] transition-all duration-300" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -276,7 +276,7 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
                       <FormControl>
                         <Textarea 
                           placeholder="Tell us about your travel style..." 
-                          className="resize-none h-24 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#1D9E75] transition-all duration-300"
+                          className="resize-none h-24 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#16795A] transition-all duration-300"
                           {...field} 
                         />
                       </FormControl>
@@ -291,7 +291,7 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
                     <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
                     <Input 
                       placeholder="Search for your city..." 
-                      className="pl-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#1D9E75] transition-all duration-300"
+                      className="pl-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#16795A] transition-all duration-300"
                       value={locationQuery}
                       onChange={(e) => setLocationQuery(e.target.value)}
                     />
@@ -393,7 +393,7 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
           <Button 
             type="submit" 
             form="profile-form" 
-            className="w-full bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl h-12 shadow-sm hover:shadow cursor-pointer transition-all duration-200"
+            className="w-full bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl h-12 shadow-sm hover:shadow cursor-pointer transition-all duration-200"
             disabled={isUpdating}
           >
             {isUpdating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}

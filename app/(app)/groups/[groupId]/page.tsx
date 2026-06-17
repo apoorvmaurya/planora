@@ -76,10 +76,10 @@ export default function GroupDetailPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center">
-                <Map className="w-6 h-6 mr-2 text-[#1D9E75]" /> Group Plans
+                <Map className="w-6 h-6 mr-2 text-[#16795A]" /> Group Plans
               </h2>
               <Link href={`/plans/new?groupId=${groupId}`}>
-                <Button className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl h-10">
+                <Button className="bg-[#16795A] hover:bg-[#115E46] rounded-xl h-10">
                   <Plus className="w-4 h-4 mr-1" /> New Plan
                 </Button>
               </Link>
@@ -104,7 +104,7 @@ export default function GroupDetailPage() {
                         damping: 30,
                         delay: i * 0.05
                       }}
-                      className="bg-white dark:bg-slate-900/50 backdrop-blur-md p-5 rounded-3xl border border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row gap-4 items-center group cursor-pointer hover:border-[#1D9E75]/40 dark:hover:border-teal-500/40 hover:shadow-lg dark:hover:shadow-teal-950/10 transition-all duration-300 mb-4"
+                      className="bg-white dark:bg-slate-900/50 backdrop-blur-md p-5 rounded-3xl border border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row gap-4 items-center group cursor-pointer hover:border-[#16795A]/40 dark:hover:border-teal-500/40 hover:shadow-lg dark:hover:shadow-teal-950/10 transition-all duration-300 mb-4"
                   >
                     <div className="w-full sm:w-32 h-24 bg-slate-100 dark:bg-slate-800 rounded-2xl overflow-hidden shrink-0 transition-colors duration-500">
                       {plan.cover_image_url ? (
@@ -117,7 +117,7 @@ export default function GroupDetailPage() {
                     </div>
                     <div className="flex-1 w-full">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100 group-hover:text-[#1D9E75] dark:group-hover:text-teal-400 transition-colors duration-300">{plan.title}</h3>
+                        <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100 group-hover:text-[#16795A] dark:group-hover:text-teal-400 transition-colors duration-300">{plan.title}</h3>
                         <Badge variant="secondary" className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 transition-colors duration-500">{plan.status}</Badge>
                       </div>
                       <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1 mb-3 transition-colors duration-500">{plan.description}</p>
@@ -148,7 +148,7 @@ export default function GroupDetailPage() {
                 className={`px-3 rounded-lg h-8 text-xs font-bold transition-colors ${
                   copiedLink
                     ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20'
-                    : 'text-[#1D9E75] hover:text-[#15805e] hover:bg-teal-50 dark:hover:bg-teal-950/20'
+                    : 'text-[#16795A] hover:text-[#115E46] hover:bg-teal-50 dark:hover:bg-teal-950/20'
                 }`}
               >
                 {copiedLink ? (
@@ -175,7 +175,7 @@ export default function GroupDetailPage() {
                     <div>
                       <p className="font-semibold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                         {member.user.full_name} 
-                        {member.role === 'admin' && <Shield className="w-3 h-3 text-[#1D9E75]" />}
+                        {member.role === 'admin' && <Shield className="w-3 h-3 text-[#16795A]" />}
                       </p>
                       <p className="text-xs text-slate-500 dark:text-slate-400">@{member.user.username}</p>
                     </div>

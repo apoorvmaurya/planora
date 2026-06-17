@@ -121,7 +121,7 @@ export default function SignupPage() {
       >
         <div className="text-center mb-8">
           <Link href="/" className="text-3xl font-bold tracking-tight inline-block mb-2">
-            Plan<span className="text-[#1D9E75]">ora</span>
+            Plan<span className="text-[#16795A]">ora</span>
           </Link>
           <p className="text-slate-500 dark:text-slate-400">Create an account to start planning.</p>
         </div>
@@ -164,7 +164,7 @@ export default function SignupPage() {
                     <button 
                       type="button" 
                       onClick={suggestPassword}
-                      className="text-xs text-[#1D9E75] hover:underline flex items-center font-medium"
+                      className="text-xs text-[#16795A] hover:underline flex items-center font-medium"
                     >
                       <KeyRound className="w-3 h-3 mr-1" /> Suggest strong password
                     </button>
@@ -244,7 +244,7 @@ export default function SignupPage() {
 
         <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-8">
           Already have an account?{" "}
-          <Link href="/login" className="text-[#1D9E75] font-semibold hover:underline">
+          <Link href="/login" className="text-[#16795A] font-semibold hover:underline">
             Sign in
           </Link>
         </p>

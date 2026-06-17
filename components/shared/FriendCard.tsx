@@ -65,7 +65,7 @@ export const FriendCard = memo(function FriendCard({
           <Button 
             onClick={() => onAdd?.(user.id)} 
             disabled={isProcessing}
-            className="bg-[#1D9E75] hover:bg-[#15805e] w-full sm:w-auto rounded-xl shadow-sm hover:shadow transition-all duration-200 cursor-pointer"
+            className="bg-[#16795A] hover:bg-[#115E46] w-full sm:w-auto rounded-xl shadow-sm hover:shadow transition-all duration-200 cursor-pointer"
           >
             <UserPlus className="w-4 h-4 mr-2" /> Add
           </Button>
@@ -84,7 +84,7 @@ export const FriendCard = memo(function FriendCard({
             <Button 
               onClick={() => onAccept?.(friendshipId)} 
               disabled={isProcessing}
-              className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl shadow-sm hover:shadow cursor-pointer"
+              className="bg-[#16795A] hover:bg-[#115E46] rounded-xl shadow-sm hover:shadow cursor-pointer"
             >
               <Check className="w-4 h-4 mr-1" /> Accept
             </Button>

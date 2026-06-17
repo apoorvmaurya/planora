@@ -35,7 +35,23 @@ export default function PlanChatPage() {
     () => new DefaultChatTransport({ api: `/api/plans/${planId}/chat` })
   )
 
-  const { messages, sendMessage, status, setMessages } = useChat({ transport })
+  const { messages, sendMessage, status, setMessages } = useChat({
+    transport,
+    onError: (err) => {
+      console.error("Chat error:", err)
+      const errorMsg = err.message || "An error occurred. Please try again."
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Math.random().toString(),
+          role: "assistant",
+          content: errorMsg,
+          createdAt: new Date(),
+          parts: [{ type: "text", text: errorMsg }]
+        }
+      ])
+    }
+  })
 
   /* ── local input state (useChat v4 no longer manages this) ── */
   const [input, setInput] = useState("")
@@ -80,7 +96,7 @@ export default function PlanChatPage() {
         </Link>
         <div className="flex-1 min-w-0">
           <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2 transition-colors duration-500">
-            Planora AI <Sparkles className="w-5 h-5 text-[#1D9E75]" />
+            Planora AI <Sparkles className="w-5 h-5 text-[#16795A]" />
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm flex items-center gap-1.5 transition-colors duration-500">
             <Wrench className="w-3 h-3" /> Can edit, add, remove &amp; reorder your itinerary
@@ -110,7 +126,7 @@ export default function PlanChatPage() {
           {messages.length === 0 && (
             <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-6 py-8">
               <div className="text-center space-y-3">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/30 dark:to-emerald-950/30 text-[#1D9E75] flex items-center justify-center mx-auto shadow-sm">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/30 dark:to-emerald-950/30 text-[#16795A] flex items-center justify-center mx-auto shadow-sm">
                   <Bot className="w-8 h-8" />
                 </div>
                 <h3 className="font-bold text-slate-700 dark:text-slate-200 text-lg">What can I help with?</h3>
@@ -125,7 +141,7 @@ export default function PlanChatPage() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleSuggestion(s)}
-                    className="text-left text-sm p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-[#1D9E75]/40 hover:bg-teal-50/50 dark:hover:bg-teal-950/20 transition-all text-slate-600 dark:text-slate-300 shadow-sm cursor-pointer"
+                    className="text-left text-sm p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-[#16795A]/40 hover:bg-teal-50/50 dark:hover:bg-teal-950/20 transition-all text-slate-600 dark:text-slate-300 shadow-sm cursor-pointer"
                   >
                     {s}
                   </motion.button>
@@ -148,7 +164,7 @@ export default function PlanChatPage() {
                 className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 shadow-sm ${
                   m.role === "user"
                     ? "bg-slate-900 dark:bg-slate-800 text-white"
-                    : "bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/30 dark:to-emerald-950/30 text-[#1D9E75]"
+                    : "bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/30 dark:to-emerald-950/30 text-[#16795A]"
                 }`}
               >
                 {m.role === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
@@ -310,13 +326,13 @@ export default function PlanChatPage() {
                 exit={{ opacity: 0 }}
                 className="flex gap-3"
               >
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/30 dark:to-emerald-950/30 text-[#1D9E75] flex items-center justify-center shrink-0 shadow-sm">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/30 dark:to-emerald-950/30 text-[#16795A] flex items-center justify-center shrink-0 shadow-sm">
                   <Bot className="w-4 h-4" />
                 </div>
                 <div className="px-5 py-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm rounded-2xl rounded-tl-sm flex items-center gap-1.5">
-                  <span className="w-2 h-2 bg-[#1D9E75] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                  <span className="w-2 h-2 bg-[#1D9E75] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                  <span className="w-2 h-2 bg-[#1D9E75] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                  <span className="w-2 h-2 bg-[#16795A] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="w-2 h-2 bg-[#16795A] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="w-2 h-2 bg-[#16795A] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                 </div>
               </motion.div>
             )}
@@ -334,13 +350,13 @@ export default function PlanChatPage() {
               onChange={(e) => setInput(e.target.value)}
               placeholder={isLoading ? "Waiting for response…" : "Try: 'Add a beach day on Day 2'…"}
               disabled={isLoading}
-              className="w-full h-13 pl-5 pr-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-base text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/30 focus:border-[#1D9E75]/40 transition-all disabled:opacity-60"
+              className="w-full h-13 pl-5 pr-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-base text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#16795A]/30 focus:border-[#16795A]/40 transition-all disabled:opacity-60"
             />
             <Button
               type="submit"
               disabled={isLoading || !input.trim()}
               size="icon"
-              className="absolute right-1.5 w-10 h-10 rounded-xl bg-[#1D9E75] hover:bg-[#15805e] disabled:opacity-40 transition-all cursor-pointer"
+              className="absolute right-1.5 w-10 h-10 rounded-xl bg-[#16795A] hover:bg-[#115E46] disabled:opacity-40 transition-all cursor-pointer"
             >
               <Send className="w-4 h-4 text-white" />
             </Button>

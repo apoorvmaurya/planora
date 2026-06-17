@@ -163,11 +163,11 @@ export default function OnboardingPage() {
         <div className="mb-8 flex justify-between items-center px-2">
           {[1, 2, 3].map((i) => (
             <div key={i} className="flex items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-colors ${step >= i ? 'bg-[#1D9E75] text-white' : 'bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-colors ${step >= i ? 'bg-[#16795A] text-white' : 'bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>
                 {i}
               </div>
               {i < 3 && (
-                <div className={`h-1 w-24 sm:w-32 mx-2 rounded-full transition-colors ${step > i ? 'bg-[#1D9E75]' : 'bg-slate-200 dark:bg-slate-800'}`} />
+                <div className={`h-1 w-24 sm:w-32 mx-2 rounded-full transition-colors ${step > i ? 'bg-[#16795A]' : 'bg-slate-200 dark:bg-slate-800'}`} />
               )}
             </div>
           ))}
@@ -190,7 +190,7 @@ export default function OnboardingPage() {
 
                 <div className="flex flex-col items-center gap-4">
                   <div className="relative">
-                    <div className="w-24 h-24 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center overflow-hidden cursor-pointer hover:border-[#1D9E75] hover:bg-teal-50 dark:hover:bg-[#1D9E75]/10 transition-colors">
+                    <div className="w-24 h-24 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center overflow-hidden cursor-pointer hover:border-[#16795A] hover:bg-teal-50 dark:hover:bg-[#16795A]/10 transition-colors">
                       {avatarPreview ? (
                         <img src={avatarPreview} alt="Avatar preview" className="w-full h-full object-cover" />
                       ) : (

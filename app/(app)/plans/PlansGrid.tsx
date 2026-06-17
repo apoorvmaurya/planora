@@ -101,7 +101,7 @@ export function PlansGrid({ plans }: PlansGridProps) {
             exit={{ opacity: 0, scale: 0.95 }}
             className="text-center py-24 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm transition-colors duration-500"
           >
-            <div className="w-20 h-20 mx-auto bg-teal-50 dark:bg-teal-950/20 text-[#1D9E75] dark:text-teal-400 rounded-full flex items-center justify-center mb-6 transition-colors duration-500">
+            <div className="w-20 h-20 mx-auto bg-teal-50 dark:bg-teal-950/20 text-[#16795A] dark:text-teal-400 rounded-full flex items-center justify-center mb-6 transition-colors duration-500">
               {activeFilter === 'Drafts' ? <ListTodo className="w-10 h-10" /> : 
                activeFilter === 'Completed' ? <Map className="w-10 h-10" /> :
                <Compass className="w-10 h-10" />}
@@ -110,7 +110,7 @@ export function PlansGrid({ plans }: PlansGridProps) {
             <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-8 transition-colors duration-500">
               {searchQuery ? "Try adjusting your search terms." : "Ready for your next adventure? Start planning a new trip with your group."}
             </p>
-            <Link href="/plans/new" className="inline-flex shrink-0 items-center justify-center bg-[#1D9E75] hover:bg-[#15805e] text-white rounded-xl px-8 h-12 text-sm font-medium transition-all shadow-md shadow-teal-500/10">
+            <Link href="/plans/new" className="inline-flex shrink-0 items-center justify-center bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl px-8 h-12 text-sm font-medium transition-all shadow-md shadow-teal-500/10">
               Create New Plan
             </Link>
           </motion.div>

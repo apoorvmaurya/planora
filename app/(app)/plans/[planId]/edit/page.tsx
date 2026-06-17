@@ -288,7 +288,7 @@ export default function EditPlanPage() {
             disabled={isGenerating || isAiLoading}
             className="w-full h-12 rounded-xl font-semibold border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300 flex items-center justify-center gap-2"
           >
-            {isGenerating || isAiLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-4 h-4 text-[#1D9E75]" />}
+            {isGenerating || isAiLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-4 h-4 text-[#16795A]" />}
             {isAiLoading ? "AI is generating..." : "Regenerate with AI"}
           </Button>
         </div>
@@ -299,7 +299,7 @@ export default function EditPlanPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h3 className="font-extrabold text-xl text-slate-900 dark:text-white flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-[#1D9E75]" /> Review AI Suggestions
+                  <Sparkles className="w-5 h-5 text-[#16795A]" /> Review AI Suggestions
                 </h3>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                   Compare the new suggested itinerary side-by-side and cherry-pick what to keep.
@@ -339,7 +339,7 @@ export default function EditPlanPage() {
             {object?.title && (
               <div className="bg-teal-50 dark:bg-teal-950/20 border border-teal-100 dark:border-teal-900/30 p-4 rounded-2xl flex items-center justify-between transition-colors duration-500">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#1D9E75]">Suggested Title</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#16795A]">Suggested Title</span>
                   <p className="font-extrabold text-slate-800 dark:text-slate-200">{object.title}</p>
                 </div>
                 <span className="text-xs font-semibold text-slate-400 italic">will overwrite current title</span>
@@ -376,7 +376,7 @@ export default function EditPlanPage() {
                           onClick={() => setDayChoice(prev => ({ ...prev, [dayNum]: 'new' }))}
                           className={`flex-1 py-1.5 px-3 rounded-lg font-bold text-xs transition-all cursor-pointer ${
                             choice === 'new'
-                              ? 'bg-[#1D9E75] text-white shadow-sm'
+                              ? 'bg-[#16795A] text-white shadow-sm'
                               : 'text-slate-550 dark:text-slate-400 hover:text-slate-800'
                           }`}
                         >
@@ -427,7 +427,7 @@ export default function EditPlanPage() {
                             <div key={idx} className="p-3 bg-white dark:bg-slate-900 rounded-xl text-xs space-y-1 border border-slate-100 dark:border-slate-800">
                               <div className="flex justify-between font-bold text-slate-805 dark:text-slate-200">
                                 <span>{item?.title}</span>
-                                <span className="bg-emerald-100/50 dark:bg-emerald-950/50 text-[#1D9E75] px-1.5 py-0.5 rounded text-[10px]">{item?.time_of_day}</span>
+                                <span className="bg-emerald-100/50 dark:bg-emerald-950/50 text-[#16795A] px-1.5 py-0.5 rounded text-[10px]">{item?.time_of_day}</span>
                               </div>
                               <p className="text-slate-500 dark:text-slate-400 line-clamp-1">{item?.location_name}</p>
                             </div>
@@ -452,7 +452,7 @@ export default function EditPlanPage() {
               <Button
                 onClick={handleSaveMerge}
                 disabled={isSavingMerge || isAiLoading}
-                className="rounded-xl bg-[#1D9E75] hover:bg-[#15805e] text-white font-bold h-12 px-8 shadow-md cursor-pointer"
+                className="rounded-xl bg-[#16795A] hover:bg-[#115E46] text-white font-bold h-12 px-8 shadow-md cursor-pointer"
               >
                 {isSavingMerge ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}
                 Save & Merge Itinerary
@@ -470,7 +470,7 @@ export default function EditPlanPage() {
             <Button 
               onClick={handleConfirm}
               disabled={isConfirming || isGenerating}
-              className="bg-[#1D9E75] hover:bg-[#15805e] text-white h-14 px-10 rounded-2xl text-lg font-bold shadow-xl shadow-teal-550/20 cursor-pointer"
+              className="bg-[#16795A] hover:bg-[#115E46] text-white h-14 px-10 rounded-2xl text-lg font-bold shadow-xl shadow-teal-550/20 cursor-pointer"
             >
               {isConfirming ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Confirm Plan'}
             </Button>

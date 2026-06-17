@@ -47,12 +47,12 @@ function formatRelativeTime(dateString: string): string {
 
 const getGradient = (name: string) => {
   const gradients = [
-    "from-[#1D9E75] to-emerald-500",
+    "from-[#16795A] to-emerald-500",
     "from-teal-500 to-cyan-500",
     "from-emerald-500 to-green-500",
     "from-teal-600 to-indigo-600",
     "from-cyan-600 to-blue-600",
-    "from-[#1D9E75] to-teal-400",
+    "from-[#16795A] to-teal-400",
   ]
   let sum = 0
   for (let i = 0; i < name.length; i++) {
@@ -183,14 +183,14 @@ export default function ComingSoonPage() {
         angle: 60,
         spread: 55,
         origin: { x: 0, y: 0.8 },
-        colors: ["#1D9E75", "#10B981", "#3B82F6"]
+        colors: ["#16795A", "#10B981", "#3B82F6"]
       })
       confetti({
         particleCount: 3,
         angle: 120,
         spread: 55,
         origin: { x: 1, y: 0.8 },
-        colors: ["#1D9E75", "#10B981", "#3B82F6"]
+        colors: ["#16795A", "#10B981", "#3B82F6"]
       })
 
       if (Date.now() < end) {
@@ -203,7 +203,7 @@ export default function ComingSoonPage() {
   return (
     <div className="dark min-h-screen bg-slate-950 text-slate-100 font-sans relative overflow-hidden flex flex-col justify-between">
       {/* Dynamic glow blobs */}
-      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[35rem] h-[35rem] rounded-full bg-[#1D9E75] opacity-[0.06] blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[35rem] h-[35rem] rounded-full bg-[#16795A] opacity-[0.06] blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[35rem] h-[35rem] rounded-full bg-teal-500 opacity-[0.06] blur-[120px] pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[45rem] h-[45rem] rounded-full bg-indigo-500 opacity-[0.03] blur-[150px] pointer-events-none" />
 
@@ -232,7 +232,7 @@ export default function ComingSoonPage() {
               Back to Home
             </Link>
             <div className="text-xl font-bold tracking-tight">
-              Plan<span className="text-[#1D9E75]">ora</span>
+              Plan<span className="text-[#16795A]">ora</span>
             </div>
           </div>
         </motion.div>
@@ -248,13 +248,13 @@ export default function ComingSoonPage() {
             transition={{ duration: 0.6 }}
             className="space-y-4"
           >
-            <div className="inline-flex items-center gap-2 bg-[#1D9E75]/10 border border-[#1D9E75]/30 px-3 py-1 rounded-full text-xs font-bold tracking-wide text-[#1D9E75] uppercase">
+            <div className="inline-flex items-center gap-2 bg-[#16795A]/10 border border-[#16795A]/30 px-3 py-1 rounded-full text-xs font-bold tracking-wide text-[#16795A] uppercase">
               <Sparkles className="w-3.5 h-3.5" />
               Pro & Groups Tiers Coming Soon
             </div>
             
             <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-[1.1] text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-400">
-              The ultimate trip planner is getting even <span className="text-[#1D9E75]">better.</span>
+              The ultimate trip planner is getting even <span className="text-[#16795A]">better.</span>
             </h1>
             
             <p className="text-base sm:text-lg text-slate-400 leading-relaxed max-w-lg">
@@ -270,8 +270,8 @@ export default function ComingSoonPage() {
           >
             {hasSubmitted ? (
               <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-800/80 shadow-2xl p-8 rounded-3xl text-center space-y-6 relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#1D9E75]/5 to-transparent pointer-events-none" />
-                <div className="w-16 h-16 bg-[#1D9E75]/10 border border-[#1D9E75]/20 rounded-2xl flex items-center justify-center mx-auto text-[#1D9E75] animate-bounce">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#16795A]/5 to-transparent pointer-events-none" />
+                <div className="w-16 h-16 bg-[#16795A]/10 border border-[#16795A]/20 rounded-2xl flex items-center justify-center mx-auto text-[#16795A] animate-bounce">
                   <CheckCircle className="w-8 h-8" />
                 </div>
                 <div className="space-y-2">
@@ -309,7 +309,7 @@ export default function ComingSoonPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     disabled={isSubmitting}
-                    className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-4 py-3.5 text-sm placeholder:text-slate-600 focus:outline-none focus:border-[#1D9E75] focus:ring-1 focus:ring-[#1D9E75] transition-all duration-300 disabled:opacity-50"
+                    className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-4 py-3.5 text-sm placeholder:text-slate-600 focus:outline-none focus:border-[#16795A] focus:ring-1 focus:ring-[#16795A] transition-all duration-300 disabled:opacity-50"
                   />
                 </div>
 
@@ -326,7 +326,7 @@ export default function ComingSoonPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={isSubmitting}
-                    className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-4 py-3.5 text-sm placeholder:text-slate-600 focus:outline-none focus:border-[#1D9E75] focus:ring-1 focus:ring-[#1D9E75] transition-all duration-300 disabled:opacity-50"
+                    className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-4 py-3.5 text-sm placeholder:text-slate-600 focus:outline-none focus:border-[#16795A] focus:ring-1 focus:ring-[#16795A] transition-all duration-300 disabled:opacity-50"
                   />
                 </div>
 
@@ -343,7 +343,7 @@ export default function ComingSoonPage() {
                     onChange={(e) => setSuggestion(e.target.value)}
                     disabled={isSubmitting}
                     rows={4}
-                    className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-4 py-3 text-sm placeholder:text-slate-600 focus:outline-none focus:border-[#1D9E75] focus:ring-1 focus:ring-[#1D9E75] transition-all duration-300 resize-none disabled:opacity-50"
+                    className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-4 py-3 text-sm placeholder:text-slate-600 focus:outline-none focus:border-[#16795A] focus:ring-1 focus:ring-[#16795A] transition-all duration-300 resize-none disabled:opacity-50"
                   />
                 </div>
 
@@ -353,7 +353,7 @@ export default function ComingSoonPage() {
                   whileTap={{ scale: 0.99 }}
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#1D9E75] hover:bg-[#15805e] disabled:bg-slate-800 disabled:text-slate-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-[#1D9E75]/20 hover:shadow-[#1D9E75]/30 transition-all duration-300 flex items-center justify-center gap-2 text-sm"
+                  className="w-full bg-[#16795A] hover:bg-[#115E46] disabled:bg-slate-800 disabled:text-slate-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-[#16795A]/20 hover:shadow-[#16795A]/30 transition-all duration-300 flex items-center justify-center gap-2 text-sm"
                 >
                   {isSubmitting ? (
                     <>
@@ -384,7 +384,7 @@ export default function ComingSoonPage() {
             </div>
             
             <div className="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-full text-xs font-bold text-slate-200">
-              <Users className="w-3.5 h-3.5 text-[#1D9E75]" />
+              <Users className="w-3.5 h-3.5 text-[#16795A]" />
               <span>{totalCount} Supporters planning</span>
             </div>
           </div>
@@ -393,7 +393,7 @@ export default function ComingSoonPage() {
           <div className="flex-1 overflow-y-auto pr-1 space-y-4 max-h-[500px] lg:max-h-none scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent">
             {isLoadingSupporters ? (
               <div className="flex flex-col items-center justify-center py-20 space-y-4">
-                <Loader2 className="w-8 h-8 text-[#1D9E75] animate-spin" />
+                <Loader2 className="w-8 h-8 text-[#16795A] animate-spin" />
                 <p className="text-sm text-slate-500">Connecting to feed...</p>
               </div>
             ) : supporters.length === 0 ? (
@@ -428,7 +428,7 @@ export default function ComingSoonPage() {
                       >
                         {/* New label glow */}
                         {isNewEntry && (
-                          <div className="absolute top-0 right-0 bg-[#1D9E75] text-white px-2 py-0.5 rounded-bl-lg text-[9px] font-bold tracking-wider uppercase animate-pulse">
+                          <div className="absolute top-0 right-0 bg-[#16795A] text-white px-2 py-0.5 rounded-bl-lg text-[9px] font-bold tracking-wider uppercase animate-pulse">
                             Just Added
                           </div>
                         )}

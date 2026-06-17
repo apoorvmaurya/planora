@@ -77,7 +77,7 @@ export function ErrorState({
         {onRetry && (
           <Button
             onClick={onRetry}
-            className="rounded-xl h-11 px-5 bg-[#1D9E75] hover:bg-[#15805e] text-white"
+            className="rounded-xl h-11 px-5 bg-[#16795A] hover:bg-[#115E46] text-white"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             Try again

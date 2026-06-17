@@ -159,7 +159,7 @@ export default function ExpensesPage() {
           <Button variant="outline" onClick={handlePrint} className="rounded-xl border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300">
             <Download className="w-4 h-4 mr-2" /> Export PDF
           </Button>
-          <Button onClick={() => setIsModalOpen(true)} className="rounded-xl bg-[#1D9E75] hover:bg-[#15805e] text-white shadow-sm shadow-teal-600/25">
+          <Button onClick={() => setIsModalOpen(true)} className="rounded-xl bg-[#16795A] hover:bg-[#115E46] text-white shadow-sm shadow-teal-600/25">
             <Plus className="w-4 h-4 mr-2" /> Add Expense
           </Button>
         </div>
@@ -210,7 +210,7 @@ export default function ExpensesPage() {
                 className="mb-2 border border-slate-200 dark:border-slate-700"
               />
               <p className="font-bold text-slate-900 dark:text-white text-sm transition-colors duration-500">{topSpender.full_name}</p>
-              <p className="text-xs text-[#1D9E75] dark:text-teal-400 font-semibold">Paid {plan.currency}{topSpenderAmount.toFixed(2)}</p>
+              <p className="text-xs text-[#16795A] dark:text-teal-400 font-semibold">Paid {plan.currency}{topSpenderAmount.toFixed(2)}</p>
             </>
           ) : (
             <p className="text-slate-400 dark:text-slate-500 text-sm transition-colors duration-500">No expenses yet</p>
@@ -235,7 +235,7 @@ export default function ExpensesPage() {
                 {expenses.map((exp: any) => (
                   <div key={exp.id} className="p-4 sm:p-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-850/30 transition-colors duration-500">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-teal-50 dark:bg-teal-950/20 text-[#1D9E75] dark:text-teal-400 flex items-center justify-center shrink-0 transition-colors duration-500">
+                      <div className="w-12 h-12 rounded-full bg-teal-50 dark:bg-teal-950/20 text-[#16795A] dark:text-teal-400 flex items-center justify-center shrink-0 transition-colors duration-500">
                         <Receipt className="w-5 h-5" />
                       </div>
                       <div className="min-w-0">
@@ -282,7 +282,7 @@ export default function ExpensesPage() {
               <button
                 onClick={() => setSimplifyDebts(!simplifyDebts)}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none cursor-pointer ${
-                  simplifyDebts ? "bg-[#1D9E75]" : "bg-slate-200 dark:bg-slate-800"
+                  simplifyDebts ? "bg-[#16795A]" : "bg-slate-200 dark:bg-slate-800"
                 }`}
               >
                 <span
@@ -295,7 +295,7 @@ export default function ExpensesPage() {
             
             {simplifyDebts && (
               <div className="bg-teal-500/10 dark:bg-teal-500/5 border border-teal-500/20 rounded-2xl p-3.5 text-xs text-teal-800 dark:text-teal-400 flex items-start gap-2.5">
-                <AlertCircle className="w-4 h-4 shrink-0 text-[#1D9E75]" />
+                <AlertCircle className="w-4 h-4 shrink-0 text-[#16795A]" />
                 <div>
                   <span className="font-bold">✨ Premium Preview:</span> Simplified Settlements is in early preview for all users and will soon be a Premium feature.
                 </div>
@@ -304,7 +304,7 @@ export default function ExpensesPage() {
           </div>
 
           <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-lg relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#1D9E75]/20 rounded-bl-full pointer-events-none" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#16795A]/20 rounded-bl-full pointer-events-none" />
             
             {settlements.length === 0 ? (
               <div className="text-center py-8">
@@ -330,7 +330,7 @@ export default function ExpensesPage() {
                     </div>
                     
                     <div className="px-2">
-                      <ArrowRight className="w-4 h-4 text-[#1D9E75]" />
+                      <ArrowRight className="w-4 h-4 text-[#16795A]" />
                     </div>
 
                     <div className="flex items-center gap-3 flex-row-reverse">
@@ -344,7 +344,7 @@ export default function ExpensesPage() {
                       />
                       <div className="text-sm text-right">
                         <p className="font-bold">{getMemberName(s.to)}</p>
-                        <p className="text-[#1D9E75] font-bold">{plan.currency} {s.amount.toFixed(2)}</p>
+                        <p className="text-[#16795A] font-bold">{plan.currency} {s.amount.toFixed(2)}</p>
                       </div>
                     </div>
                   </div>

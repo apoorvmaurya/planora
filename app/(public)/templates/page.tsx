@@ -75,7 +75,7 @@ export default function TemplatesPage() {
       location: "India",
       tag: "Relaxing",
       cost: "¥¥",
-      gradient: "from-[#1D9E75] to-emerald-500",
+      gradient: "from-[#16795A] to-emerald-500",
       days: [
         "Day 1: Arrival & sunset beach bonfire at Vagator",
         "Day 2: Historical fort exploration & seafood tour",
@@ -162,7 +162,7 @@ export default function TemplatesPage() {
             Back to Home
           </Link>
           <div className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Plan<span className="text-[#1D9E75]">ora</span>
+            Plan<span className="text-[#16795A]">ora</span>
           </div>
         </motion.div>
       </motion.nav>
@@ -175,7 +175,7 @@ export default function TemplatesPage() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-[#1D9E75]/10 border border-[#1D9E75]/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider text-[#1D9E75] uppercase"
+            className="inline-flex items-center gap-2 bg-[#16795A]/10 border border-[#16795A]/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider text-[#16795A] uppercase"
           >
             <Sparkles className="w-3.5 h-3.5" />
             Launchpad Templates
@@ -210,7 +210,7 @@ export default function TemplatesPage() {
               onClick={() => setSelectedTag(tag)}
               className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all border ${
                 selectedTag === tag
-                  ? "bg-[#1D9E75] border-[#1D9E75] text-white shadow shadow-[#1D9E75]/25"
+                  ? "bg-[#16795A] border-[#16795A] text-white shadow shadow-[#16795A]/25"
                   : "bg-white/40 dark:bg-slate-900/30 border-slate-200 dark:border-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-350"
               }`}
             >
@@ -265,7 +265,7 @@ export default function TemplatesPage() {
                           <span className="font-bold text-slate-400 uppercase tracking-widest block mb-1">Snippet Itinerary</span>
                           {temp.days.map((day, idx) => (
                             <div key={idx} className="flex items-start gap-1.5 font-medium leading-relaxed">
-                              <ChevronRight className="w-3.5 h-3.5 text-[#1D9E75] shrink-0 mt-0.5" />
+                              <ChevronRight className="w-3.5 h-3.5 text-[#16795A] shrink-0 mt-0.5" />
                               <span className="line-clamp-2">{day}</span>
                             </div>
                           ))}
@@ -293,7 +293,7 @@ export default function TemplatesPage() {
                   <div className="pt-4 border-t border-slate-100 dark:border-slate-850 flex justify-end">
                     <Button
                       onClick={() => handleUseTemplate(temp.id)}
-                      className="bg-[#1D9E75]/10 text-[#1D9E75] hover:bg-[#1D9E75] hover:text-white rounded-xl h-11 px-5 border-0 font-bold flex items-center gap-2 cursor-pointer transition-all duration-300"
+                      className="bg-[#16795A]/10 text-[#16795A] hover:bg-[#16795A] hover:text-white rounded-xl h-11 px-5 border-0 font-bold flex items-center gap-2 cursor-pointer transition-all duration-300"
                     >
                       {copiedId === temp.id ? (
                         <>

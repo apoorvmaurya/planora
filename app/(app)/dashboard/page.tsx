@@ -139,7 +139,7 @@ export default function DashboardPage() {
     { 
       title: "Upcoming Trips", 
       value: stats.upcomingTrips.toString(), 
-      color: "bg-teal-50 dark:bg-teal-950/20 text-[#1D9E75] dark:text-teal-400 border-teal-100 dark:border-teal-900/30", 
+      color: "bg-teal-50 dark:bg-teal-950/20 text-[#16795A] dark:text-teal-400 border-teal-100 dark:border-teal-900/30", 
       hoverRing: "hover:border-teal-400/40 hover:shadow-teal-950/10",
       icon: Compass 
     },
@@ -181,7 +181,7 @@ export default function DashboardPage() {
         
         <div className="flex items-center gap-3">
           <Link href="/plans/new">
-            <button className="flex items-center gap-2 bg-[#1D9E75] hover:bg-[#15805e] text-white px-4 py-2.5 rounded-xl font-semibold transition-all shadow-md hover:shadow-lg hover:shadow-teal-500/10 cursor-pointer duration-300">
+            <button className="flex items-center gap-2 bg-[#16795A] hover:bg-[#115E46] text-white px-4 py-2.5 rounded-xl font-semibold transition-all shadow-md hover:shadow-lg hover:shadow-teal-500/10 cursor-pointer duration-300">
               <Plus className="w-5 h-5" />
               New plan
             </button>
@@ -212,7 +212,7 @@ export default function DashboardPage() {
                   <IconComponent className="w-5 h-5" />
                 </div>
                 {isLoading ? (
-                  <div className="w-5 h-5 border-2 border-slate-300 dark:border-slate-700 border-t-[#1D9E75] rounded-full animate-spin" />
+                  <div className="w-5 h-5 border-2 border-slate-300 dark:border-slate-700 border-t-[#16795A] rounded-full animate-spin" />
                 ) : (
                   <span className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                     {card.value}
@@ -236,7 +236,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-extrabold text-slate-900 dark:text-white transition-colors duration-500">Recent plans</h2>
-            <Link href="/plans" className="text-[#1D9E75] dark:text-teal-400 font-bold text-sm flex items-center hover:underline transition-colors duration-500">
+            <Link href="/plans" className="text-[#16795A] dark:text-teal-400 font-bold text-sm flex items-center hover:underline transition-colors duration-500">
               View all <ChevronRight className="w-4 h-4 ml-1" />
             </Link>
           </div>
@@ -247,7 +247,7 @@ export default function DashboardPage() {
             ) : recentPlans.length === 0 ? (
               <div className="bg-white dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 border-dashed rounded-3xl p-10 text-center flex flex-col items-center transition-colors duration-500">
                 <div className="w-16 h-16 bg-teal-50 dark:bg-teal-950/30 rounded-full flex items-center justify-center mb-4 transition-colors duration-500">
-                  <Compass className="w-8 h-8 text-[#1D9E75] dark:text-teal-400" />
+                  <Compass className="w-8 h-8 text-[#16795A] dark:text-teal-400" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 transition-colors duration-500">No plans yet!</h3>
                 <p className="text-slate-500 dark:text-slate-400 max-w-sm mb-6 transition-colors duration-500">Create a group and start planning your very first trip.</p>
@@ -271,7 +271,7 @@ export default function DashboardPage() {
                       damping: 30,
                       delay: 0.1 + (idx * 0.05) 
                     }}
-                    className="bg-white dark:bg-slate-900/40 backdrop-blur-md p-4 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm flex flex-col sm:flex-row gap-4 items-center group hover:border-[#1D9E75]/40 dark:hover:border-teal-500/40 hover:shadow-md dark:hover:shadow-teal-950/10 transition-all duration-300 cursor-pointer mb-4"
+                    className="bg-white dark:bg-slate-900/40 backdrop-blur-md p-4 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm flex flex-col sm:flex-row gap-4 items-center group hover:border-[#16795A]/40 dark:hover:border-teal-500/40 hover:shadow-md dark:hover:shadow-teal-950/10 transition-all duration-300 cursor-pointer mb-4"
                   >
                     <div className="w-full sm:w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800/85 shrink-0 transition-colors duration-500 relative">
                       <ScenicImage 
@@ -285,7 +285,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex-1 w-full">
                       <div className="flex items-start justify-between mb-2">
-                        <h3 className="font-extrabold text-lg text-slate-900 dark:text-white group-hover:text-[#1D9E75] dark:group-hover:text-teal-400 transition-colors duration-300">{plan.destination_name || "Mystery Destination"}</h3>
+                        <h3 className="font-extrabold text-lg text-slate-900 dark:text-white group-hover:text-[#16795A] dark:group-hover:text-teal-400 transition-colors duration-300">{plan.destination_name || "Mystery Destination"}</h3>
                         <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border transition-all duration-300 ${
                           plan.status === 'confirmed' ? 'bg-emerald-500/10 dark:bg-emerald-500/20 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' :
                           plan.status === 'completed' ? 'bg-blue-500/10 dark:bg-blue-500/20 border-blue-500/20 text-blue-600 dark:text-blue-400' :
@@ -326,7 +326,7 @@ export default function DashboardPage() {
                 className="bg-slate-900 dark:bg-gradient-to-br dark:from-[#0b1b17] dark:via-slate-900 dark:to-slate-950 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden group border border-transparent dark:border-slate-800/80 cursor-pointer transition-all duration-550"
               >
                 {/* Glowing Premium Aurora Layers */}
-                <div className="absolute top-0 right-0 w-44 h-44 bg-[#1D9E75] rounded-full blur-[90px] opacity-20 -mr-12 -mt-12 group-hover:opacity-35 group-hover:scale-110 transition-all duration-700"></div>
+                <div className="absolute top-0 right-0 w-44 h-44 bg-[#16795A] rounded-full blur-[90px] opacity-20 -mr-12 -mt-12 group-hover:opacity-35 group-hover:scale-110 transition-all duration-700"></div>
                 <div className="absolute bottom-0 left-0 w-36 h-36 bg-blue-500 rounded-full blur-[80px] opacity-10 -ml-12 -mb-12 group-hover:opacity-20 transition-all duration-700"></div>
                 
                 <div className="relative z-10">
@@ -359,7 +359,7 @@ export default function DashboardPage() {
                         </div>
                       ))}
                       {(upcomingEvent.group?.group_members?.length || 0) > 3 && (
-                        <div className="w-8 h-8 rounded-full bg-[#1D9E75] border-2 border-slate-900 flex items-center justify-center text-xs font-black text-white shadow-sm">
+                        <div className="w-8 h-8 rounded-full bg-[#16795A] border-2 border-slate-900 flex items-center justify-center text-xs font-black text-white shadow-sm">
                           +{(upcomingEvent.group?.group_members?.length || 0) - 3}
                         </div>
                       )}

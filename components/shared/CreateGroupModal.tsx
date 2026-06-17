@@ -122,7 +122,7 @@ export function CreateGroupModal({ open, onOpenChange }: { open: boolean, onOpen
       <DialogContent className="sm:max-w-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-3xl p-0 overflow-hidden transition-all duration-500">
         <div className="h-2 bg-slate-100 dark:bg-slate-900 w-full relative transition-colors duration-500">
           <div 
-            className="absolute left-0 top-0 h-full bg-[#1D9E75] transition-all duration-300"
+            className="absolute left-0 top-0 h-full bg-[#16795A] transition-all duration-300"
             style={{ width: step === 1 ? '50%' : '100%' }}
           />
         </div>
@@ -137,11 +137,11 @@ export function CreateGroupModal({ open, onOpenChange }: { open: boolean, onOpen
           {step === 1 ? (
             <div className="space-y-6">
               <div className="flex flex-col items-center gap-4">
-                <div className="relative group w-full h-40 bg-slate-100 dark:bg-slate-900/60 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-800 flex items-center justify-center overflow-hidden cursor-pointer hover:border-[#1D9E75] hover:bg-teal-50 dark:hover:bg-teal-950/20 transition-all duration-300">
+                <div className="relative group w-full h-40 bg-slate-100 dark:bg-slate-900/60 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-800 flex items-center justify-center overflow-hidden cursor-pointer hover:border-[#16795A] hover:bg-teal-50 dark:hover:bg-teal-950/20 transition-all duration-300">
                   {coverPreview ? (
                     <img src={coverPreview} alt="Cover" className="w-full h-full object-cover" />
                   ) : (
-                    <div className="flex flex-col items-center text-slate-400 dark:text-slate-500 group-hover:text-[#1D9E75] dark:group-hover:text-teal-400 transition-colors duration-300">
+                    <div className="flex flex-col items-center text-slate-400 dark:text-slate-500 group-hover:text-[#16795A] dark:group-hover:text-teal-400 transition-colors duration-300">
                       <ImageIcon className="w-8 h-8 mb-2" />
                       <span className="text-sm font-medium">Upload group cover</span>
                     </div>
@@ -164,7 +164,7 @@ export function CreateGroupModal({ open, onOpenChange }: { open: boolean, onOpen
                       <FormItem>
                         <FormLabel className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Group Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g. Europe 2026 Crew" className="h-12 rounded-xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus-visible:ring-[#1D9E75] transition-all duration-300" {...field} />
+                          <Input placeholder="e.g. Europe 2026 Crew" className="h-12 rounded-xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus-visible:ring-[#16795A] transition-all duration-300" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -177,7 +177,7 @@ export function CreateGroupModal({ open, onOpenChange }: { open: boolean, onOpen
                       <FormItem>
                         <FormLabel className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Description (Optional)</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="What is this group for?" className="resize-none rounded-xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus-visible:ring-[#1D9E75] transition-all duration-300" {...field} />
+                          <Textarea placeholder="What is this group for?" className="resize-none rounded-xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus-visible:ring-[#16795A] transition-all duration-300" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -192,7 +192,7 @@ export function CreateGroupModal({ open, onOpenChange }: { open: boolean, onOpen
                     const valid = await form.trigger()
                     if (valid) setStep(2)
                   }}
-                  className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl h-12 px-6 shadow-sm hover:shadow cursor-pointer transition-all duration-200"
+                  className="bg-[#16795A] hover:bg-[#115E46] rounded-xl h-12 px-6 shadow-sm hover:shadow cursor-pointer transition-all duration-200"
                 >
                   Next Step <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -243,7 +243,7 @@ export function CreateGroupModal({ open, onOpenChange }: { open: boolean, onOpen
                 <Button 
                   onClick={form.handleSubmit(onSubmit)}
                   disabled={isSubmitting}
-                  className="bg-[#1D9E75] hover:bg-[#15805e] rounded-xl h-12 px-6 shadow-sm hover:shadow cursor-pointer transition-all duration-200"
+                  className="bg-[#16795A] hover:bg-[#115E46] rounded-xl h-12 px-6 shadow-sm hover:shadow cursor-pointer transition-all duration-200"
                 >
                   {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                   Create Group

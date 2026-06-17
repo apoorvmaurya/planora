@@ -64,7 +64,7 @@ export function Sidebar() {
     <>
       <div className="p-6">
         <Link href="/dashboard" className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-          Plan<span className="text-[#1D9E75]">ora</span>
+          Plan<span className="text-[#16795A]">ora</span>
         </Link>
       </div>
 
@@ -79,12 +79,12 @@ export function Sidebar() {
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
                 isActive 
-                  ? "bg-teal-50 dark:bg-teal-950/30 text-[#1D9E75] font-semibold" 
+                  ? "bg-teal-50 dark:bg-teal-950/30 text-[#16795A] font-semibold" 
                   : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-50"
               }`}
               onClick={() => setIsOpen(false)}
             >
-              <Icon className={`w-5 h-5 ${isActive ? "text-[#1D9E75]" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"}`} />
+              <Icon className={`w-5 h-5 ${isActive ? "text-[#16795A]" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"}`} />
               {item.name}
             </Link>
           )
@@ -180,7 +180,7 @@ export function Sidebar() {
           
           <div className="relative z-10 flex justify-between items-center w-full">
             <Link href="/dashboard" className="text-xl font-bold tracking-tight px-1 text-slate-900 dark:text-slate-100">
-              Plan<span className="text-[#1D9E75]">ora</span>
+              Plan<span className="text-[#16795A]">ora</span>
             </Link>
             <div className="flex items-center gap-1">
               {mounted && (

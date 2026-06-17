@@ -64,9 +64,9 @@ export default async function PublicSharePage({ params }: { params: Promise<{ to
         {/* AI Recap */}
         {plan.recap_text && (
           <div className="bg-card text-card-foreground rounded-3xl p-6 sm:p-8 border border-border shadow-sm dark:shadow-none relative overflow-hidden max-w-3xl mx-auto transition-colors duration-500">
-            <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#1D9E75]" />
+            <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#16795A]" />
             <div className="flex gap-4 items-start">
-              <div className="bg-teal-50 dark:bg-teal-950/30 p-3 rounded-2xl text-[#1D9E75] shrink-0 hidden sm:block">
+              <div className="bg-teal-50 dark:bg-teal-950/30 p-3 rounded-2xl text-[#16795A] shrink-0 hidden sm:block">
                 <Sparkles className="w-6 h-6" />
               </div>
               <div>

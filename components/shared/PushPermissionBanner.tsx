@@ -83,9 +83,9 @@ export function PushPermissionBanner() {
           className="fixed top-20 right-4 z-50 max-w-sm w-full"
         >
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl dark:shadow-none rounded-2xl p-4 flex gap-4 items-start relative overflow-hidden transition-all duration-500">
-            <div className="absolute top-0 right-0 w-16 h-16 bg-[#1D9E75]/10 rounded-bl-full" />
+            <div className="absolute top-0 right-0 w-16 h-16 bg-[#16795A]/10 rounded-bl-full" />
             
-            <div className="bg-teal-50 dark:bg-teal-950/20 text-[#1D9E75] dark:text-teal-400 p-2.5 rounded-xl shrink-0 mt-1 transition-colors duration-500">
+            <div className="bg-teal-50 dark:bg-teal-950/20 text-[#16795A] dark:text-teal-400 p-2.5 rounded-xl shrink-0 mt-1 transition-colors duration-500">
               <BellRing className="w-5 h-5 animate-pulse" />
             </div>
             
@@ -98,7 +98,7 @@ export function PushPermissionBanner() {
                   onClick={handleEnable} 
                   disabled={isSubscribing}
                   size="sm" 
-                  className="bg-[#1D9E75] hover:bg-[#15805e] text-white h-8 text-xs rounded-lg cursor-pointer"
+                  className="bg-[#16795A] hover:bg-[#115E46] text-white h-8 text-xs rounded-lg cursor-pointer"
                 >
                   {isSubscribing ? <Loader2 className="w-3 h-3 mr-1.5 animate-spin" /> : null}
                   Enable Notifications

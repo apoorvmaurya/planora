@@ -64,7 +64,7 @@ export default function InvitePage() {
         {status === "loading" && (
           <div className="space-y-4">
             <div className="w-16 h-16 mx-auto bg-teal-50 dark:bg-teal-950/30 rounded-full flex items-center justify-center">
-              <Loader2 className="w-8 h-8 text-[#1D9E75] animate-spin" />
+              <Loader2 className="w-8 h-8 text-[#16795A] animate-spin" />
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Joining group...</h2>
             <p className="text-slate-500 dark:text-slate-400">Hang tight, we&apos;re adding you to the group.</p>

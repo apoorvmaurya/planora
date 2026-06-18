@@ -2,7 +2,7 @@ import { streamText, Output } from 'ai'
 import { createClient } from '@/lib/supabase/server'
 import { buildPromptContext, itineraryResponseSchema } from '@/lib/ai/prompts'
 import { getCoordinatesForLocation } from '@/lib/locationiq/geocode'
-import { getItemSortScore } from '@/lib/itinerary/sort'
+import { getItemSortScore, cleanseAndValidateItineraryItem } from '@/lib/itinerary/sort'
 import { getPlanAccess } from '@/lib/security/access'
 import { AI_MODELS } from '@/lib/ai/models'
 
@@ -87,6 +87,7 @@ export async function POST(req: Request) {
   **Important Formatting Rules:**
   - Create ${days} days of itinerary.
   - Each day should have 3-5 distinct items (e.g. Morning, Afternoon, Evening).
+  - You MUST adhere strictly to the JSON schema. Do NOT create top-level keys like "tripDetails", "groupMembers", or nested time-slots. The root object of your JSON response must contain ONLY "title" (string) and "days" (array of day objects). Each day object must contain "day_number" (number) and "itinerary_items" (array of itinerary items).
   `
 
   const model = AI_MODELS.structured
@@ -96,6 +97,11 @@ export async function POST(req: Request) {
     prompt: fullPrompt,
     maxOutputTokens: 4000,
     output: Output.object({ schema: itineraryResponseSchema }),
+    providerOptions: {
+      groq: {
+        structuredOutputs: false,
+      },
+    },
   })
 
   // Start background task to save to database when stream finishes
@@ -118,8 +124,8 @@ export async function POST(req: Request) {
         for (const day of object.days) {
           if (!day) continue
           
-          // Sort generated items chronologically and logically for this day
           const dayItems = (day.itinerary_items || []).filter(Boolean)
+          dayItems.forEach(cleanseAndValidateItineraryItem)
           const sortedDayItems = [...dayItems].sort((a, b) => {
             return getItemSortScore(a) - getItemSortScore(b)
           })

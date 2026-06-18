@@ -215,7 +215,7 @@ export function AddMemoryModal({ planId, isOpen, onClose, onSuccess }: AddMemory
                 border-2 border-dashed rounded-3xl p-10 text-center cursor-pointer transition-all duration-300
                 ${dragActive 
                   ? 'border-[#16795A] bg-teal-50/50 dark:bg-teal-950/20' 
-                  : 'border-slate-200 dark:border-slate-800 hover:border-slate-350 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900/40'}
+                  : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900/40'}
               `}
             >
               <input
@@ -251,7 +251,7 @@ export function AddMemoryModal({ planId, isOpen, onClose, onSuccess }: AddMemory
                         />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-slate-750 dark:text-slate-200 truncate mb-2 transition-colors duration-500">{file.name}</p>
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-200 truncate mb-2 transition-colors duration-500">{file.name}</p>
                         <input
                           type="text"
                           placeholder="Add a caption..."
@@ -262,7 +262,7 @@ export function AddMemoryModal({ planId, isOpen, onClose, onSuccess }: AddMemory
                       </div>
                       <button 
                         onClick={(e) => { e.stopPropagation(); removeFile(idx); }}
-                        className="absolute -top-2 -right-2 w-6 h-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 rounded-full flex items-center justify-center text-slate-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all shadow-sm cursor-pointer"
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full flex items-center justify-center text-slate-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all shadow-sm cursor-pointer"
                       >
                         <X className="w-3 h-3" />
                       </button>

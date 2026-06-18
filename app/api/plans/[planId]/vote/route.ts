@@ -47,6 +47,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ planId:
 
   // Check for election / auto tie-breaker
   if (plan) {
+    const { data: existingItems } = await supabase
+      .from('itinerary_items')
+      .select('title, location_name')
+      .eq('plan_id', planId)
+
+    const forbidList = existingItems?.map((i: any) => `- "${i.title}" at ${i.location_name}`).join('\n') || "None"
+
     const { count: memberCount } = await supabase.from('group_members').select('*', { count: 'exact', head: true }).eq('group_id', plan.group_id)
     const { data: allVotes } = await supabase.from('member_votes').select('vote').eq('item_id', item_id)
     
@@ -89,6 +96,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ planId:
             try {
               const { object: newItemData } = await generateObject({
                 model: AI_MODELS.structured,
+                providerOptions: {
+                  groq: {
+                    structuredOutputs: false,
+                  },
+                },
                 schema: z.object({
                   title: z.string(),
                   description: z.string(),
@@ -105,7 +117,13 @@ Title: ${item.title}
 Description: ${item.description}
 Cost: ${item.estimated_cost} ${plan.currency}
 
-This suggestion has resulted in a tied vote. Please generate a SINGLE alternative itinerary item that fits the same time of day (${item.time_of_day}) and similar budget. It should be completely different from "${item.title}".`,
+We need to generate a SINGLE alternative itinerary item that fits the same time of day (${item.time_of_day}) and similar budget.
+
+CRITICAL NEGATIVE CONSTRAINTS (DEDUPLICATION):
+The alternative item MUST NOT be any of the following items that are already scheduled on the itinerary:
+${forbidList}
+
+Please generate an alternative suggested item that is completely different and distinct from "${item.title}" and all items in the forbid list above. Format your response strictly as a JSON object adhering to the schema.`,
               })
 
               const { lat, lng } = await getCoordinatesForLocation(newItemData.location_name, plan?.destination_name)
@@ -144,6 +162,11 @@ This suggestion has resulted in a tied vote. Please generate a SINGLE alternativ
             try {
               const { object: newItemData } = await generateObject({
                 model: AI_MODELS.structured,
+                providerOptions: {
+                  groq: {
+                    structuredOutputs: false,
+                  },
+                },
                 schema: z.object({
                   title: z.string(),
                   description: z.string(),
@@ -160,7 +183,13 @@ Title: ${item.title}
 Description: ${item.description}
 Cost: ${item.estimated_cost} ${plan.currency}
 
-This item has resulted in a tied vote. Please generate a SINGLE alternative itinerary item that fits the same time of day (${item.time_of_day}) and similar budget. It should be completely different from "${item.title}".`,
+We need to generate a SINGLE alternative itinerary item that fits the same time of day (${item.time_of_day}) and similar budget.
+
+CRITICAL NEGATIVE CONSTRAINTS (DEDUPLICATION):
+The alternative item MUST NOT be any of the following items that are already scheduled on the itinerary:
+${forbidList}
+
+Please generate an alternative item that is completely different and distinct from "${item.title}" and all items in the forbid list above. Format your response strictly as a JSON object adhering to the schema.`,
               })
 
               const { lat, lng } = await getCoordinatesForLocation(newItemData.location_name, plan?.destination_name)

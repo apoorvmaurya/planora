@@ -186,7 +186,7 @@ export function CreateGroupModal({ open, onOpenChange }: { open: boolean, onOpen
                 </form>
               </Form>
 
-              <div className="flex justify-end pt-4 border-t border-slate-100 dark:border-slate-850 transition-colors duration-500">
+              <div className="flex justify-end pt-4 border-t border-slate-100 dark:border-slate-800 transition-colors duration-500">
                 <Button 
                   onClick={async () => {
                     const valid = await form.trigger()
@@ -237,7 +237,7 @@ export function CreateGroupModal({ open, onOpenChange }: { open: boolean, onOpen
               </ScrollArea>
 
               <div className="flex justify-between pt-4 border-t border-slate-100 dark:border-slate-800/80 transition-colors duration-500">
-                <Button variant="ghost" onClick={() => setStep(1)} className="rounded-xl h-12 text-slate-500 dark:text-slate-450 hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer">
+                <Button variant="ghost" onClick={() => setStep(1)} className="rounded-xl h-12 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer">
                   Back
                 </Button>
                 <Button 

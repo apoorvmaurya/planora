@@ -97,7 +97,7 @@ export default function TermsOfServicePage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-slate-550 dark:text-slate-400 text-base"
+            className="text-slate-500 dark:text-slate-400 text-base"
           >
             Last Updated: May 30, 2026. Review our official terms of platform usage alongside our handy Plain English summaries.
           </motion.p>
@@ -120,7 +120,7 @@ export default function TermsOfServicePage() {
                     className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
                       isActive
                         ? "bg-[#16795A]/10 text-[#16795A] dark:text-teal-400"
-                        : "text-slate-550 hover:bg-slate-50 dark:hover:bg-slate-850"
+                        : "text-slate-50 hover:bg-slate-50 dark:hover:bg-slate-800"
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -140,7 +140,7 @@ export default function TermsOfServicePage() {
                 <BookOpen className="w-5 h-5 text-[#16795A]" /> 1. Agreement of Terms
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
+                <div className="md:col-span-8 text-slate-600 dark:text-slate-300 space-y-4 text-sm leading-relaxed">
                   <p>
                     These Terms of Service constitute a legally binding agreement made between you, whether personally or on behalf of an entity (&quot;you&quot;), and Planora (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;), concerning your access to and use of the Planora travel planner, website, and mobile software.
                   </p>
@@ -150,7 +150,7 @@ export default function TermsOfServicePage() {
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
                   <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
-                  <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
+                  <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
                     By logging into or using Planora, you are entering a legally binding agreement. Stop using the service if you don&apos;t agree to these rules.
                   </p>
                 </div>
@@ -163,7 +163,7 @@ export default function TermsOfServicePage() {
                 <UserCheck className="w-5 h-5 text-[#16795A]" /> 2. User Accounts
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
+                <div className="md:col-span-8 text-slate-600 dark:text-slate-300 space-y-4 text-sm leading-relaxed">
                   <p>
                     To access the trip planning platform, you must create a profile. You agree to provide accurate, current, and complete profile information. You are solely responsible for maintaining the confidentiality of your account credentials.
                   </p>
@@ -173,7 +173,7 @@ export default function TermsOfServicePage() {
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
                   <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
-                  <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
+                  <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
                     Keep your profile information accurate and secure. You are responsible for all activity on your account.
                   </p>
                 </div>
@@ -186,7 +186,7 @@ export default function TermsOfServicePage() {
                 <AlertCircle className="w-5 h-5 text-[#16795A]" /> 3. Rules of Conduct
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
+                <div className="md:col-span-8 text-slate-600 dark:text-slate-300 space-y-4 text-sm leading-relaxed">
                   <p>
                     Planora is a collaborative platform. You agree to use the service only for legitimate group trip planning and expense coordination. You may not:
                   </p>
@@ -198,7 +198,7 @@ export default function TermsOfServicePage() {
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
                   <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
-                  <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
+                  <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
                     Be a good group member. Don&apos;t spam, write abusive posts, upload illegal photos, list fake expense statements, or attempt to hack our servers.
                   </p>
                 </div>
@@ -211,7 +211,7 @@ export default function TermsOfServicePage() {
                 <ShieldAlert className="w-5 h-5 text-[#16795A]" /> 4. Liability Limits
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
+                <div className="md:col-span-8 text-slate-600 dark:text-slate-300 space-y-4 text-sm leading-relaxed">
                   <p>
                     Planora is provided on an &quot;AS-IS&quot; and &quot;AS-AVAILABLE&quot; basis. We make no warranties regarding service availability, lack of API errors, or database loss. We do not assume responsibility for flight delays, cancellation of events, or failures of group members to pay back debt logged on our platform.
                   </p>
@@ -221,7 +221,7 @@ export default function TermsOfServicePage() {
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
                   <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
-                  <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
+                  <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
                     We offer Planora &quot;as-is&quot;. We are not liable for database hiccups, bugs in AI routes, or friends failing to pay their split travel bills.
                   </p>
                 </div>
@@ -234,7 +234,7 @@ export default function TermsOfServicePage() {
                 <Scale className="w-5 h-5 text-[#16795A]" /> 5. Termination
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
+                <div className="md:col-span-8 text-slate-600 dark:text-slate-300 space-y-4 text-sm leading-relaxed">
                   <p>
                     We may terminate or suspend your account and access to the service immediately, without prior notice or liability, under our sole discretion, for conduct that violates these Terms or harms other users.
                   </p>
@@ -244,7 +244,7 @@ export default function TermsOfServicePage() {
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
                   <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
-                  <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
+                  <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
                     We reserve the right to ban users who disrupt the platform or break the rules, without warning.
                   </p>
                 </div>

@@ -40,7 +40,7 @@ export default function AppError({
           <Link href="/dashboard" className="flex-1">
             <Button 
               variant="outline"
-              className="w-full border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl h-12 font-semibold cursor-pointer"
+              className="w-full border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl h-12 font-semibold cursor-pointer"
             >
               <Home className="w-4 h-4 mr-2" /> Dashboard
             </Button>

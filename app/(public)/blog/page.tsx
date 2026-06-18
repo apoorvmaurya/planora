@@ -47,7 +47,7 @@ export default function BlogPage() {
       category: "Planning Tips",
       date: "May 28, 2026",
       readTime: "6 min read",
-      gradient: "from-teal-400 to-emerald-605",
+      gradient: "from-teal-400 to-emerald-600",
       author: "Apoorv Maurya"
     },
     {
@@ -65,7 +65,7 @@ export default function BlogPage() {
       category: "Travel Guides",
       date: "May 15, 2026",
       readTime: "8 min read",
-      gradient: "from-[#16795A] to-teal-450",
+      gradient: "from-[#16795A] to-teal-400",
       author: "Sarah Jenkins"
     },
     {
@@ -74,7 +74,7 @@ export default function BlogPage() {
       category: "Planning Tips",
       date: "May 08, 2026",
       readTime: "4 min read",
-      gradient: "from-purple-550 to-fuchsia-600",
+      gradient: "from-purple-500 to-fuchsia-600",
       author: "Dr. Elena Rostova"
     },
     {
@@ -92,7 +92,7 @@ export default function BlogPage() {
       category: "AI & Tech",
       date: "Apr 14, 2026",
       readTime: "9 min read",
-      gradient: "from-cyan-550 to-blue-500",
+      gradient: "from-cyan-500 to-blue-500",
       author: "Planora Dev"
     }
   ]
@@ -163,7 +163,7 @@ export default function BlogPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-slate-550 dark:text-slate-400 text-lg leading-relaxed"
+            className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed"
           >
             Expert advice, technical breakdowns, and planning hacks designed to turn group trips from wishlist dreams into bookings.
           </motion.p>
@@ -181,7 +181,7 @@ export default function BlogPage() {
                   className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all border ${
                     selectedCategory === cat
                       ? "bg-[#16795A] border-[#16795A] text-white shadow shadow-[#16795A]/25"
-                      : "bg-white/40 dark:bg-slate-900/30 border-slate-200 dark:border-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-350"
+                      : "bg-white/40 dark:bg-slate-900/30 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
                   }`}
                 >
                   {cat}
@@ -191,13 +191,13 @@ export default function BlogPage() {
 
             {/* Search Input */}
             <div className="relative w-full md:max-w-xs">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-450 dark:text-slate-500" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search articles..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-full text-sm bg-white/40 dark:bg-slate-900/30 backdrop-blur-md border border-slate-200 dark:border-slate-850 focus:outline-none focus:border-[#16795A] focus:ring-1 focus:ring-[#16795A] text-slate-900 dark:text-white transition-all duration-350"
+                className="w-full pl-10 pr-4 py-2.5 rounded-full text-sm bg-white/40 dark:bg-slate-900/30 backdrop-blur-md border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-[#16795A] focus:ring-1 focus:ring-[#16795A] text-slate-900 dark:text-white transition-all duration-350"
               />
             </div>
           </div>
@@ -206,7 +206,7 @@ export default function BlogPage() {
         {/* Blog Post Grid */}
         <section className="mb-24">
           {filteredPosts.length === 0 ? (
-            <div className="text-center py-20 bg-white/40 dark:bg-slate-900/20 backdrop-blur-md rounded-3xl border border-dashed border-slate-200 dark:border-slate-850">
+            <div className="text-center py-20 bg-white/40 dark:bg-slate-900/20 backdrop-blur-md rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
               <p className="text-slate-500 dark:text-slate-400 font-semibold">No articles match your search parameters.</p>
               <button onClick={() => { setSearchQuery(""); setSelectedCategory("All"); }} className="text-xs font-bold text-[#16795A] uppercase tracking-wider mt-4">Reset Filters</button>
             </div>
@@ -241,7 +241,7 @@ export default function BlogPage() {
                       </p>
                     </div>
 
-                    <div className="pt-4 border-t border-slate-100 dark:border-slate-850 flex items-center justify-between text-xs text-slate-450 dark:text-slate-500 font-semibold transition-colors duration-500">
+                    <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 font-semibold transition-colors duration-500">
                       <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> {post.date}</span>
                       <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {post.readTime}</span>
                     </div>
@@ -257,7 +257,7 @@ export default function BlogPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-[#16795A]/20 to-transparent pointer-events-none" />
           <div className="relative z-10 max-w-2xl mx-auto text-center space-y-6">
             <h2 className="text-2xl sm:text-4xl font-bold tracking-tight">Stay updated with Planora</h2>
-            <p className="text-slate-450 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
+            <p className="text-slate-400 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
               Sign up for our newsletter to receive the latest trip templates, travel tips, and early release features of Planora Premium.
             </p>
             <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
@@ -268,7 +268,7 @@ export default function BlogPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 disabled={isSubmitting}
-                className="flex-1 bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm placeholder:text-slate-650 focus:outline-none focus:border-[#16795A] focus:ring-1 focus:ring-[#16795A] transition-all"
+                className="flex-1 bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm placeholder:text-slate-600 focus:outline-none focus:border-[#16795A] focus:ring-1 focus:ring-[#16795A] transition-all"
               />
               <Button
                 type="submit"

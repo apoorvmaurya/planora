@@ -171,7 +171,7 @@ export default function AboutPage() {
                     <Icon className="w-5 h-5" />
                   </div>
                   <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{value.title}</h3>
-                  <p className="text-slate-550 dark:text-slate-400 leading-relaxed text-sm">{value.desc}</p>
+                  <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm">{value.desc}</p>
                 </motion.div>
               )
             })}

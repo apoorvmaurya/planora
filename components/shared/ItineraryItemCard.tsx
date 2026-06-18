@@ -279,9 +279,9 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
         
         <div className="flex justify-between items-start mb-3">
           <div>
-            <h4 className="font-bold text-xl text-slate-900 dark:text-white flex flex-wrap items-center gap-2">
+            <h3 className="font-bold text-xl text-slate-900 dark:text-white flex flex-wrap items-center gap-2">
               {displayTitle}
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200/50 dark:border-slate-750">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200/50 dark:border-slate-700">
                 {item.time_of_day}
               </span>
               {isTieBreaker && (
@@ -304,9 +304,9 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
                   💡 Suggestion
                 </span>
               )}
-            </h4>
+            </h3>
             {isSuggestion && (
-              <p className="text-[11px] text-slate-450 dark:text-slate-400 mt-1 font-semibold flex items-center gap-1">
+              <p className="text-[11px] text-slate-400 dark:text-slate-400 mt-1 font-semibold flex items-center gap-1">
                 Proposed by <span className="text-slate-700 dark:text-slate-200 font-extrabold">{suggestor?.full_name || 'Group Member'}</span>
               </p>
             )}
@@ -348,7 +348,7 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
             {canEditDirectOrPropose && (
               <Dialog open={isEditing} onOpenChange={setIsEditing}>
                 <DialogTrigger render={
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg shrink-0 cursor-pointer">
+                  <Button variant="ghost" size="icon" aria-label="Edit Activity" className="h-8 w-8 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg shrink-0 cursor-pointer">
                     <Edit2 className="w-4 h-4" />
                   </Button>
                 } />
@@ -431,7 +431,7 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
           </div>
         </div>
         
-        <p className="text-sm text-slate-600 dark:text-slate-350 mb-5 leading-relaxed">{item.description}</p>
+        <p className="text-sm text-slate-600 dark:text-slate-300 mb-5 leading-relaxed">{item.description}</p>
         
         <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100/50 dark:border-slate-800/60">
           <div className="flex flex-wrap items-center text-xs font-semibold text-slate-500 dark:text-slate-400 gap-4">
@@ -456,6 +456,7 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
                   variant="ghost" 
                   size="sm" 
                   onClick={() => onVote(item.id, 'up')}
+                  aria-label="Upvote suggestion"
                   className={`h-8 px-3 rounded-md text-xs font-bold transition-all cursor-pointer ${userVote === 'up' ? 'bg-teal-500 text-white hover:bg-teal-600' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-teal-600'}`}
                 >
                   <ThumbsUp className={`w-3.5 h-3.5 mr-1.5 ${userVote === 'up' ? 'fill-white' : ''}`} />
@@ -472,6 +473,7 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
                   variant="ghost" 
                   size="sm" 
                   onClick={() => onVote(item.id, 'down')}
+                  aria-label="Downvote suggestion"
                   className={`h-8 px-3 rounded-md text-xs font-bold transition-all cursor-pointer ${userVote === 'down' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-rose-600'}`}
                 >
                   <ThumbsDown className={`w-3.5 h-3.5 mr-1.5 ${userVote === 'down' ? 'fill-white' : ''}`} />

@@ -135,28 +135,36 @@ export default function DashboardPage() {
       value: stats.activePlans.toString(), 
       color: "bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-900/30", 
       hoverRing: "hover:border-blue-400/40 hover:shadow-blue-950/10",
-      icon: Map 
+      icon: Map,
+      href: "/plans",
+      cta: stats.activePlans > 0 ? "View active plans" : "Start a new plan"
     },
     { 
       title: "Upcoming Trips", 
       value: stats.upcomingTrips.toString(), 
       color: "bg-teal-50 dark:bg-teal-950/20 text-[#16795A] dark:text-teal-400 border-teal-100 dark:border-teal-900/30", 
       hoverRing: "hover:border-teal-400/40 hover:shadow-teal-950/10",
-      icon: Compass 
+      icon: Compass,
+      href: "/plans",
+      cta: stats.upcomingTrips > 0 ? "See upcoming trips" : "Plan next adventure"
     },
     { 
       title: "Friends", 
       value: stats.friends.toString(), 
       color: "bg-purple-50 dark:bg-purple-950/20 text-purple-600 dark:text-purple-400 border-purple-100 dark:border-purple-900/30", 
       hoverRing: "hover:border-purple-400/40 hover:shadow-purple-950/10",
-      icon: UserPlus 
+      icon: UserPlus,
+      href: "/friends",
+      cta: stats.friends > 0 ? "Manage friends list" : "Connect with friends"
     },
     { 
       title: "Groups", 
       value: stats.groups.toString(), 
       color: "bg-orange-50 dark:bg-orange-950/20 text-orange-600 dark:text-orange-400 border-orange-100 dark:border-orange-900/30", 
       hoverRing: "hover:border-orange-400/40 hover:shadow-orange-950/10",
-      icon: Users 
+      icon: Users,
+      href: "/groups",
+      cta: stats.groups > 0 ? "Explore groups" : "Create a group"
     },
   ]
   
@@ -199,40 +207,41 @@ export default function DashboardPage() {
         {summaryCards.map((card, idx) => {
           const IconComponent = card.icon
           return (
-            <motion.div
-              key={card.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              whileHover={{ scale: 1.02, y: -2 }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 400, 
-                damping: 25,
-                delay: idx * 0.05 
-              }}
-              className={`bg-white dark:bg-slate-900/40 backdrop-blur-md p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm hover:shadow-md ${card.hoverRing} transition-all duration-300 cursor-pointer flex flex-col justify-between h-36`}
-            >
-              <div className="flex justify-between items-start">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${card.color} border transition-all duration-300`}>
-                  <IconComponent className="w-5 h-5" />
+            <Link key={card.title} href={card.href} className="block group">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ scale: 1.02, y: -2 }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 400, 
+                  damping: 25,
+                  delay: idx * 0.05 
+                }}
+                className={`bg-white dark:bg-slate-900/40 backdrop-blur-md p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm group-hover:shadow-md group-hover:border-[#16795A]/35 dark:group-hover:border-teal-500/35 ${card.hoverRing} transition-all duration-300 flex flex-col justify-between h-36`}
+              >
+                <div className="flex justify-between items-start">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${card.color} border transition-all duration-300`}>
+                    <IconComponent className="w-5 h-5" />
+                  </div>
+                  {isLoading ? (
+                    <div className="w-5 h-5 border-2 border-slate-300 dark:border-slate-700 border-t-[#16795A] rounded-full animate-spin" />
+                  ) : (
+                    <span className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                      {card.value}
+                    </span>
+                  )}
                 </div>
-                {isLoading ? (
-                  <div className="w-5 h-5 border-2 border-slate-300 dark:border-slate-700 border-t-[#16795A] rounded-full animate-spin" />
-                ) : (
-                  <span className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                    {card.value}
-                  </span>
-                )}
-              </div>
-              <div>
-                <p className="text-slate-500 dark:text-slate-400 font-bold tracking-wide uppercase text-xs">
-                  {card.title}
-                </p>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
-                  Planora collaborative metrics
-                </p>
-              </div>
-            </motion.div>
+                <div>
+                  <p className="text-slate-500 dark:text-slate-400 font-bold tracking-wide uppercase text-xs">
+                    {card.title}
+                  </p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 group-hover:text-[#16795A] dark:group-hover:text-teal-400 mt-0.5 transition-colors duration-200 font-semibold flex items-center gap-0.5">
+                    {card.cta} →
+                  </p>
+                </div>
+              </motion.div>
+            </Link>
           )
         })}
       </div>
@@ -241,7 +250,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-extrabold text-slate-900 dark:text-white transition-colors duration-500">Recent plans</h2>
-            <Link href="/plans" className="text-[#16795A] dark:text-teal-400 font-bold text-sm flex items-center hover:underline transition-colors duration-500">
+            <Link href="/plans" className="text-[#16795A] dark:text-teal-400 font-bold text-sm flex items-center hover:underline min-h-[44px] min-w-[44px] px-2 -mr-2 transition-colors duration-500">
               View all <ChevronRight className="w-4 h-4 ml-1" />
             </Link>
           </div>

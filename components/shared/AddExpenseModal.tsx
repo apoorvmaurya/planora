@@ -323,8 +323,8 @@ export function AddExpenseModal({
               </div>
               <div className="space-y-3 max-h-[160px] overflow-y-auto pr-1">
                 {scannedItems.map((item, itemIdx) => (
-                  <div key={itemIdx} className="space-y-1.5 border-b border-slate-200 dark:border-slate-850 pb-2.5 last:border-b-0 last:pb-0">
-                    <div className="flex justify-between text-xs font-bold text-slate-850 dark:text-slate-250">
+                  <div key={itemIdx} className="space-y-1.5 border-b border-slate-200 dark:border-slate-800 pb-2.5 last:border-b-0 last:pb-0">
+                    <div className="flex justify-between text-xs font-bold text-slate-800 dark:text-slate-200">
                       <span className="truncate max-w-[200px]" title={item.itemName}>{item.itemName}</span>
                       <span>{item.cost.toFixed(2)}</span>
                     </div>
@@ -339,7 +339,7 @@ export function AddExpenseModal({
                             className={`px-2 py-0.5 rounded text-[10px] font-extrabold border transition-all cursor-pointer ${
                               isSelected 
                                 ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' 
-                                : 'bg-white dark:bg-slate-900 border-slate-250 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100'
+                                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100'
                             }`}
                           >
                             {m.user.full_name.split(' ')[0]}
@@ -397,11 +397,11 @@ export function AddExpenseModal({
               <RadioGroup value={splitType} onValueChange={(val: string) => handleSplitTypeChange(val as 'equal' | 'custom')} className="flex gap-4">
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="equal" id="equal" className="transition-all duration-200" />
-                  <Label htmlFor="equal" className="text-slate-700 dark:text-slate-350 cursor-pointer transition-colors duration-500">Split equally</Label>
+                  <Label htmlFor="equal" className="text-slate-700 dark:text-slate-300 cursor-pointer transition-colors duration-500">Split equally</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="custom" id="custom" className="transition-all duration-200" />
-                  <Label htmlFor="custom" className="text-slate-700 dark:text-slate-350 cursor-pointer transition-colors duration-500">Custom amounts</Label>
+                  <Label htmlFor="custom" className="text-slate-700 dark:text-slate-300 cursor-pointer transition-colors duration-500">Custom amounts</Label>
                 </div>
               </RadioGroup>
             </div>
@@ -425,7 +425,7 @@ export function AddExpenseModal({
                   <Input 
                     type="number" 
                     step="0.01"
-                    className="w-24 h-8 text-right bg-white dark:bg-slate-950 border-slate-250 dark:border-slate-800 text-slate-900 dark:text-white rounded-lg focus-visible:ring-[#16795A] transition-all duration-300"
+                    className="w-24 h-8 text-right bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-lg focus-visible:ring-[#16795A] transition-all duration-300"
                     {...register(`split_details.${m.user.id}`)}
                   />
                 </div>

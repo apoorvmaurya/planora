@@ -352,7 +352,7 @@ export default function EditPlanPage() {
               <RefreshCw className="w-4 h-4 text-[#16795A]" />
             </div>
             <div>
-              <h3 className="font-extrabold text-lg text-slate-900 dark:text-white">Trip Configuration</h3>
+              <h2 className="font-extrabold text-lg text-slate-900 dark:text-white">Trip Configuration</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">Adjust dates, budget, and preferences before regenerating.</p>
             </div>
           </div>
@@ -483,7 +483,7 @@ export default function EditPlanPage() {
                     <Sparkles className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-extrabold text-xl text-slate-900 dark:text-white">Review AI Suggestions</h3>
+                    <h2 className="font-extrabold text-xl text-slate-900 dark:text-white">Review AI Suggestions</h2>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                       {isAdmin 
                         ? "Compare and cherry-pick what to keep. Your selection will replace the current itinerary."
@@ -578,7 +578,7 @@ export default function EditPlanPage() {
                           <span className="text-sm font-black text-white dark:text-slate-900">{dayNum}</span>
                         </div>
                         <div>
-                          <h4 className="font-extrabold text-slate-800 dark:text-slate-200">Day {dayNum}</h4>
+                          <h3 className="font-extrabold text-slate-800 dark:text-slate-200">Day {dayNum}</h3>
                           <p className="text-[10px] text-slate-400 font-medium">
                             {dayCurrentItems.length} current • {dayNewItems.length} new activities
                           </p>
@@ -758,7 +758,7 @@ export default function EditPlanPage() {
             <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-[#16795A] to-emerald-600 flex items-center justify-center mx-auto mb-5 shadow-xl shadow-[#16795A]/30">
               <ShieldCheck className="w-8 h-8 text-white" />
             </div>
-            <h3 className="font-extrabold text-2xl mb-2 text-slate-900 dark:text-white">Ready to lock it in?</h3>
+            <h2 className="font-extrabold text-2xl mb-2 text-slate-900 dark:text-white">Ready to lock it in?</h2>
             <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-sm mx-auto text-sm leading-relaxed">
               Confirming this plan will notify your group members and schedule the automated trip reminders.
             </p>

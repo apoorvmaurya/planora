@@ -110,6 +110,19 @@ export async function buildPromptContext({
     7. **Budget Realism**:
        - If the budget is low, prioritize free parks, walking tours, and budget street food. If the budget is high, recommend premium tours, ticketed museums, and upscale dining.
 
-    8. **JSON Format**: Output must be returned strictly as a JSON object adhering to the schema.
+    8. **Strict JSON Schema & Structure Constraints**:
+       - The output JSON MUST contain exactly two top-level keys: "title" (string) and "days" (array).
+       - Each day object in the "days" array MUST contain exactly two keys: "day_number" (integer starting from 1) and "itinerary_items" (array of activities).
+       - Each activity object in the "itinerary_items" array MUST contain exactly:
+         - "title" (string)
+         - "description" (string)
+         - "time_of_day" ("Morning" | "Afternoon" | "Evening" | "Night")
+         - "location_name" (string)
+         - "lat" (number)
+         - "lng" (number)
+         - "category" ("activity" | "food" | "transport" | "accommodation" | "leisure")
+         - "duration_minutes" (integer)
+         - "estimated_cost" (number)
+       - CRITICAL: Do NOT output any other top-level keys (such as "tripDetails", "groupMembers", or "itinerary"). The root of your JSON response must be an object with ONLY "title" and "days".
   `
 }

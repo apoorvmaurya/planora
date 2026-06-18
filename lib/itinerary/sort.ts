@@ -110,3 +110,55 @@ export async function reorderDayItems(supabase: any, planId: string, dayNumber: 
     console.error("Failed to reorder day items:", err)
   }
 }
+
+/**
+ * Cleanse and validate chronological placement of itinerary items.
+ * Enforces human-logical heuristics for overnight stays, breakfast, lunch, and dinner.
+ */
+export function cleanseAndValidateItineraryItem(item: any) {
+  if (!item) return item
+  const title = (item.title || '').toLowerCase()
+  const desc = (item.description || '').toLowerCase()
+
+  // 1. Overnight Stay / Lodging / Sleep -> Must be Night
+  const isOvernight = 
+    title.includes('stay overnight') || 
+    title.includes('overnight stay') || 
+    title.includes('sleep at') || 
+    title.includes('night stay') ||
+    title.includes('overnight at') ||
+    title.includes('stay at hotel') ||
+    desc.includes('stay overnight') ||
+    desc.includes('overnight stay') ||
+    desc.includes('sleep at')
+
+  if (isOvernight) {
+    item.time_of_day = 'Night'
+  }
+
+  // 2. Breakfast & Brunch -> Morning
+  const isBreakfast = title.includes('breakfast') || title.includes('brunch')
+  if (isBreakfast) {
+    if (item.time_of_day === 'Evening' || item.time_of_day === 'Night') {
+      item.time_of_day = 'Morning'
+    }
+  }
+
+  // 3. Lunch -> Afternoon
+  const isLunch = title.includes('lunch')
+  if (isLunch) {
+    if (item.time_of_day !== 'Afternoon') {
+      item.time_of_day = 'Afternoon'
+    }
+  }
+
+  // 4. Dinner -> Evening or Night
+  const isDinner = title.includes('dinner')
+  if (isDinner) {
+    if (item.time_of_day === 'Morning' || item.time_of_day === 'Afternoon') {
+      item.time_of_day = 'Night'
+    }
+  }
+
+  return item
+}

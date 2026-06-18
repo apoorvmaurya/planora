@@ -370,7 +370,7 @@ export default function SettingsPage() {
                 <div className="space-y-4 pt-6 border-t border-slate-100 dark:border-slate-800">
                   <div>
                     <h4 className="text-sm font-bold text-slate-900 dark:text-white">Application Theme</h4>
-                    <p className="text-xs text-slate-550 dark:text-slate-400 mt-1">Select the theme that best fits your environment.</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Select the theme that best fits your environment.</p>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4">

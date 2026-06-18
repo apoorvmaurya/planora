@@ -611,7 +611,7 @@ export default function PlanDetailPage() {
       if (changes.length === 0) return null
       
       return (
-        <div className="mt-2 text-[11px] bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 text-slate-650 dark:text-slate-350 p-2.5 rounded-lg space-y-1">
+        <div className="mt-2 text-[11px] bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-300 p-2.5 rounded-lg space-y-1">
           {changes.map((c, i) => (
             <p key={i} className="flex items-center gap-1.5 font-medium">🔹 {c}</p>
           ))}
@@ -749,6 +749,7 @@ export default function PlanDetailPage() {
 
               return (
                 <TabsContent key={dayNum} value={dayNum.toString()} className="outline-none mt-0">
+                  <h2 className="sr-only">Day {dayNum} Itinerary</h2>
                   <div className="pt-2 space-y-6">
                     {dayItems.length === 0 ? (
                       <div className="text-center py-12 bg-slate-50 dark:bg-slate-900/30 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800/80 transition-colors duration-500">
@@ -776,7 +777,7 @@ export default function PlanDetailPage() {
 
                           return (
                             <div key={slot} className="space-y-4">
-                              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-2">
+                              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest pl-2">
                                 {slot}
                               </p>
 
@@ -1145,7 +1146,7 @@ export default function PlanDetailPage() {
                               </div>
                             </div>
                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0 ${
-                              m.user.city ? 'bg-teal-50 dark:bg-teal-950/20 text-[#16795A]' : 'bg-slate-100 dark:bg-slate-800 text-slate-450'
+                              m.user.city ? 'bg-teal-50 dark:bg-teal-950/20 text-[#16795A]' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
                             }`}>
                               {m.user.city ? 'Ready' : 'Pending'}
                             </span>
@@ -1247,7 +1248,7 @@ export default function PlanDetailPage() {
                 {plan.status === 'draft' && (
                   <Button
                     variant="outline"
-                    className="w-full justify-start rounded-xl border-teal-200 dark:border-teal-900/50 text-[#16795A] hover:bg-teal-50 dark:hover:bg-teal-950/20 hover:text-[#115E46]"
+                    className="w-full justify-start rounded-xl border-[#16795A]/30 dark:border-teal-900/50 text-[#16795A] dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/20 hover:text-[#115E46]"
                     onClick={async () => {
                       const res = await fetch(`/api/plans/${planId}/confirm`, { method: 'POST' })
                       if (res.ok) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); toast.success('Plan confirmed!'); setPlan((p: any) => ({ ...p, status: 'confirmed' })) }
@@ -1399,7 +1400,7 @@ export default function PlanDetailPage() {
                 {plan.status === 'draft' && (
                   <Button
                     variant="outline"
-                    className="w-full justify-start rounded-xl h-12 border-teal-200 dark:border-teal-900/50 text-[#16795A] hover:bg-teal-50 dark:hover:bg-teal-950/20"
+                    className="w-full justify-start rounded-xl h-12 border-[#16795A]/30 dark:border-teal-900/50 text-[#16795A] dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/20"
                     onClick={async () => {
                       setAdminSheetOpen(false)
                       const res = await fetch(`/api/plans/${planId}/confirm`, { method: 'POST' })
@@ -1478,7 +1479,7 @@ export default function PlanDetailPage() {
                             className="border border-slate-200 dark:border-slate-700 object-cover"
                           />
                           <div>
-                            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{m.user.full_name}</p>
+                            <p className="text-sm font-semibold text-slate-800 dark:border-slate-200">{m.user.full_name}</p>
                             <p className="text-xs text-slate-400">@{m.user.username}</p>
                           </div>
                         </div>
@@ -1621,6 +1622,7 @@ export default function PlanDetailPage() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsChatOpen(true)}
+            aria-label="Open AI Chat"
             className="fixed bottom-6 right-6 z-40 bg-gradient-to-tr from-[#16795A] to-teal-500 hover:from-[#115E46] hover:to-teal-600 text-white rounded-full p-4 shadow-xl shadow-teal-500/20 flex items-center justify-center cursor-pointer border border-teal-400/20 group"
           >
             <Sparkles className="w-6 h-6 animate-pulse group-hover:scale-110 transition-transform" />
@@ -1646,7 +1648,7 @@ export default function PlanDetailPage() {
                   </div>
                   <div>
                     <h3 className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-base">
-                      Planora AI <Sparkles className="w-3.5 h-3.5 text-emerald-650 animate-pulse" />
+                      Planora AI <Sparkles className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
                     </h3>
                     <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Travel Copilot</p>
                   </div>
@@ -1655,7 +1657,8 @@ export default function PlanDetailPage() {
                   variant="ghost" 
                   size="icon" 
                   onClick={() => setIsChatOpen(false)}
-                  className="rounded-full w-8 h-8 p-0 text-slate-450 hover:bg-slate-100 dark:hover:bg-slate-900 cursor-pointer"
+                  aria-label="Close Chat Drawer"
+                  className="rounded-full w-8 h-8 p-0 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 cursor-pointer"
                 >
                   <XCircle className="w-5 h-5" />
                 </Button>
@@ -1693,7 +1696,7 @@ export default function PlanDetailPage() {
                     {/* Avatar */}
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm text-xs ${
                       m.role === "user"
-                        ? "bg-slate-900 dark:bg-slate-850 text-white"
+                        ? "bg-slate-900 dark:bg-slate-800 text-white"
                         : "bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/20 dark:to-emerald-950/20 text-[#16795A]"
                     }`}>
                       {m.role === "user" ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
@@ -1701,8 +1704,8 @@ export default function PlanDetailPage() {
                     {/* Bubble */}
                     <div className={`rounded-2xl max-w-[85%] text-sm overflow-hidden ${
                       m.role === "user"
-                        ? "bg-slate-900 dark:bg-slate-850 text-white rounded-tr-sm px-4 py-2.5"
-                        : "bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm text-slate-850 dark:text-slate-100 rounded-tl-sm"
+                        ? "bg-slate-900 dark:bg-slate-800 text-white rounded-tr-sm px-4 py-2.5"
+                        : "bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm text-slate-800 dark:text-slate-100 rounded-tl-sm"
                     }`}>
                       {m.parts.map((part, pi) => {
                         if (part.type === "text") {
@@ -1753,7 +1756,7 @@ export default function PlanDetailPage() {
                                   ? "bg-emerald-50/50 dark:bg-emerald-950/15 border-emerald-200/50 dark:border-emerald-900/30 text-emerald-800 dark:text-emerald-300"
                                   : isError
                                   ? "bg-red-50/50 dark:bg-red-950/15 border-red-200/50 dark:border-red-900/30 text-red-700 dark:text-red-300"
-                                  : "bg-slate-50 dark:bg-slate-900/60 border-slate-200/60 dark:border-slate-800/60 text-slate-600 dark:text-slate-350"
+                                  : "bg-slate-50 dark:bg-slate-900/60 border-slate-200/60 dark:border-slate-800/60 text-slate-600 dark:text-slate-300"
                               }`}>
                                 <span className="text-base shrink-0">{meta.icon}</span>
                                 <div className="min-w-0 flex-1">
@@ -1922,7 +1925,7 @@ export default function PlanDetailPage() {
                             </span>
                           </div>
                           
-                          <p className="text-xs font-semibold text-slate-650 dark:text-slate-350 leading-relaxed">
+                          <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 leading-relaxed">
                             {log.description}
                           </p>
                           
@@ -1936,7 +1939,7 @@ export default function PlanDetailPage() {
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => handleRevertChange(log.id)}
-                                className="h-7 text-[10px] font-extrabold text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 flex items-center gap-1 hover:bg-slate-100 dark:hover:bg-slate-850 px-2 rounded-lg cursor-pointer transition-colors"
+                                className="h-7 text-[10px] font-extrabold text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 flex items-center gap-1 hover:bg-slate-100 dark:hover:bg-slate-800 px-2 rounded-lg cursor-pointer transition-colors"
                               >
                                 <RotateCcw className="w-3 h-3" /> Revert Change
                               </Button>

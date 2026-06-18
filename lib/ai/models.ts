@@ -1,4 +1,5 @@
 import { groq } from '@ai-sdk/groq'
+import { withFallback } from './fallback'
 
 export const AI_MODELS = {
   // Main conversational model (Llama 3.3 70B)
@@ -7,6 +8,9 @@ export const AI_MODELS = {
   // Chat fallback model (Llama 3.1 8B)
   chatFallback: groq('llama-3.1-8b-instant'),
 
-  // Structured generation model (Llama 4 Scout 17B) supporting strict json_schema
-  structured: groq('llama-4-scout-17b-16e-instruct'),
+  // Structured generation model supporting JSON mode with fallback
+  structured: withFallback(
+    groq('llama-3.3-70b-versatile'),
+    groq('llama-3.1-8b-instant')
+  ),
 }

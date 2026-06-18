@@ -97,7 +97,7 @@ export default function PrivacyPolicyPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-slate-550 dark:text-slate-400 text-base"
+            className="text-slate-500 dark:text-slate-400 text-base"
           >
             Last Updated: May 30, 2026. We believe legal policies should be readable. Below, you will find our official terms alongside clear &quot;Plain English&quot; summaries.
           </motion.p>
@@ -120,7 +120,7 @@ export default function PrivacyPolicyPage() {
                     className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
                       isActive
                         ? "bg-[#16795A]/10 text-[#16795A] dark:text-teal-400"
-                        : "text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-850"
+                        : "text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800"
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -140,7 +140,7 @@ export default function PrivacyPolicyPage() {
                 <FileText className="w-5 h-5 text-[#16795A]" /> 1. Introduction
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
+                <div className="md:col-span-8 text-slate-600 dark:text-slate-300 space-y-4 text-sm leading-relaxed">
                   <p>
                     Planora (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our collaborative travel planning service, mobile apps, and associated APIs.
                   </p>
@@ -150,7 +150,7 @@ export default function PrivacyPolicyPage() {
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
                   <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
-                  <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
+                  <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
                     This document explains what data Planora collects from you, how we keep it safe, and what we do with it. By using Planora, you agree to these rules.
                   </p>
                 </div>
@@ -163,7 +163,7 @@ export default function PrivacyPolicyPage() {
                 <Database className="w-5 h-5 text-[#16795A]" /> 2. Information We Collect
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
+                <div className="md:col-span-8 text-slate-600 dark:text-slate-300 space-y-4 text-sm leading-relaxed">
                   <p>
                     We collect personal information that you voluntarily provide to us when registering, setting up a profile, creating trips, splitting budgets, or communicating with us. This includes:
                   </p>
@@ -188,7 +188,7 @@ export default function PrivacyPolicyPage() {
                 <Eye className="w-5 h-5 text-[#16795A]" /> 3. How We Use Data
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
+                <div className="md:col-span-8 text-slate-600 dark:text-slate-300 space-y-4 text-sm leading-relaxed">
                   <p>
                     We process your information for purposes based on legitimate business interests, the fulfillment of our contract with you, compliance with legal obligations, and user consent. We use your data to:
                   </p>
@@ -200,7 +200,7 @@ export default function PrivacyPolicyPage() {
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
                   <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
-                  <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
+                  <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
                     We use your details to make sure you and your friends can plan trips in real-time, generate routes using AI, split expenses, and receive timely push notifications.
                   </p>
                 </div>
@@ -213,7 +213,7 @@ export default function PrivacyPolicyPage() {
                 <Shield className="w-5 h-5 text-[#16795A]" /> 4. Information Sharing
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
+                <div className="md:col-span-8 text-slate-600 dark:text-slate-300 space-y-4 text-sm leading-relaxed">
                   <p>
                     We do not sell, rent, or trade your personal information. Your details are shared only in the following scenarios:
                   </p>
@@ -224,7 +224,7 @@ export default function PrivacyPolicyPage() {
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
                   <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
-                  <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
+                  <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
                     We never sell your data. We share your profile name with friends you plan trips with, and securely sync data with our hosting partners (like Supabase).
                   </p>
                 </div>
@@ -237,7 +237,7 @@ export default function PrivacyPolicyPage() {
                 <Lock className="w-5 h-5 text-[#16795A]" /> 5. Data Security
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <div className="md:col-span-8 text-slate-600 dark:text-slate-350 space-y-4 text-sm leading-relaxed">
+                <div className="md:col-span-8 text-slate-600 dark:text-slate-300 space-y-4 text-sm leading-relaxed">
                   <p>
                     We implement appropriate technical and organizational security measures, including database Row Level Security (RLS) on Postgres schemas, to protect the security of your personal information.
                   </p>
@@ -247,7 +247,7 @@ export default function PrivacyPolicyPage() {
                 </div>
                 <div className="md:col-span-4 bg-teal-50/50 dark:bg-teal-950/15 border border-teal-100/80 dark:border-teal-950/40 p-5 rounded-2xl text-xs space-y-2">
                   <span className="font-extrabold text-[#16795A] uppercase tracking-wider block">In Plain English</span>
-                  <p className="text-slate-550 dark:text-slate-400 leading-relaxed">
+                  <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
                     We use state-of-the-art security filters so only group members can see group trips. While we do our best to encrypt and protect data, internet transfers always carry some small risk.
                   </p>
                 </div>

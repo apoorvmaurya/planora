@@ -142,7 +142,7 @@ export function MapComponent({ items, planDestination }: MapComponentProps) {
               <span>${item.time_of_day}</span>
             </div>
             <h4 class="font-extrabold text-sm text-slate-900 dark:text-white mt-1">${item.title}</h4>
-            <p class="text-xs text-slate-600 dark:text-slate-350 line-clamp-2">${item.description || ""}</p>
+            <p class="text-xs text-slate-600 dark:text-slate-300 line-clamp-2">${item.description || ""}</p>
             <div class="flex items-center justify-between gap-1 text-[10px] font-semibold text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800">
               <span class="inline-block truncate">📍 ${item.location_name}</span>
               <a 

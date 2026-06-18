@@ -114,7 +114,7 @@ export function PushPermissionBanner() {
               </div>
             </div>
 
-            <button onClick={handleDismiss} className="absolute top-3 right-3 text-slate-400 hover:text-slate-650 dark:text-slate-500 dark:hover:text-slate-350 cursor-pointer transition-colors">
+            <button onClick={handleDismiss} aria-label="Dismiss notification reminder" className="absolute top-3 right-3 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 cursor-pointer transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>

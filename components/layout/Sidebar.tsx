@@ -68,7 +68,7 @@ export function Sidebar() {
         </Link>
       </div>
 
-      <div className="flex-1 px-4 space-y-2 overflow-y-auto">
+      <nav aria-label="Main Navigation" className="flex-1 px-4 space-y-2 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
           const Icon = item.icon
@@ -78,7 +78,7 @@ export function Sidebar() {
               key={item.name}
               href={item.href}
               aria-current={isActive ? "page" : undefined}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group min-h-[44px] ${
                 isActive 
                   ? "bg-teal-50 dark:bg-teal-950/30 text-[#16795A] font-semibold" 
                   : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-50"
@@ -90,7 +90,7 @@ export function Sidebar() {
             </Link>
           )
         })}
-      </div>
+      </nav>
 
       <div className="p-4 border-t border-slate-200 dark:border-slate-800">
         <div className="flex items-center gap-3 mb-4 px-2">
@@ -136,7 +136,7 @@ export function Sidebar() {
 
         <Link 
           href="/settings"
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-100 transition-colors mt-1"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-100 transition-colors mt-1 min-h-[44px]"
           onClick={() => setIsOpen(false)}
         >
           <Settings className="w-5 h-5 text-slate-400 dark:text-slate-500" />
@@ -144,7 +144,7 @@ export function Sidebar() {
         </Link>
         <button 
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-300 transition-colors mt-1 cursor-pointer"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-300 transition-colors mt-1 cursor-pointer min-h-[44px]"
         >
           <LogOut className="w-5 h-5 text-red-400 dark:text-red-500" />
           <span className="text-sm font-medium">Log out</span>
@@ -187,7 +187,7 @@ export function Sidebar() {
               {mounted && (
                 <button
                   onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-                  className="p-2 rounded-full hover:bg-slate-100/80 dark:hover:bg-slate-800/80 text-slate-800 dark:text-slate-200 cursor-pointer"
+                  className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-100/80 dark:hover:bg-slate-800/80 text-slate-800 dark:text-slate-200 cursor-pointer transition-all duration-200"
                   aria-label="Toggle theme"
                 >
                   {resolvedTheme === "dark" ? <Moon className="w-5 h-5 text-teal-400" /> : <Sun className="w-5 h-5 text-amber-500" />}
@@ -195,7 +195,7 @@ export function Sidebar() {
               )}
               <button 
                 onClick={() => setIsOpen(!isOpen)}
-                className="p-2 rounded-full hover:bg-slate-100/80 dark:hover:bg-slate-800/80 text-slate-800 dark:text-slate-200 cursor-pointer"
+                className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-100/80 dark:hover:bg-slate-800/80 text-slate-800 dark:text-slate-200 cursor-pointer transition-all duration-200"
                 aria-label="Toggle menu"
                 aria-expanded={isOpen}
                 aria-haspopup="true"

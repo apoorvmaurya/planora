@@ -74,8 +74,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${dmSans.variable} antialiased min-h-[100dvh] flex flex-col overflow-x-hidden w-full max-w-[100vw] theme-transition`}>
+    <html lang="en" className={dmSans.variable} suppressHydrationWarning>
+      <body className="antialiased min-h-[100dvh] flex flex-col overflow-x-hidden w-full max-w-[100vw] theme-transition">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ServiceWorkerRegister />
           {children}

@@ -5,7 +5,7 @@ import { getCoordinatesForLocation } from '@/lib/locationiq/geocode'
 import { rateLimit } from '@/lib/security/rateLimiter'
 import { runInputGuardrail } from '@/lib/security/guardrails'
 import { withFallback } from '@/lib/ai/fallback'
-import { reorderDayItems } from '@/lib/itinerary/sort'
+import { reorderDayItems, cleanseAndValidateItineraryItem } from '@/lib/itinerary/sort'
 import { getPlanAccess } from '@/lib/security/access'
 import { AI_MODELS } from '@/lib/ai/models'
 
@@ -66,9 +66,35 @@ export async function POST(req: Request, { params }: { params: Promise<{ planId:
     return `- [ID: ${i.id}] Day ${i.day_number} (${i.time_of_day}): "${i.title}" at ${i.location_name} — ${i.description} (${i.duration_minutes}min, est. ${i.estimated_cost} ${plan?.currency})${statusText}`
   }).join("\n") || "No items yet."
 
+  let members: any[] = []
+  if (plan.group_id) {
+    const { data: groupMembers } = await supabase
+      .from('group_members')
+      .select('user:profiles(*)')
+      .eq('group_id', plan.group_id)
+    members = groupMembers?.map((m: any) => m.user) || []
+  } else {
+    // Solo trip: fetch the current traveler's profile to pass their preferences to the LLM
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single()
+    if (profile) {
+      members = [profile]
+    }
+  }
+
+  const memberContext = members.map((m: any) => 
+    `- ${m.full_name} from ${m.city || 'Unknown'}. Preferences: ${JSON.stringify(m.travel_preferences || {})}`
+  ).join("\n") || "No member preferences recorded."
+
   const systemPrompt = `You are Planora AI, a smart and friendly travel assistant for a trip to ${plan?.destination_name}.
 Trip Dates: ${plan?.start_date} to ${plan?.end_date}. Budget: ${plan?.budget_total} ${plan?.currency}.
 User Role: ${isAdmin ? 'Admin' : 'Group Member'}.
+
+Group Members & Preferences:
+${memberContext}
 
 ${!isAdmin && plan?.group_id ? `Note: You are chatting with a Group Member. Non-admins cannot modify the official itinerary directly. Any changes (add, edit, delete) you make on their behalf will automatically be created as "Suggestions" or "Delete Proposals" for the group to vote on, rather than modifying official items directly. Ensure the user knows this!` : ''}
 
@@ -98,6 +124,9 @@ You must validate all itinerary edits for logical flow, geographical consistency
 4. **Context-Aware Incremental Modifications**:
    - Before executing tools, scan the existing items (both approved items and proposed suggestions) to avoid duplicating bookings or adding conflicting plans.
    - **Targeted Conditionals (e.g., "add stay after long transits")**: If a user asks to add stays/accommodations after long transits, identify specific days that have a transit/transport activity with a duration of 120 minutes or longer. Place the stay *only* on those specific days, immediately following the transit (in the next chronological slot or the Night slot), instead of blindly duplicating it across all days of the trip.
+5. **Strict Deduplication & Safety Checks**:
+   - Check the **Current Itinerary** list before calling \`add_item\` or \`bulk_update_itinerary\`. If the user asks to add an activity (e.g., "Sunder Nursery") that matches or is extremely similar to an activity already scheduled on that day, DO NOT call any tool. Instead, reply directly to the user saying that the activity is already scheduled on that day, and ask if they would like to reschedule it or do something else.
+   - **Conversational Recommendations**: If the user asks for suggestions, recommendations, or ideas of things to do, check the entire **Current Itinerary** first. Under no circumstances should you suggest, recommend, or mention any place, attraction, restaurant, hotel, or activity that is already scheduled on any day of the trip. Always recommend completely new, distinct, and unique places.
 
 Rules:
 - When editing, only change fields the user mentioned. Keep others unchanged.
@@ -156,6 +185,38 @@ Rules:
           duration_minutes: number
           estimated_cost: number
         }) => {
+          // Apply slot corrections
+          cleanseAndValidateItineraryItem(p)
+
+          // Check for duplicates
+          const { data: existingItems } = await supabase
+            .from('itinerary_items')
+            .select('title, location_name')
+            .eq('plan_id', planId)
+            .eq('day_number', p.day_number)
+
+          const clean = (s: string) => s.toLowerCase().replace(/^(explore|exploring|visit|visiting|go to|check in to|check-in to|arrival at|arrival and)\s+/, '').replace(/[^a-z0-9]/g, '').trim()
+          const coreNew = clean(p.title)
+
+          const isDuplicate = existingItems?.some((item: any) => {
+            const coreExisting = clean(item.title)
+            if (coreNew === coreExisting && coreNew.length > 2) return true
+            
+            const cleanLocNew = p.location_name.toLowerCase().replace(/[^a-z0-9]/g, '')
+            const cleanLocExisting = item.location_name.toLowerCase().replace(/[^a-z0-9]/g, '')
+            if (cleanLocNew === cleanLocExisting && cleanLocNew.length > 2) {
+              if (coreNew.includes(coreExisting) || coreExisting.includes(coreNew)) return true
+            }
+            return false
+          })
+
+          if (isDuplicate) {
+            return {
+              success: false,
+              error: `The activity "${p.title}" is already scheduled on Day ${p.day_number}. Duplicate activities are not allowed.`
+            }
+          }
+
           const { lat, lng } = await getCoordinatesForLocation(p.location_name, plan?.destination_name)
 
            const { data, error } = await supabase
@@ -209,6 +270,13 @@ Rules:
         }) => {
           const { data: existing } = await supabase.from('itinerary_items').select('*').eq('id', item_id).single()
           if (!existing) return { success: false, error: 'Item not found' }
+
+          // Merge updates and validate slots
+          const merged = { ...existing, ...updates }
+          cleanseAndValidateItineraryItem(merged)
+          if (updates.time_of_day) {
+            updates.time_of_day = merged.time_of_day
+          }
 
           let lat = existing.lat
           let lng = existing.lng
@@ -380,6 +448,48 @@ Rules:
         }) => {
           let deleted_count = 0
           let upserted_count = 0
+          const skipped_duplicates: string[] = []
+
+          // Fetch all existing database items for deduplication
+          const { data: dbItems } = await supabase
+            .from('itinerary_items')
+            .select('id, title, location_name, day_number')
+            .eq('plan_id', planId)
+
+          const clean = (s: string) => s.toLowerCase().replace(/^(explore|exploring|visit|visiting|go to|check in to|check-in to|arrival at|arrival and)\s+/, '').replace(/[^a-z0-9]/g, '').trim()
+
+          // Filter out duplicates from upsert_items
+          const filteredUpsertItems: any[] = []
+          if (p.upsert_items) {
+            for (const item of p.upsert_items) {
+              // Apply slot validation
+              cleanseAndValidateItineraryItem(item)
+
+              if (!item.id) {
+                const coreNew = clean(item.title)
+                const isDuplicate = dbItems?.some((existing: any) => {
+                  if (p.delete_item_ids?.includes(existing.id)) return false
+                  if (existing.day_number !== item.day_number) return false
+
+                  const coreExisting = clean(existing.title)
+                  if (coreNew === coreExisting && coreNew.length > 2) return true
+
+                  const cleanLocNew = item.location_name.toLowerCase().replace(/[^a-z0-9]/g, '')
+                  const cleanLocExisting = existing.location_name.toLowerCase().replace(/[^a-z0-9]/g, '')
+                  if (cleanLocNew === cleanLocExisting && cleanLocNew.length > 2) {
+                    if (coreNew.includes(coreExisting) || coreExisting.includes(coreNew)) return true
+                  }
+                  return false
+                })
+
+                if (isDuplicate) {
+                  skipped_duplicates.push(item.title)
+                  continue
+                }
+              }
+              filteredUpsertItems.push(item)
+            }
+          }
 
           if (!isAdmin && plan?.group_id) {
             // Members create suggestions for bulk modifications
@@ -410,8 +520,8 @@ Rules:
               }
             }
 
-            if (p.upsert_items) {
-              for (const item of p.upsert_items) {
+            if (filteredUpsertItems.length > 0) {
+              for (const item of filteredUpsertItems) {
                 const { lat, lng } = await getCoordinatesForLocation(item.location_name, plan?.destination_name)
 
                 if (item.id) {
@@ -468,7 +578,7 @@ Rules:
               }
             }
 
-            return { success: true, deleted_count, upserted_count, proposed: true }
+            return { success: true, deleted_count, upserted_count, proposed: true, skipped_duplicates }
           }
 
           // Admins or Solo Trips: Direct Modification
@@ -481,9 +591,9 @@ Rules:
             deleted_count = p.delete_item_ids.length
           }
 
-          if (p.upsert_items && p.upsert_items.length > 0) {
+          if (filteredUpsertItems.length > 0) {
             const preparedItems = []
-            for (const item of p.upsert_items) {
+            for (const item of filteredUpsertItems) {
               let lat = 0
               let lng = 0
               if (item.id) {
@@ -537,7 +647,7 @@ Rules:
             }
           }
 
-          return { success: true, deleted_count, upserted_count }
+          return { success: true, deleted_count, upserted_count, skipped_duplicates }
         }
       }),
     },

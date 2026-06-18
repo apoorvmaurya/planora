@@ -43,7 +43,7 @@ export default function TemplatesPage() {
       location: "Japan",
       tag: "Cultural",
       cost: "¥¥¥",
-      gradient: "from-rose-450 to-orange-500",
+      gradient: "from-rose-400 to-orange-500",
       days: [
         "Day 1: Arrival & Shibuya Crossing walking tour",
         "Day 2: TeamLab borderless digital museum & sushi crawl",
@@ -59,7 +59,7 @@ export default function TemplatesPage() {
       location: "Iceland",
       tag: "Roadtrip",
       cost: "¥¥¥¥",
-      gradient: "from-blue-500 to-cyan-550",
+      gradient: "from-blue-500 to-cyan-500",
       days: [
         "Day 1: Golden Circle geysers & Gullfoss waterfall",
         "Day 2: Seljalandsfoss waterfall walk & black sand beach",
@@ -211,7 +211,7 @@ export default function TemplatesPage() {
               className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all border ${
                 selectedTag === tag
                   ? "bg-[#16795A] border-[#16795A] text-white shadow shadow-[#16795A]/25"
-                  : "bg-white/40 dark:bg-slate-900/30 border-slate-200 dark:border-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-350"
+                  : "bg-white/40 dark:bg-slate-900/30 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
               }`}
             >
               {tag}
@@ -260,7 +260,7 @@ export default function TemplatesPage() {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 10 }}
-                          className="space-y-2.5 text-xs text-slate-600 dark:text-slate-350"
+                          className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300"
                         >
                           <span className="font-bold text-slate-400 uppercase tracking-widest block mb-1">Snippet Itinerary</span>
                           {temp.days.map((day, idx) => (
@@ -278,7 +278,7 @@ export default function TemplatesPage() {
                           exit={{ opacity: 0 }}
                           className="space-y-4"
                         >
-                          <p className="text-sm text-slate-550 dark:text-slate-450 leading-relaxed">
+                          <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
                             {temp.desc}
                           </p>
                           <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
@@ -290,7 +290,7 @@ export default function TemplatesPage() {
                   </div>
 
                   {/* Copy Link / Launch Action */}
-                  <div className="pt-4 border-t border-slate-100 dark:border-slate-850 flex justify-end">
+                  <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
                     <Button
                       onClick={() => handleUseTemplate(temp.id)}
                       className="bg-[#16795A]/10 text-[#16795A] hover:bg-[#16795A] hover:text-white rounded-xl h-11 px-5 border-0 font-bold flex items-center gap-2 cursor-pointer transition-all duration-300"

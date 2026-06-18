@@ -147,7 +147,7 @@ export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps)
           {plan.status === 'draft' ? (
             <Link 
               href={`/plans/${plan.id}/edit`} 
-              className="flex-1 w-full py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-200"
+              className="flex-1 w-full py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-200"
             >
               <PenSquare className="w-4 h-4" /> Edit Draft
             </Link>
@@ -162,7 +162,8 @@ export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps)
           {onShare && (
             <button 
               onClick={(e) => { e.preventDefault(); onShare(plan.id); }}
-              className="p-2 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 text-slate-600 dark:text-slate-300 rounded-xl transition-all duration-200 cursor-pointer"
+              aria-label="Share plan"
+              className="p-2 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl transition-all duration-200 cursor-pointer"
             >
               <Share2 className="w-4 h-4" />
             </button>

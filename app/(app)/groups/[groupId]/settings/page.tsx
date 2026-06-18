@@ -550,7 +550,7 @@ export default function GroupSettingsPage() {
                                 variant="ghost"
                                 disabled={isProcessing}
                                 onClick={() => removeMember(member.user.id)}
-                                className="text-red-500 hover:text-red-655 hover:bg-red-50 dark:hover:bg-red-950/20 text-xs rounded-xl h-9 px-3"
+                                className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 text-xs rounded-xl h-9 px-3"
                               >
                                 Kick
                               </Button>
@@ -583,13 +583,13 @@ export default function GroupSettingsPage() {
                               </div>
                               <div>
                                 <p className="font-semibold text-sm text-slate-800 dark:text-slate-200">{invite.invitee?.full_name}</p>
-                                <p className="text-xs text-slate-450 dark:text-slate-500">@{invite.invitee?.username}</p>
+                                <p className="text-xs text-slate-400 dark:text-slate-500">@{invite.invitee?.username}</p>
                               </div>
                             </div>
                             <Button
                               variant="ghost"
                               onClick={() => handleCancelInvitation(invite.id)}
-                              className="text-slate-450 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 text-xs rounded-xl h-9 px-3 flex items-center gap-1.5 cursor-pointer"
+                              className="text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 text-xs rounded-xl h-9 px-3 flex items-center gap-1.5 cursor-pointer"
                             >
                               <X className="w-3.5 h-3.5" /> Cancel Invite
                             </Button>

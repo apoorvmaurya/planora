@@ -99,7 +99,7 @@ export default function GuidesPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-slate-550 dark:text-slate-400 text-lg leading-relaxed"
+            className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed"
           >
             Everything you need to know about setting up groups, utilizing AI planning, tracking joint budgets, and traveling stress-free.
           </motion.p>
@@ -120,7 +120,7 @@ export default function GuidesPage() {
                 >
                   <span className="text-base sm:text-lg group-hover:text-[#16795A] transition-colors">{guide.title}</span>
                   <ChevronDown
-                    className={`w-5 h-5 text-slate-400 group-hover:text-slate-650 transition-transform duration-300 ${
+                    className={`w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-transform duration-300 ${
                       isOpen ? "rotate-180" : ""
                     }`}
                   />
@@ -134,7 +134,7 @@ export default function GuidesPage() {
                       exit={{ height: 0 }}
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                     >
-                      <div className="px-6 sm:px-8 pb-6 text-sm text-slate-550 dark:text-slate-400 leading-relaxed border-t border-slate-100 dark:border-slate-850 pt-4">
+                      <div className="px-6 sm:px-8 pb-6 text-sm text-slate-500 dark:text-slate-400 leading-relaxed border-t border-slate-100 dark:border-slate-800 pt-4">
                         {guide.content}
                       </div>
                     </motion.div>
@@ -151,7 +151,7 @@ export default function GuidesPage() {
             <h3 className="font-bold text-lg text-slate-900 dark:text-white flex items-center justify-center sm:justify-start gap-2">
               <Star className="w-5 h-5 text-yellow-500 fill-yellow-500 animate-spin" style={{ animationDuration: '4s' }} /> Need quick assistance?
             </h3>
-            <p className="text-sm text-slate-550 dark:text-slate-450 leading-relaxed">
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
               Use our built-in assistant **PlaBot** at the bottom-right corner of the app. It can guide you through trip setups, split math details, or itinerary updates in real-time.
             </p>
           </div>

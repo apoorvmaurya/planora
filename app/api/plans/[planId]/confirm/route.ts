@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { sendPushNotification } from "@/lib/push/vapid"
+import { getPlanAccess } from "@/lib/security/access"
 
 export async function POST(
   req: Request,
@@ -15,34 +16,15 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // 1. Fetch Plan to verify existence and get group_id
-    const { data: plan, error: planError } = await supabase
-      .from("plans")
-      .select("*")
-      .eq("id", planId)
-      .single()
+    // Verify plan exists and user is admin
+    const { isAdmin, plan } = await getPlanAccess(supabase, planId, user.id)
 
-    if (planError || !plan) {
+    if (!plan) {
       return NextResponse.json({ error: "Plan not found" }, { status: 404 })
     }
 
-    // For group plans, verify user is in the group
-    if (plan.group_id) {
-      const { data: membership } = await supabase
-        .from("group_members")
-        .select("*")
-        .eq("group_id", plan.group_id)
-        .eq("user_id", user.id)
-        .single()
-
-      if (!membership) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-      }
-    } else {
-      // Solo plan - verify the user is the creator
-      if (plan.created_by !== user.id) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-      }
+    if (!isAdmin) {
+      return NextResponse.json({ error: "Only admins can confirm plans" }, { status: 403 })
     }
 
     // 2. Update Plan Status

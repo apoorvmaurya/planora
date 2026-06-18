@@ -1,5 +1,5 @@
 import { generateText } from 'ai'
-import { groq } from '@ai-sdk/groq'
+import { AI_MODELS } from '@/lib/ai/models'
 
 // AI notification builders using Groq
 
@@ -12,7 +12,7 @@ export async function buildHypeNotification(plan: any, daysUntil: number) {
   `
   
   const { text } = await generateText({
-    model: groq('llama-3.3-70b-versatile'),
+    model: AI_MODELS.chat,
     prompt
   })
 
@@ -32,7 +32,7 @@ export async function buildDayOfNotification(plan: any) {
   `
 
   const { text } = await generateText({
-    model: groq('llama-3.3-70b-versatile'),
+    model: AI_MODELS.chat,
     prompt
   })
 
@@ -52,7 +52,7 @@ export async function buildReminderNotification(plan: any) {
   `
 
   const { text } = await generateText({
-    model: groq('llama-3.3-70b-versatile'),
+    model: AI_MODELS.chat,
     prompt
   })
 

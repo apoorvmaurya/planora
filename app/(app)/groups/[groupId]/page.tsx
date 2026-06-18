@@ -46,7 +46,7 @@ export default function GroupDetailPage() {
     <div className="space-y-8 pb-12 max-w-5xl mx-auto">
       {/* Header Cover */}
       <div className="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm relative">
-        <div className="h-64 bg-slate-100 relative">
+        <div className="h-48 sm:h-56 md:h-64 bg-slate-100 relative">
           {group.cover_image_url ? (
             <img src={group.cover_image_url} alt={group.name} className="w-full h-full object-cover" />
           ) : (
@@ -106,7 +106,7 @@ export default function GroupDetailPage() {
                       }}
                       className="bg-white dark:bg-slate-900/50 backdrop-blur-md p-5 rounded-3xl border border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row gap-4 items-center group cursor-pointer hover:border-[#16795A]/40 dark:hover:border-teal-500/40 hover:shadow-lg dark:hover:shadow-teal-950/10 transition-all duration-300 mb-4"
                   >
-                    <div className="w-full sm:w-32 h-24 bg-slate-100 dark:bg-slate-800 rounded-2xl overflow-hidden shrink-0 transition-colors duration-500">
+                    <div className="w-32 h-24 bg-slate-100 dark:bg-slate-800 rounded-2xl overflow-hidden shrink-0 transition-colors duration-500">
                       {plan.cover_image_url ? (
                         <img src={plan.cover_image_url} alt="Cover" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       ) : (
@@ -118,7 +118,7 @@ export default function GroupDetailPage() {
                     <div className="flex-1 w-full">
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100 group-hover:text-[#16795A] dark:group-hover:text-teal-400 transition-colors duration-300">{plan.title}</h3>
-                        <Badge variant="secondary" className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 transition-colors duration-500">{plan.status}</Badge>
+                        <Badge variant="secondary" className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors duration-500">{plan.status}</Badge>
                       </div>
                       <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1 mb-3 transition-colors duration-500">{plan.description}</p>
                       <div className="flex items-center text-xs font-semibold text-slate-400 dark:text-slate-500 gap-4 transition-colors duration-500">

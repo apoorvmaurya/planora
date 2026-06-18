@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { getPlanAccess } from "@/lib/security/access"
 
 export async function PATCH(
   req: Request,
@@ -9,6 +10,10 @@ export async function PATCH(
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  const { isAuthorized, plan } = await getPlanAccess(supabase, planId, user.id)
+  if (!plan) return NextResponse.json({ error: "Plan not found" }, { status: 404 })
+  if (!isAuthorized) return NextResponse.json({ error: "Access denied" }, { status: 403 })
 
   const body = await req.json()
   const allowedFields = ['title', 'description', 'start_date', 'end_date', 'budget_total', 'currency', 'status']
@@ -42,6 +47,10 @@ export async function DELETE(
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  const { isAdmin, plan } = await getPlanAccess(supabase, planId, user.id)
+  if (!plan) return NextResponse.json({ error: "Plan not found" }, { status: 404 })
+  if (!isAdmin) return NextResponse.json({ error: "Only admins can delete plans" }, { status: 403 })
 
   const { searchParams } = new URL(req.url)
   const permanent = searchParams.get('permanent') === 'true'

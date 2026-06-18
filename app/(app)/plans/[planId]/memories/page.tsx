@@ -10,6 +10,7 @@ import confetti from "canvas-confetti"
 import { AddMemoryModal } from "@/components/shared/AddMemoryModal"
 import { Button } from "@/components/ui/button"
 import { UserAvatar } from "@/components/shared/UserAvatar"
+import { Breadcrumb } from "@/components/shared/Breadcrumb"
 
 export default function MemoriesPage() {
   const params = useParams()
@@ -99,13 +100,20 @@ export default function MemoriesPage() {
     setTimeout(() => setCopiedLink(false), 2000)
   }
 
-  if (!plan) return <div className="text-center py-20 text-slate-500 dark:text-slate-450 transition-colors duration-500">Loading memories...</div>
+  if (!plan) return <div className="text-center py-20 text-slate-500 dark:text-slate-400 transition-colors duration-500">Loading memories...</div>
 
   return (
     <div className="max-w-6xl mx-auto pb-20 space-y-8">
+      <Breadcrumb
+        items={[
+          { label: "Plans", href: "/plans" },
+          { label: plan?.title || "Trip Itinerary", href: `/plans/${planId}` },
+          { label: "Memories" }
+        ]}
+      />
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3 transition-colors duration-550">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3 transition-colors duration-500">
             Trip Memories
             {plan.status === 'completed' && (
               <span className="bg-amber-100 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 text-xs px-2 py-1 rounded-full flex items-center gap-1 transition-colors duration-500">
@@ -113,12 +121,12 @@ export default function MemoriesPage() {
               </span>
             )}
           </h1>
-          <p className="text-slate-500 dark:text-slate-450 transition-colors duration-500">Relive the best moments from {plan.destination_name}.</p>
+          <p className="text-slate-500 dark:text-slate-400 transition-colors duration-500">Relive the best moments from {plan.destination_name}.</p>
         </div>
         
         <div className="flex gap-3">
           {plan.share_token && (
-            <Button variant="outline" onClick={handleShare} className="rounded-xl flex items-center gap-2 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300">
+            <Button variant="outline" onClick={handleShare} className="rounded-xl flex items-center gap-2 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300">
               {copiedLink ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Share2 className="w-4 h-4" />}
               {copiedLink ? 'Copied Link!' : 'Share Publicly'}
             </Button>
@@ -157,8 +165,8 @@ export default function MemoriesPage() {
           <div className="w-16 h-16 mx-auto bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 rounded-full flex items-center justify-center mb-4 transition-colors duration-500">
             <ImagePlus className="w-8 h-8" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white transition-colors duration-550">No memories yet</h3>
-          <p className="text-slate-500 dark:text-slate-450 mt-1 max-w-sm mx-auto transition-colors duration-500">Upload the first photo to start building your trip's shared album.</p>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white transition-colors duration-500">No memories yet</h3>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto transition-colors duration-500">Upload the first photo to start building your trip's shared album.</p>
         </div>
       ) : (
         <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">

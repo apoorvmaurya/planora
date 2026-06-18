@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { forwardGeocode } from "@/lib/locationiq/geocode"
+import { getCoordinatesForLocation } from "@/lib/locationiq/geocode"
+import { getPlanAccess } from "@/lib/security/access"
 
 export async function POST(
   req: Request,
@@ -18,18 +19,14 @@ export async function POST(
       return NextResponse.json({ error: "Invalid items parameter" }, { status: 400 })
     }
 
-    const { data: plan, error: planError } = await supabase
-      .from('plans')
-      .select('destination_name')
-      .eq('id', planId)
-      .single()
+    const { isAuthorized, isAdmin, plan } = await getPlanAccess(supabase, planId, user.id)
 
-    if (planError || !plan) {
+    if (!plan) {
       return NextResponse.json({ error: "Plan not found" }, { status: 404 })
     }
 
-    if (title) {
-      await supabase.from('plans').update({ title }).eq('id', planId)
+    if (!isAuthorized) {
+      return NextResponse.json({ error: "Not a member of this plan's group" }, { status: 403 })
     }
 
     // Geocode and prep items for insertion
@@ -48,15 +45,9 @@ export async function POST(
       // Geocode if missing coordinates or coordinates are zero
       const hasValidCoords = lat && lng && Math.abs(lat) > 0.001 && Math.abs(lng) > 0.001
       if (!hasValidCoords) {
-        try {
-          const coords = await forwardGeocode(item.location_name, plan.destination_name)
-          if (coords) {
-            lat = coords.lat
-            lng = coords.lng
-          }
-        } catch (err) {
-          console.error("Geocoding failed during merge for venue:", item.location_name, err)
-        }
+        const coords = await getCoordinatesForLocation(item.location_name, plan.destination_name)
+        lat = coords.lat
+        lng = coords.lng
       }
 
       itemsToInsert.push({
@@ -71,27 +62,47 @@ export async function POST(
         category: item.category || 'activity',
         duration_minutes: item.duration_minutes || 60,
         estimated_cost: item.estimated_cost || 0,
-        sort_order: sortOrderCounter[dayNum]++
+        sort_order: sortOrderCounter[dayNum]++,
+        // Admin: items are approved directly. Member: items are suggestions.
+        suggestion_status: isAdmin ? 'approved' : 'suggestion',
+        created_by: user.id
       })
     }
 
-    // Overwrite the itinerary items cleanly
-    const { error: deleteError } = await supabase
-      .from('itinerary_items')
-      .delete()
-      .eq('plan_id', planId)
+    if (isAdmin) {
+      // Admin flow: overwrite the itinerary cleanly
+      if (title) {
+        await supabase.from('plans').update({ title }).eq('id', planId)
+      }
 
-    if (deleteError) throw deleteError
-
-    if (itemsToInsert.length > 0) {
-      const { error: insertError } = await supabase
+      const { error: deleteError } = await supabase
         .from('itinerary_items')
-        .insert(itemsToInsert)
+        .delete()
+        .eq('plan_id', planId)
 
-      if (insertError) throw insertError
+      if (deleteError) throw deleteError
+
+      if (itemsToInsert.length > 0) {
+        const { error: insertError } = await supabase
+          .from('itinerary_items')
+          .insert(itemsToInsert)
+
+        if (insertError) throw insertError
+      }
+
+      return NextResponse.json({ success: true, proposed: false })
+    } else {
+      // Member flow: insert as suggestions alongside existing items (do NOT delete existing)
+      if (itemsToInsert.length > 0) {
+        const { error: insertError } = await supabase
+          .from('itinerary_items')
+          .insert(itemsToInsert)
+
+        if (insertError) throw insertError
+      }
+
+      return NextResponse.json({ success: true, proposed: true })
     }
-
-    return NextResponse.json({ success: true })
 
   } catch (error: any) {
     console.error("Merge itinerary error:", error)

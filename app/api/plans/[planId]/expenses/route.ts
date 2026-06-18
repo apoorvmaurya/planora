@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { getPlanAccess } from "@/lib/security/access"
 
 export async function GET(request: Request, { params }: { params: Promise<{ planId: string }> }) {
   const { planId } = await params;
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  const { isAuthorized } = await getPlanAccess(supabase, planId, user.id)
+  if (!isAuthorized) return NextResponse.json({ error: "Access denied" }, { status: 403 })
 
   const { data, error } = await supabase
     .from('plan_expenses')
@@ -25,6 +29,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ pla
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  const { isAuthorized } = await getPlanAccess(supabase, planId, user.id)
+  if (!isAuthorized) return NextResponse.json({ error: "Access denied" }, { status: 403 })
 
   try {
     const body = await request.json()

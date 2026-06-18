@@ -4,23 +4,29 @@ import React, { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useUserStore } from "@/store/userStore"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, AlertDialogClose } from "@/components/ui/alert-dialog"
-import { Map, Calendar, Users, DollarSign, Train, Plane, Bus, MessageSquare, Loader2, Wallet, Camera, Bell, PenSquare, Trash2, XCircle, CheckCircle2, Share2, UserMinus, Sparkles, Plus, Shield } from "lucide-react"
+import { Map, Calendar, Users, DollarSign, Train, Plane, Bus, MessageSquare, Loader2, Wallet, Camera, Bell, PenSquare, Trash2, XCircle, CheckCircle2, Share2, UserMinus, Sparkles, Plus, Shield, Send, User, Bot, History, RotateCcw } from "lucide-react"
 import { toast } from "sonner"
 import { ItineraryItemCard } from "@/components/shared/ItineraryItemCard"
 import { UserAvatar } from "@/components/shared/UserAvatar"
 import { ErrorState } from "@/components/shared/ErrorState"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger, DialogDescription } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import Image from "next/image"
 import confetti from "canvas-confetti"
 import { ScenicImage } from "@/components/shared/ScenicImage"
 import dynamic from "next/dynamic"
 import { syncOfflineOps, queueOfflineOp, offlineDB } from "@/lib/supabase/offlineSync"
+import { useChat } from "@ai-sdk/react"
+import { DefaultChatTransport } from "ai"
 
 const MapComponent = dynamic(
   () => import("@/components/shared/MapComponent").then((mod) => mod.MapComponent),
@@ -57,6 +63,120 @@ export default function PlanDetailPage() {
   const [adminSheetOpen, setAdminSheetOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
 
+  // AI Chat & Manual Add States
+  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [chatInput, setChatInput] = useState("")
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [selectedDayForAdd, setSelectedDayForAdd] = useState(1)
+  const [activityLogs, setActivityLogs] = useState<any[]>([])
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false)
+  const [newActivity, setNewActivity] = useState({
+    title: "",
+    description: "",
+    category: "activity",
+    time_of_day: "Morning",
+    location_name: "",
+    duration_minutes: 60,
+    estimated_cost: 0
+  })
+
+  const [chatTransport] = useState(() => new DefaultChatTransport({ api: `/api/plans/${planId}/chat` }))
+  const { messages, sendMessage, status, setMessages } = useChat({
+    transport: chatTransport,
+    onError: (err) => {
+      console.error("Chat error:", err)
+      toast.error(err.message || "An error occurred with Planora AI")
+    }
+  })
+
+  const handleManualAddActivity = async () => {
+    if (!newActivity.title || !newActivity.location_name) {
+      toast.error("Title and Location are required")
+      return
+    }
+
+    const payload = {
+      ...newActivity,
+      day_number: selectedDayForAdd
+    }
+
+    if (!navigator.onLine) {
+      try {
+        const tempItem = {
+          id: 'temp-item-' + Date.now(),
+          plan_id: planId,
+          user_id: null,
+          day_number: selectedDayForAdd,
+          time_of_day: newActivity.time_of_day,
+          title: newActivity.title,
+          description: newActivity.description,
+          location_name: newActivity.location_name,
+          category: newActivity.category,
+          duration_minutes: newActivity.duration_minutes,
+          estimated_cost: newActivity.estimated_cost,
+          sort_order: 99,
+          lat: 0,
+          lng: 0
+        }
+
+        setItems(prev => {
+          const next = [...prev, tempItem].sort((a, b) => a.day_number - b.day_number || a.sort_order - b.sort_order)
+          offlineDB.items.put({ id: planId, planId, data: next })
+          return next
+        })
+
+        await queueOfflineOp(planId, 'MANUAL_ADD_ITEM', payload)
+        toast.info("Offline: Activity queued for synchronization")
+        setIsAddDialogOpen(false)
+        setNewActivity({
+          title: "",
+          description: "",
+          category: "activity",
+          time_of_day: "Morning",
+          location_name: "",
+          duration_minutes: 60,
+          estimated_cost: 0
+        })
+      } catch (err) {
+        console.error("Offline manual add failed:", err)
+        toast.error("Failed to add activity offline")
+      }
+      return
+    }
+
+    try {
+      const res = await fetch(`/api/plans/${planId}/items`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+
+      const data = await res.json()
+      if (res.ok && data.item) {
+        setItems(prev => {
+          const next = [...prev, data.item].sort((a, b) => a.day_number - b.day_number || a.sort_order - b.sort_order)
+          offlineDB.items.put({ id: planId, planId, data: next })
+          return next
+        })
+        toast.success("Activity added successfully!")
+        setIsAddDialogOpen(false)
+        setNewActivity({
+          title: "",
+          description: "",
+          category: "activity",
+          time_of_day: "Morning",
+          location_name: "",
+          duration_minutes: 60,
+          estimated_cost: 0
+        })
+      } else {
+        throw new Error(data.error || "Failed to create activity")
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to create activity")
+    }
+  }
+
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -84,6 +204,9 @@ export default function PlanDetailPage() {
         const votesList = vData || []
         setVotes(votesList)
         await offlineDB.votes.put({ id: planId, planId, data: votesList })
+
+        const { data: logData } = await supabase.from('plan_activity_logs').select('*').eq('plan_id', planId).order('created_at', { ascending: false })
+        setActivityLogs(logData || [])
  
         if (pData.group_id) {
           const { data: mData } = await supabase.from('group_members').select('role, user:profiles(*)').eq('group_id', pData.group_id)
@@ -137,6 +260,14 @@ export default function PlanDetailPage() {
           await offlineDB.votes.put({ id: planId, planId, data })
         }
       }).subscribe()
+
+    const logsChannel = supabase.channel(`logs_${planId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'plan_activity_logs', filter: `plan_id=eq.${planId}` }, async () => {
+        const { data } = await supabase.from('plan_activity_logs').select('*').eq('plan_id', planId).order('created_at', { ascending: false })
+        if (data) {
+          setActivityLogs(data)
+        }
+      }).subscribe()
  
     const roomOne = supabase.channel(`presence_${planId}`, {
       config: { presence: { key: profile.id } },
@@ -178,6 +309,7 @@ export default function PlanDetailPage() {
     return () => {
       supabase.removeChannel(itemsChannel)
       supabase.removeChannel(votesChannel)
+      supabase.removeChannel(logsChannel)
       supabase.removeChannel(roomOne)
       window.removeEventListener('online', handleOnline)
     }
@@ -202,7 +334,7 @@ export default function PlanDetailPage() {
 
     // 1. Calculate optimistic votes state
     const existingIndex = votes.findIndex(v => v.item_id === itemId && v.user_id === profile.id)
-    let newVotes = [...votes]
+    const newVotes = [...votes]
 
     if (existingIndex > -1) {
       const existing = votes[existingIndex]
@@ -356,66 +488,151 @@ export default function PlanDetailPage() {
     }
   }
 
+  const handleRevertChange = async (logId: string) => {
+    const confirmRevert = window.confirm("Are you sure you want to revert this change?")
+    if (!confirmRevert) return
+
+    try {
+      const res = await fetch(`/api/plans/${planId}/history/${logId}/revert`, {
+        method: "POST"
+      })
+      const data = await res.json()
+      if (res.ok) {
+        toast.success(data.message || "Reverted successfully!")
+        await refreshItinerary()
+        const { data: logData } = await supabase
+          .from('plan_activity_logs')
+          .select('*')
+          .eq('plan_id', planId)
+          .order('created_at', { ascending: false })
+        if (logData) setActivityLogs(logData)
+      } else {
+        toast.error(data.error || "Failed to revert change")
+      }
+    } catch {
+      toast.error("Failed to revert change due to a network error")
+    }
+  }
+
+  const visibleItems = React.useMemo(() => {
+    return items.filter(i => i.user_id === null || i.user_id === profile?.id)
+  }, [items, profile?.id])
+  
+  // Universal Chronological & Logical Self-Aware Sorting (Memoized for 60fps performance)
+  const sortedItems = React.useMemo(() => {
+    return [...visibleItems].sort((a, b) => {
+      // 1. Sort by day number
+      if (a.day_number !== b.day_number) {
+        return a.day_number - b.day_number
+      }
+
+      // 2. Sort by time of day
+      const timeOrder: Record<string, number> = {
+        "Pre-trip": 0,
+        "Morning": 1,
+        "Afternoon": 2,
+        "Evening": 3,
+        "Night": 4
+      }
+      const weightA = timeOrder[a.time_of_day] ?? 1
+      const weightB = timeOrder[b.time_of_day] ?? 1
+      if (weightA !== weightB) {
+        return weightA - weightB
+      }
+
+      // 3. Category logical sequencing
+      const getSubRank = (item: any) => {
+        const category = (item.category || "").toLowerCase()
+        const title = (item.title || "").toLowerCase()
+        
+        if (category === 'transit' || category === 'transport') {
+          const destCity = (plan?.destination_name || "").split(',')[0].toLowerCase().trim()
+          const isDeparture = title.startsWith(destCity) || title.includes(`${destCity} to`)
+          return isDeparture ? 100 : -100 // Arrivals on top, departures at bottom
+        }
+        
+        if (category === 'accommodation') {
+          return -50 // Hotels check-in right after arrivals
+        }
+        
+        if (category === 'food' || category === 'restaurant') {
+          return 10 // Dining relaxed events slightly lower
+        }
+        
+        return 0 // Standard activities
+      }
+
+      const subRankA = getSubRank(a)
+      const subRankB = getSubRank(b)
+      if (subRankA !== subRankB) {
+        return subRankA - subRankB
+      }
+
+      return (a.sort_order || 0) - (b.sort_order || 0)
+    })
+  }, [visibleItems, plan?.destination_name])
+
   if (isLoading) return <div className="text-center py-20 text-slate-500">Loading plan...</div>
   if (!plan) return <ErrorState variant="not_found" title="Plan not found" description="This plan may have been deleted or you don't have access." backHref="/plans" backLabel="Back to plans" />
-
-  const visibleItems = items.filter(i => i.user_id === null || i.user_id === profile?.id)
-  
-  // Universal Chronological & Logical Self-Aware Sorting
-  const sortedItems = [...visibleItems].sort((a, b) => {
-    // 1. Sort by day number
-    if (a.day_number !== b.day_number) {
-      return a.day_number - b.day_number
-    }
-
-    // 2. Sort by time of day
-    const timeOrder: Record<string, number> = {
-      "Pre-trip": 0,
-      "Morning": 1,
-      "Afternoon": 2,
-      "Evening": 3,
-      "Night": 4
-    }
-    const weightA = timeOrder[a.time_of_day] ?? 1
-    const weightB = timeOrder[b.time_of_day] ?? 1
-    if (weightA !== weightB) {
-      return weightA - weightB
-    }
-
-    // 3. Category logical sequencing
-    const getSubRank = (item: any) => {
-      const category = (item.category || "").toLowerCase()
-      const title = (item.title || "").toLowerCase()
-      
-      if (category === 'transit' || category === 'transport') {
-        const destCity = (plan?.destination_name || "").split(',')[0].toLowerCase().trim()
-        const isDeparture = title.startsWith(destCity) || title.includes(`${destCity} to`)
-        return isDeparture ? 100 : -100 // Arrivals on top, departures at bottom
-      }
-      
-      if (category === 'accommodation') {
-        return -50 // Hotels check-in right after arrivals
-      }
-      
-      if (category === 'food' || category === 'restaurant') {
-        return 10 // Dining relaxed events slightly lower
-      }
-      
-      return 0 // Standard activities
-    }
-
-    const subRankA = getSubRank(a)
-    const subRankB = getSubRank(b)
-    if (subRankA !== subRankB) {
-      return subRankA - subRankB
-    }
-
-    return (a.sort_order || 0) - (b.sort_order || 0)
-  })
 
   const days = Array.from(new Set(sortedItems.map(i => i.day_number))).sort()
   const currentMember = members.find(m => m.user.id === profile?.id)
   const isAdmin = currentMember?.role === 'admin' || plan.created_by === profile?.id
+
+  const formatLogTime = (dateStr: string) => {
+    const date = new Date(dateStr)
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' - ' + date.toLocaleDateString([], { month: 'short', day: 'numeric' })
+  }
+
+  const renderPayloadDiff = (log: any) => {
+    if (!log.payload) return null
+    const { old_item, new_item, deleted_item } = log.payload
+    
+    if (deleted_item) {
+      return (
+        <div className="mt-2 text-xs bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-300 p-2.5 rounded-lg space-y-1">
+          <p className="font-bold">Deleted Item Details:</p>
+          <p><span className="font-semibold text-slate-500">Location:</span> {deleted_item.location_name}</p>
+          <p><span className="font-semibold text-slate-500">Cost:</span> {deleted_item.estimated_cost} {plan?.currency}</p>
+        </div>
+      )
+    }
+    
+    if (old_item && new_item) {
+      const changes: string[] = []
+      if (old_item.title !== new_item.title) changes.push(`Title: "${old_item.title}" ➔ "${new_item.title}"`)
+      if (old_item.description !== new_item.description) changes.push(`Description updated`)
+      if (old_item.time_of_day !== new_item.time_of_day) changes.push(`Time: "${old_item.time_of_day}" ➔ "${new_item.time_of_day}"`)
+      if (old_item.day_number !== new_item.day_number) changes.push(`Day: Day ${old_item.day_number} ➔ Day ${new_item.day_number}`)
+      if (old_item.location_name !== new_item.location_name) changes.push(`Location: "${old_item.location_name}" ➔ "${new_item.location_name}"`)
+      if (old_item.estimated_cost !== new_item.estimated_cost) changes.push(`Cost: ${old_item.estimated_cost} ➔ ${new_item.estimated_cost} {plan?.currency}`)
+      if (old_item.duration_minutes !== new_item.duration_minutes) changes.push(`Duration: ${old_item.duration_minutes}m ➔ ${new_item.duration_minutes}m`)
+      
+      if (changes.length === 0) return null
+      
+      return (
+        <div className="mt-2 text-[11px] bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 text-slate-650 dark:text-slate-350 p-2.5 rounded-lg space-y-1">
+          {changes.map((c, i) => (
+            <p key={i} className="flex items-center gap-1.5 font-medium">🔹 {c}</p>
+          ))}
+        </div>
+      )
+    }
+    
+    if (new_item) {
+      return (
+        <div className="mt-2 text-xs bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 p-2.5 rounded-lg space-y-1">
+          <p className="font-bold">Added Item Details:</p>
+          {new_item.description && <p className="italic text-slate-500 truncate">&quot;{new_item.description}&quot;</p>}
+          <p><span className="font-semibold text-slate-500">Location:</span> {new_item.location_name}</p>
+          <p><span className="font-semibold text-slate-500">Duration:</span> {new_item.duration_minutes} mins</p>
+          <p><span className="font-semibold text-slate-500">Cost:</span> {new_item.estimated_cost} {plan?.currency}</p>
+        </div>
+      )
+    }
+    
+    return null
+  }
 
   const gradients = [
     "from-teal-400 to-emerald-600",
@@ -426,15 +643,15 @@ export default function PlanDetailPage() {
   return (
     <div className="max-w-6xl mx-auto pb-20 space-y-8">
       {/* Header */}
-      <div className="bg-slate-900 text-white rounded-3xl relative overflow-hidden shadow-lg h-80 flex flex-col justify-end p-8">
+      <div className="bg-slate-900 text-white rounded-3xl relative overflow-hidden shadow-lg h-56 sm:h-64 md:h-80 flex flex-col justify-end p-6 sm:p-8">
         <ScenicImage 
           destination={plan.destination_name}
           alt={plan.destination_name}
-          width={1200}
-          height={400}
+          width={1600}
+          height={800}
           fill
           priority
-          className="object-cover opacity-60 pointer-events-none"
+          className="object-cover object-center opacity-60 pointer-events-none"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent pointer-events-none" />
         
@@ -443,28 +660,48 @@ export default function PlanDetailPage() {
             <div className="flex items-center gap-3 mb-4">
               <span className="bg-white/20 backdrop-blur text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">{plan.status}</span>
               <div className="flex -space-x-2">
-                {members.slice(0, 5).map(m => (
-                  <UserAvatar
-                    key={m.user.id}
-                    avatarUrl={m.user.avatar_url}
-                    name={m.user.full_name}
-                    userId={m.user.id}
-                    size="w-8 h-8"
-                    textSize="text-[10px]"
-                    className="border-2 border-slate-900"
-                  />
-                ))}
+                {plan.group_id ? (
+                  members.slice(0, 5).map(m => (
+                    <UserAvatar
+                      key={m.user.id}
+                      avatarUrl={m.user.avatar_url}
+                      name={m.user.full_name}
+                      userId={m.user.id}
+                      size="w-8 h-8"
+                      textSize="text-[10px]"
+                      className="border-2 border-slate-900"
+                    />
+                  ))
+                ) : (
+                  profile && (
+                    <UserAvatar
+                      avatarUrl={profile.avatar_url}
+                      name={profile.full_name ?? undefined}
+                      userId={profile.id}
+                      size="w-8 h-8"
+                      textSize="text-[10px]"
+                      className="border-2 border-slate-900"
+                    />
+                  )
+                )}
               </div>
             </div>
             <h1 className="text-5xl font-extrabold mb-2">{plan.title}</h1>
             <p className="text-white/80 max-w-xl text-lg flex items-center gap-2"><Map className="w-5 h-5" /> {plan.destination_name}</p>
           </div>
           <div className="flex gap-3 flex-wrap">
-            <Link href={`/plans/${planId}/chat`}>
-              <Button className="bg-white/20 hover:bg-white/30 backdrop-blur text-white rounded-xl h-12 px-6">
-                <MessageSquare className="w-5 h-5 mr-2" /> Ask Planora AI
-              </Button>
-            </Link>
+            <Button 
+              onClick={() => { setIsHistoryOpen(true); setIsChatOpen(false); }}
+              className="bg-white/20 hover:bg-white/30 backdrop-blur text-white rounded-xl h-12 px-6 cursor-pointer"
+            >
+              <History className="w-5 h-5 mr-2" /> Activity Log
+            </Button>
+            <Button 
+              onClick={() => { setIsChatOpen(true); setIsHistoryOpen(false); }}
+              className="bg-white/20 hover:bg-white/30 backdrop-blur text-white rounded-xl h-12 px-6 cursor-pointer"
+            >
+              <MessageSquare className="w-5 h-5 mr-2" /> Ask Planora AI
+            </Button>
             {isAdmin && (
               <Button 
                 onClick={() => setAdminSheetOpen(true)}
@@ -478,7 +715,7 @@ export default function PlanDetailPage() {
       </div>
 
       {/* Online Users */}
-      {onlineUsers.length > 0 && (
+      {plan.group_id && onlineUsers.length > 0 && (
         <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 font-medium">
           <div className="w-2 h-2 rounded-full bg-[#16795A] animate-pulse" />
           <span>Live viewing:</span>
@@ -504,23 +741,144 @@ export default function PlanDetailPage() {
               )}
             </TabsList>
             
-            {days.map((dayNum: any) => (
-              <TabsContent key={dayNum} value={dayNum.toString()} className="outline-none mt-0">
-                <div className="pt-2">
-                  {sortedItems.filter(i => i.day_number === dayNum).map(item => (
-                    <ItineraryItemCard 
-                      key={item.id} 
-                      item={item} 
-                      votes={votes.filter(v => v.item_id === item.id)} 
-                      currentUserId={profile?.id} 
-                      isAdmin={isAdmin} 
-                      onVote={handleVote} 
-                      onUpdate={refreshItinerary}
-                    />
-                  ))}
-                </div>
-              </TabsContent>
-            ))}
+            {days.map((dayNum: any) => {
+              const dayItems = sortedItems.filter(i => i.day_number === dayNum)
+              const approvedDayItems = dayItems.filter(i => i.suggestion_status === 'approved' || !i.suggestion_status)
+              const daySuggestions = dayItems.filter(i => i.suggestion_status === 'suggestion')
+              const timesOfDay = ["Pre-trip", "Morning", "Afternoon", "Evening", "Night"]
+
+              return (
+                <TabsContent key={dayNum} value={dayNum.toString()} className="outline-none mt-0">
+                  <div className="pt-2 space-y-6">
+                    {dayItems.length === 0 ? (
+                      <div className="text-center py-12 bg-slate-50 dark:bg-slate-900/30 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800/80 transition-colors duration-500">
+                        <Calendar className="w-10 h-10 text-slate-400 mx-auto mb-3" />
+                        <p className="text-sm text-slate-500 dark:text-slate-400 italic">No activities planned for this day yet.</p>
+                        <div className="flex justify-center gap-3 mt-4">
+                          <Button
+                            onClick={() => {
+                              setSelectedDayForAdd(dayNum)
+                              setIsAddDialogOpen(true)
+                            }}
+                            className="bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl h-10 px-5 font-bold flex items-center gap-1.5 shadow-sm cursor-pointer"
+                          >
+                            <Plus className="w-4 h-4" /> {isAdmin ? "Add Activity" : "Propose Activity"}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        {timesOfDay.map((slot) => {
+                          const approvedSlotItems = approvedDayItems.filter(i => i.time_of_day === slot)
+                          const slotSuggestions = daySuggestions.filter(i => i.time_of_day === slot)
+
+                          if (approvedSlotItems.length === 0 && slotSuggestions.length === 0) return null
+
+                          return (
+                            <div key={slot} className="space-y-4">
+                              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-2">
+                                {slot}
+                              </p>
+
+                              {/* Approved Official Items */}
+                              {approvedSlotItems.map((item) => {
+                                const alternatives = slotSuggestions.filter(s => s.parent_item_id === item.id)
+
+                                return (
+                                  <div key={item.id} className="space-y-3">
+                                    <ItineraryItemCard 
+                                      item={item} 
+                                      votes={votes.filter(v => v.item_id === item.id)} 
+                                      currentUserId={profile?.id} 
+                                      isAdmin={isAdmin} 
+                                      onVote={handleVote} 
+                                      onUpdate={refreshItinerary}
+                                      members={members}
+                                      isSolo={!plan.group_id}
+                                    />
+
+                                    {/* Proposed alternatives */}
+                                    {alternatives.length > 0 && (
+                                      <div className="ml-6 sm:ml-8 pl-4 border-l-2 border-dashed border-teal-200 dark:border-teal-900/50 space-y-3 mb-4">
+                                        <p className="text-[10px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider flex items-center gap-1">
+                                          💡 Proposed Alternatives ({alternatives.length})
+                                        </p>
+                                        {alternatives.map((altItem) => (
+                                          <ItineraryItemCard 
+                                            key={altItem.id}
+                                            item={altItem} 
+                                            votes={votes.filter(v => v.item_id === altItem.id)} 
+                                            currentUserId={profile?.id} 
+                                            isAdmin={isAdmin} 
+                                            onVote={handleVote} 
+                                            onUpdate={refreshItinerary}
+                                            members={members}
+                                            isSolo={!plan.group_id}
+                                          />
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                )
+                              })}
+
+                              {/* New Proposed Items for this slot (with no parent relation) */}
+                              {(() => {
+                                const newProposals = slotSuggestions.filter(s => !s.parent_item_id)
+                                if (newProposals.length === 0) return null
+
+                                return (
+                                  <div className="ml-6 sm:ml-8 pl-4 border-l-2 border-dashed border-teal-200 dark:border-teal-900/50 space-y-3">
+                                    <p className="text-[10px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider flex items-center gap-1">
+                                      ➕ Proposed Additions ({newProposals.length})
+                                    </p>
+                                    {newProposals.map((newSug) => (
+                                      <ItineraryItemCard 
+                                        key={newSug.id}
+                                        item={newSug} 
+                                        votes={votes.filter(v => v.item_id === newSug.id)} 
+                                        currentUserId={profile?.id} 
+                                        isAdmin={isAdmin} 
+                                        onVote={handleVote} 
+                                        onUpdate={refreshItinerary}
+                                        members={members}
+                                        isSolo={!plan.group_id}
+                                      />
+                                    ))}
+                                  </div>
+                                )
+                              })()}
+                            </div>
+                          )
+                        })}
+
+                        {/* Quick Actions */}
+                        <div className="flex justify-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+                          <Button
+                            onClick={() => {
+                              setSelectedDayForAdd(dayNum)
+                              setIsAddDialogOpen(true)
+                            }}
+                            className="bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/20 text-[#16795A] dark:text-teal-400 border border-teal-100/50 dark:border-teal-900/10 rounded-xl h-11 px-5 font-extrabold text-sm flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                          >
+                            <Plus className="w-4.5 h-4.5" /> {isAdmin ? "Add Activity" : "Propose Activity"}
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setIsChatOpen(true)
+                              sendMessage({ text: `Help me replan Day ${dayNum} to make it more exciting!` })
+                            }}
+                            className="bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/20 text-purple-650 dark:text-purple-400 border border-purple-100/50 dark:border-purple-900/10 rounded-xl h-11 px-5 font-extrabold text-sm flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                          >
+                            <Sparkles className="w-4 h-4" /> AI Replan Day {dayNum}
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </TabsContent>
+              )
+            })}
             {days.length > 0 && (
               <TabsContent value="map" className="outline-none mt-0">
                 <div className="pt-2">
@@ -534,10 +892,10 @@ export default function PlanDetailPage() {
           <div className="bg-slate-50 dark:bg-slate-900/55 rounded-3xl p-8 border border-slate-100 dark:border-slate-800 transition-colors duration-500 space-y-8">
             <div>
               <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2 transition-colors duration-500">Getting There</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Coordinate and Weaver your travel plans independently without cluttering the group schedule.</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Coordinate and manage your travel plans independently without cluttering the group schedule.</p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 items-start">
+            <div className={plan.group_id ? "grid md:grid-cols-2 gap-6 items-start" : "max-w-3xl mx-auto space-y-6"}>
               {/* Your Personal Planner */}
               <div className="bg-white dark:bg-slate-900/50 backdrop-blur-md p-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 transition-colors duration-500 flex flex-col w-full min-w-0 overflow-hidden">
                 <div className="w-full min-w-0">
@@ -589,7 +947,7 @@ export default function PlanDetailPage() {
                             variant="ghost" 
                             size="sm" 
                             onClick={() => setIsEditingCity(true)} 
-                            className="text-xs font-bold text-indigo-500 hover:text-indigo-650 cursor-pointer h-8"
+                            className="text-xs font-bold text-indigo-500 hover:text-indigo-600 cursor-pointer h-8"
                           >
                             Edit City
                           </Button>
@@ -599,7 +957,7 @@ export default function PlanDetailPage() {
                       <Button 
                         disabled={transitLoading[profile.id]}
                         onClick={() => handleGenerateTransit(profile.id, profile.city || "")}
-                        className="w-full bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/30 dark:hover:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900/30 text-indigo-650 dark:text-indigo-300 font-bold rounded-xl h-11 cursor-pointer flex items-center justify-center gap-2"
+                        className="w-full bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/30 dark:hover:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900/30 text-indigo-600 dark:text-indigo-300 font-bold rounded-xl h-11 cursor-pointer flex items-center justify-center gap-2"
                       >
                         {transitLoading[profile.id] ? (
                           <>
@@ -623,7 +981,7 @@ export default function PlanDetailPage() {
                               <div className="flex-1 min-w-0 space-y-1">
                                 <p className="font-bold text-sm text-slate-900 dark:text-slate-100 break-words leading-snug">{opt.title}</p>
                                 <p className="text-xs text-slate-500 dark:text-slate-400 break-words leading-relaxed">{opt.details}</p>
-                                <span className="inline-block text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-650 dark:text-indigo-300 px-2 py-0.5 rounded-md mt-1 border border-indigo-100/30 dark:border-indigo-900/10 shadow-sm">
+                                <span className="inline-block text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 px-2 py-0.5 rounded-md mt-1 border border-indigo-100/30 dark:border-indigo-900/10 shadow-sm">
                                   Est: {opt.cost}
                                 </span>
                               </div>
@@ -701,7 +1059,7 @@ export default function PlanDetailPage() {
                       )}
                     </div>
                   ) : (
-                    <div className="bg-slate-50 dark:bg-slate-800/30 p-5 rounded-2xl border border-dashed border-slate-200 dark:border-slate-850 text-center space-y-4">
+                    <div className="bg-slate-50 dark:bg-slate-800/30 p-5 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 text-center space-y-4">
                       <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Set your home city to get customized flight & train suggestions.</p>
                       <div className="flex gap-2">
                         <Input 
@@ -749,53 +1107,55 @@ export default function PlanDetailPage() {
               </div>
 
               {/* Group Departures (Read-Only) */}
-              <div className="bg-white dark:bg-slate-900/50 backdrop-blur-md p-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 transition-colors duration-500 flex flex-col w-full min-w-0 overflow-hidden">
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/60 flex items-center justify-center text-[#16795A] font-bold">
-                      👥
+              {plan.group_id && (
+                <div className="bg-white dark:bg-slate-900/50 backdrop-blur-md p-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 transition-colors duration-500 flex flex-col w-full min-w-0 overflow-hidden">
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/60 flex items-center justify-center text-[#16795A] font-bold">
+                        👥
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900 dark:text-slate-100">Group Departures</h4>
+                        <p className="text-xs text-slate-400">Group members&apos; origins</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-slate-900 dark:text-slate-100">Group Departures</h4>
-                      <p className="text-xs text-slate-400">Group members' origins</p>
-                    </div>
-                  </div>
 
-                  {members.filter(m => m.user.id !== profile?.id).length === 0 ? (
-                    <div className="text-center py-10 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800/60">
-                      <p className="text-sm text-slate-400 dark:text-slate-500 italic">Solo trip! Invite friends to coordinate departures.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1">
-                      {members.filter(m => m.user.id !== profile?.id).map(m => (
-                        <div key={m.user.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800/60">
-                          <div className="flex items-center gap-3 min-w-0">
-                            <UserAvatar
-                              avatarUrl={m.user.avatar_url}
-                              name={m.user.full_name}
-                              userId={m.user.id}
-                              size="w-9 h-9"
-                              textSize="text-[11px]"
-                              className="border border-slate-200 dark:border-slate-700 shrink-0"
-                            />
-                            <div className="min-w-0">
-                              <p className="text-sm font-bold text-slate-850 dark:text-slate-250 truncate">{m.user.full_name}</p>
-                              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                                {m.user.city ? `Departing: ${m.user.city}` : "Home city not set"}
-                              </p>
+                    {members.filter(m => m.user.id !== profile?.id).length === 0 ? (
+                      <div className="text-center py-10 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800/60">
+                        <p className="text-sm text-slate-400 dark:text-slate-500 italic">Solo trip! Invite friends to coordinate departures.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1">
+                        {members.filter(m => m.user.id !== profile?.id).map(m => (
+                          <div key={m.user.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800/60">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <UserAvatar
+                                avatarUrl={m.user.avatar_url}
+                                name={m.user.full_name}
+                                userId={m.user.id}
+                                size="w-9 h-9"
+                                textSize="text-[11px]"
+                                className="border border-slate-200 dark:border-slate-700 shrink-0"
+                              />
+                              <div className="min-w-0">
+                                <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">{m.user.full_name}</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                                  {m.user.city ? `Departing: ${m.user.city}` : "Home city not set"}
+                                </p>
+                              </div>
                             </div>
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0 ${
+                              m.user.city ? 'bg-teal-50 dark:bg-teal-950/20 text-[#16795A]' : 'bg-slate-100 dark:bg-slate-800 text-slate-450'
+                            }`}>
+                              {m.user.city ? 'Ready' : 'Pending'}
+                            </span>
                           </div>
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0 ${
-                            m.user.city ? 'bg-teal-50 dark:bg-teal-950/20 text-[#16795A]' : 'bg-slate-100 dark:bg-slate-800 text-slate-450'
-                          }`}>
-                            {m.user.city ? 'Ready' : 'Pending'}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -842,7 +1202,7 @@ export default function PlanDetailPage() {
                       {isAdmin && m.user.id !== profile?.id && plan.group_id && (
                         <button
                           onClick={() => setKickTarget(m.user)}
-                          className="opacity-100 md:opacity-0 md:group-hover:opacity-100 text-red-450 hover:text-red-600 transition-all p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20"
+                          className="opacity-100 md:opacity-0 md:group-hover:opacity-100 text-red-400 hover:text-red-600 transition-all p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20"
                         >
                           <UserMinus className="w-4 h-4" />
                         </button>
@@ -1152,6 +1512,446 @@ export default function PlanDetailPage() {
           </SheetContent>
         </Sheet>
       )}
+
+      {/* Manual Add Activity Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+          <DialogHeader>
+            <DialogTitle className="text-slate-900 dark:text-white font-extrabold text-2xl">Add Activity to Day {selectedDayForAdd}</DialogTitle>
+            <DialogDescription className="text-slate-500 dark:text-slate-400 text-xs">
+              Fill out the details to manually add a new activity to your itinerary. Location coordinates will be geocoded automatically.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Activity Title</Label>
+              <Input 
+                placeholder="e.g. Scenic Beach Picnic" 
+                value={newActivity.title} 
+                onChange={e => setNewActivity({...newActivity, title: e.target.value})} 
+                className="rounded-xl bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Description</Label>
+              <Textarea 
+                placeholder="Describe what you will do..." 
+                value={newActivity.description} 
+                onChange={e => setNewActivity({...newActivity, description: e.target.value})} 
+                className="resize-none h-20 rounded-xl bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Time of Day</Label>
+                <Select value={newActivity.time_of_day} onValueChange={v => v && setNewActivity({...newActivity, time_of_day: v})}>
+                  <SelectTrigger className="rounded-xl bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Morning">Morning</SelectItem>
+                    <SelectItem value="Afternoon">Afternoon</SelectItem>
+                    <SelectItem value="Evening">Evening</SelectItem>
+                    <SelectItem value="Night">Night</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Category</Label>
+                <Select value={newActivity.category} onValueChange={v => v && setNewActivity({...newActivity, category: v})}>
+                  <SelectTrigger className="rounded-xl bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="activity">Activity 🎟️</SelectItem>
+                    <SelectItem value="food">Food 🍽️</SelectItem>
+                    <SelectItem value="transport">Transport 🚗</SelectItem>
+                    <SelectItem value="accommodation">Accommodation 🏨</SelectItem>
+                    <SelectItem value="leisure">Leisure 🏖️</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Location</Label>
+                <Input 
+                  placeholder="e.g. Bondi Beach" 
+                  value={newActivity.location_name} 
+                  onChange={e => setNewActivity({...newActivity, location_name: e.target.value})} 
+                  className="rounded-xl bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Mins</Label>
+                  <Input 
+                    type="number" 
+                    value={newActivity.duration_minutes} 
+                    onChange={e => setNewActivity({...newActivity, duration_minutes: parseInt(e.target.value) || 0})} 
+                    className="rounded-xl bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Cost</Label>
+                  <Input 
+                    type="number" 
+                    value={newActivity.estimated_cost} 
+                    onChange={e => setNewActivity({...newActivity, estimated_cost: parseFloat(e.target.value) || 0})} 
+                    className="rounded-xl bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              onClick={handleManualAddActivity} 
+              className="bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl h-11 font-bold w-full"
+            >
+              <Plus className="w-4 h-4 mr-2" /> Add to Itinerary
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Floating AI Chat Bubble Button */}
+      <AnimatePresence>
+        {!isChatOpen && (
+          <motion.button
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setIsChatOpen(true)}
+            className="fixed bottom-6 right-6 z-40 bg-gradient-to-tr from-[#16795A] to-teal-500 hover:from-[#115E46] hover:to-teal-600 text-white rounded-full p-4 shadow-xl shadow-teal-500/20 flex items-center justify-center cursor-pointer border border-teal-400/20 group"
+          >
+            <Sparkles className="w-6 h-6 animate-pulse group-hover:scale-110 transition-transform" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* Collapsible Slide-Over AI Chat Panel */}
+      <AnimatePresence>
+        {isChatOpen && (
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 h-full w-full sm:w-[460px] bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl border-l border-slate-200/50 dark:border-slate-800/50 shadow-2xl z-50 flex flex-col"
+            >
+              {/* Drawer Header */}
+              <div className="p-5 border-b border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/35">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/30 dark:to-emerald-950/30 text-[#16795A] flex items-center justify-center shadow-inner">
+                    <Bot className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-base">
+                      Planora AI <Sparkles className="w-3.5 h-3.5 text-emerald-650 animate-pulse" />
+                    </h3>
+                    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Travel Copilot</p>
+                  </div>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setIsChatOpen(false)}
+                  className="rounded-full w-8 h-8 p-0 text-slate-450 hover:bg-slate-100 dark:hover:bg-slate-900 cursor-pointer"
+                >
+                  <XCircle className="w-5 h-5" />
+                </Button>
+              </div>
+
+              {/* Drawer Chat Body */}
+              <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gradient-to-b from-slate-50/30 to-white dark:from-slate-900/10 dark:to-slate-950">
+                {messages.length === 0 && (
+                  <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-5 py-8 text-center px-4">
+                    <div className="w-14 h-14 rounded-full bg-teal-50/60 dark:bg-teal-950/20 text-[#16795A] flex items-center justify-center shadow-sm">
+                      <Bot className="w-7 h-7 animate-pulse" />
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="font-extrabold text-slate-700 dark:text-slate-200 text-sm">How can I help you, {profile?.full_name?.split(' ')[0]}?</h4>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 max-w-[280px]">
+                        Ask me to customize your activities, replan days, suggest restaurants, or check travel details.
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-1 gap-2 w-full max-w-[320px]">
+                      {["Add a coffee stop on Day 1", "Make Day 2 more relaxed", "Suggest local food options", "What should I pack for this trip?"].map((s, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => sendMessage({ text: s })}
+                          className="text-left text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-[#16795A]/45 hover:bg-teal-50/50 dark:hover:bg-teal-950/10 transition-all text-slate-600 dark:text-slate-355 shadow-sm cursor-pointer"
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {messages.map((m) => (
+                  <div key={m.id} className={`flex gap-3 ${m.role === "user" ? "flex-row-reverse" : ""}`}>
+                    {/* Avatar */}
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm text-xs ${
+                      m.role === "user"
+                        ? "bg-slate-900 dark:bg-slate-850 text-white"
+                        : "bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/20 dark:to-emerald-950/20 text-[#16795A]"
+                    }`}>
+                      {m.role === "user" ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
+                    </div>
+                    {/* Bubble */}
+                    <div className={`rounded-2xl max-w-[85%] text-sm overflow-hidden ${
+                      m.role === "user"
+                        ? "bg-slate-900 dark:bg-slate-850 text-white rounded-tr-sm px-4 py-2.5"
+                        : "bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm text-slate-850 dark:text-slate-100 rounded-tl-sm"
+                    }`}>
+                      {m.parts.map((part, pi) => {
+                        if (part.type === "text") {
+                          return (
+                            <div key={pi} className={`whitespace-pre-wrap leading-relaxed ${m.role === "assistant" ? "px-4 py-2.5" : ""}`}>
+                              {part.text}
+                            </div>
+                          )
+                        }
+
+                        if (part.type === "tool-invocation") {
+                          const toolInvocation = (part as any).toolInvocation
+                          if (!toolInvocation) return null
+
+                          const { state, toolName, args, result } = toolInvocation
+                          const isRunning = state === "partial-call" || state === "call"
+                          const isDone = state === "result"
+                          const isError = isDone && result && (result.error || result.success === false)
+
+                          const toolMeta: Record<string, { label: string; icon: string }> = {
+                            add_item: { label: "Adding Activity", icon: "➕" },
+                            edit_item: { label: "Updating Activity", icon: "✏️" },
+                            delete_item: { label: "Deleting Activity", icon: "🗑️" },
+                            swap_items: { label: "Swapping order", icon: "🔄" },
+                            bulk_update_itinerary: { label: "AI Bulk Update", icon: "✨" }
+                          }
+                          const meta = toolMeta[toolName] || { label: toolName, icon: "⚙️" }
+
+                          let detailsText = ""
+                          if (isRunning) {
+                            detailsText = "Updating workspace..."
+                          } else if (isDone) {
+                            if (isError) {
+                              detailsText = result?.error || "Could not apply edits."
+                            } else {
+                              if (toolName === "bulk_update_itinerary") {
+                                detailsText = `Itinerary synced: modified ${result.upserted_count || 0} and removed ${result.deleted_count || 0} items.`
+                              } else {
+                                detailsText = "Itinerary synchronized successfully!"
+                              }
+                            }
+                          }
+
+                          return (
+                            <div key={pi} className="mx-2 my-1.5">
+                              <div className={`rounded-xl border p-2.5 flex items-center gap-3 text-xs transition-colors ${
+                                isDone && !isError
+                                  ? "bg-emerald-50/50 dark:bg-emerald-950/15 border-emerald-200/50 dark:border-emerald-900/30 text-emerald-800 dark:text-emerald-300"
+                                  : isError
+                                  ? "bg-red-50/50 dark:bg-red-950/15 border-red-200/50 dark:border-red-900/30 text-red-700 dark:text-red-300"
+                                  : "bg-slate-50 dark:bg-slate-900/60 border-slate-200/60 dark:border-slate-800/60 text-slate-600 dark:text-slate-350"
+                              }`}>
+                                <span className="text-base shrink-0">{meta.icon}</span>
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-bold">{meta.label}</p>
+                                  <p className="text-[10px] opacity-80 mt-0.5 truncate">{detailsText}</p>
+                                </div>
+                                {isRunning && <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400 shrink-0" />}
+                              </div>
+                            </div>
+                          )
+                        }
+                        return null
+                      })}
+                    </div>
+                  </div>
+                ))}
+
+                {status === "streaming" && (
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/20 dark:to-emerald-950/20 text-[#16795A] flex items-center justify-center shrink-0 shadow-sm">
+                      <Bot className="w-3.5 h-3.5 animate-bounce" />
+                    </div>
+                    <div className="px-4 py-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm rounded-2xl rounded-tl-sm flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 bg-[#16795A] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <span className="w-1.5 h-1.5 bg-[#16795A] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <span className="w-1.5 h-1.5 bg-[#16795A] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Drawer Message Input */}
+              <div className="p-4 border-t border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/35 backdrop-blur-md">
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault()
+                    const text = chatInput.trim()
+                    if (!text || status === "streaming") return
+                    setChatInput("")
+                    await sendMessage({ text })
+                  }}
+                  className="relative flex items-center"
+                >
+                  <input
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder={status === "streaming" ? "AI is typing..." : "Ask AI to edit this plan..."}
+                    disabled={status === "streaming"}
+                    className="w-full h-11 pl-4 pr-12 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#16795A]/30 focus:border-[#16795A]/45 transition-all disabled:opacity-60"
+                  />
+                  <Button
+                    type="submit"
+                    disabled={status === "streaming" || !chatInput.trim()}
+                    size="icon"
+                    className="absolute right-1.5 w-8 h-8 rounded-lg bg-[#16795A] hover:bg-[#115E46] text-white flex items-center justify-center cursor-pointer"
+                  >
+                    <Send className="w-3.5 h-3.5 text-white" />
+                  </Button>
+                </form>
+              </div>
+            </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Collapsible Slide-Over Plan Activity Log Panel */}
+      <AnimatePresence>
+        {isHistoryOpen && (
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed top-0 right-0 h-full w-full sm:w-[460px] bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl border-l border-slate-200/50 dark:border-slate-800/50 shadow-2xl z-50 flex flex-col"
+          >
+            {/* Drawer Header */}
+            <div className="p-5 border-b border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/35">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950/30 dark:to-violet-950/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-inner">
+                  <History className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-base">
+                    Plan Activity Log
+                  </h3>
+                  <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Audit Trail</p>
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setIsHistoryOpen(false)}
+                className="rounded-full w-8 h-8 p-0 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 cursor-pointer"
+              >
+                <XCircle className="w-5 h-5" />
+              </Button>
+            </div>
+
+            {/* Drawer Body */}
+            <div className="flex-1 overflow-y-auto p-5 space-y-5 bg-gradient-to-b from-slate-50/30 to-white dark:from-slate-900/10 dark:to-slate-950">
+              {activityLogs.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-3 py-8 text-center px-4">
+                  <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-400 flex items-center justify-center">
+                    <History className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300">No activity logged yet</h4>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 max-w-[240px] mt-1">
+                      Changes made to the itinerary (adds, updates, deletes) will appear here in real-time.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="relative border-l-2 border-slate-100 dark:border-slate-800 ml-4 pl-6 space-y-6">
+                  {activityLogs.map((log) => {
+                    const member = members.find((m: any) => m.user.id === log.user_id)
+                    const avatarUrl = member?.user.avatar_url
+                    const authorName = member?.user.full_name || (log.user_id ? "Group Member" : "Planora AI")
+                    const isSystem = !log.user_id
+                    
+                    let iconBg = "bg-blue-100 dark:bg-blue-950/40 text-blue-650 dark:text-blue-400"
+                    let actionIcon = "✏️"
+                    if (log.activity_type === "ADD_ITEM") {
+                      iconBg = "bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400"
+                      actionIcon = "➕"
+                    } else if (log.activity_type === "DELETE_ITEM") {
+                      iconBg = "bg-rose-100 dark:bg-rose-950/40 text-rose-650 dark:text-rose-405"
+                      actionIcon = "🗑️"
+                    } else if (log.activity_type === "PROMOTE_ITEM") {
+                      iconBg = "bg-teal-100 dark:bg-teal-950/40 text-teal-650 dark:text-teal-400"
+                      actionIcon = "💡"
+                    } else if (log.activity_type === "PROPOSE_ITEM") {
+                      iconBg = "bg-purple-100 dark:bg-purple-950/40 text-purple-650 dark:text-purple-400"
+                      actionIcon = "❓"
+                    } else if (log.activity_type === "REVERT_ACTION") {
+                      iconBg = "bg-slate-100 dark:bg-slate-900/40 text-slate-600 dark:text-slate-400"
+                      actionIcon = "↩️"
+                    }
+                    
+                    return (
+                      <div key={log.id} className="relative group">
+                        {/* Timeline Bullet */}
+                        <div className={`absolute -left-[35px] top-1.5 w-6 h-6 rounded-full flex items-center justify-center text-[10px] shadow-sm z-10 ${iconBg}`}>
+                          {actionIcon}
+                        </div>
+                        
+                        {/* Log Item Content */}
+                        <div className="bg-white/60 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/80 p-4 rounded-2xl hover:bg-white/80 dark:hover:bg-slate-900/60 transition-all shadow-sm">
+                          <div className="flex items-center gap-2 mb-2">
+                            {isSystem ? (
+                              <div className="w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-950/30 text-[#16795A] flex items-center justify-center text-[10px] shrink-0 border border-teal-100 dark:border-teal-900/40">
+                                🤖
+                              </div>
+                            ) : (
+                              <UserAvatar
+                                avatarUrl={avatarUrl}
+                                name={authorName}
+                                userId={log.user_id}
+                                size="w-5 h-5"
+                                textSize="text-[8px]"
+                                className="shrink-0"
+                              />
+                            )}
+                            <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{authorName}</span>
+                            <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 ml-auto shrink-0">
+                              {formatLogTime(log.created_at)}
+                            </span>
+                          </div>
+                          
+                          <p className="text-xs font-semibold text-slate-650 dark:text-slate-350 leading-relaxed">
+                            {log.description}
+                          </p>
+                          
+                          {/* Diff Payload */}
+                          {renderPayloadDiff(log)}
+
+                          {/* Revert Action */}
+                          {isAdmin && ["ADD_ITEM", "DELETE_ITEM", "UPDATE_ITEM", "PROMOTE_ITEM"].includes(log.activity_type) && (
+                            <div className="mt-3 pt-3 border-t border-slate-100/50 dark:border-slate-800/50 flex justify-end">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleRevertChange(log.id)}
+                                className="h-7 text-[10px] font-extrabold text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 flex items-center gap-1 hover:bg-slate-100 dark:hover:bg-slate-850 px-2 rounded-lg cursor-pointer transition-colors"
+                              >
+                                <RotateCcw className="w-3 h-3" /> Revert Change
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

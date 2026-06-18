@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { forwardGeocode } from "@/lib/locationiq/geocode"
+import { getPlanAccess } from "@/lib/security/access"
 
 export async function POST(
   req: Request,
@@ -10,6 +11,10 @@ export async function POST(
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  const { isAuthorized, plan } = await getPlanAccess(supabase, planId, user.id)
+  if (!plan) return NextResponse.json({ error: "Plan not found" }, { status: 404 })
+  if (!isAuthorized) return NextResponse.json({ error: "Access denied" }, { status: 403 })
 
   const { title, details, cost, type, day_number } = await req.json()
   if (!title) return NextResponse.json({ error: "Title is required" }, { status: 400 })
@@ -44,21 +49,17 @@ export async function POST(
 
   if (query) {
     try {
-      const { data: plan } = await supabase.from("plans").select("destination_name").eq("id", planId).single()
-      const destination = plan?.destination_name
+      const destination = plan.destination_name
       
-      const coords = await forwardGeocode(query, destination)
+      let coords = await forwardGeocode(query, destination)
+      if (!coords && destination) {
+        coords = await forwardGeocode(`${query}, ${destination}`)
+      }
+      
       if (coords) {
         lat = coords.lat
         lng = coords.lng
         resolvedLocationName = coords.display_name ? coords.display_name.split(',')[0] : query
-      } else if (destination) {
-        const fallbackCoords = await forwardGeocode(`${query}, ${destination}`)
-        if (fallbackCoords) {
-          lat = fallbackCoords.lat
-          lng = fallbackCoords.lng
-          resolvedLocationName = fallbackCoords.display_name ? fallbackCoords.display_name.split(',')[0] : query
-        }
       }
     } catch (err) {
       console.error("Transit terminal geocoding failed:", err)

@@ -1,151 +1,174 @@
-<h1 align="center">Plan<span>ora</span></h1>
+# <p align="center"><img src="public/icon-192.png" width="48" height="48" alt="Planora Icon" style="vertical-align: middle; margin-right: 10px;" /> Planora</p>
 
 <p align="center">
   <strong>Plans that actually happen — together.</strong><br />
-  The collaborative trip planner that turns "we should hang out" into "here's the boarding pass."
+  The collaborative trip planner that converts "we should hang out" into "here's the boarding pass."
 </p>
 
 <p align="center">
-  <a href="https://planora-plum-beta.vercel.app">Live Demo</a> ·
-  <a href="#features">Features</a> ·
-  <a href="#tech-stack">Tech Stack</a> ·
-  <a href="#getting-started">Getting Started</a> ·
-  <a href="#project-structure">Project Structure</a>
+  <img src="https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js" alt="Next.js 15" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8?style=for-the-badge&logo=tailwind-css" alt="Tailwind v4" />
+  <img src="https://img.shields.io/badge/Supabase-Database-3ecf8e?style=for-the-badge&logo=supabase" alt="Supabase" />
+  <img src="https://img.shields.io/badge/Groq-Llama_AI-f55?style=for-the-badge" alt="Groq Llama" />
+  <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="MIT License" />
 </p>
+
+---
+
+Planora is an enterprise-grade collaborative travel planning application designed to streamline group trip coordination. By merging real-time synchronization, interactive AI generation, democratic voting consensus engines, and smart chronological sorting, Planora eliminates coordination friction and solves group travel planning challenges.
+
+---
+
+## 🛠️ System Architecture
+
+Planora uses a highly decoupled, real-time client-server architecture built on Next.js 15, Supabase, and the Groq Inference Engine.
+
+```mermaid
+graph TD
+    User([User Client / PWA]) -->|HTTPS & WSS| FE[Next.js App Router Frontend]
+    FE -->|State Management| Zustand[Zustand Local Store]
+    FE -->|API Calls / JSON| APILayer[API Route Handlers]
+    
+    subgraph Security Layer
+        APILayer -->|Session Authentication| SupabaseAuth[Supabase Auth]
+        APILayer -->|Centralized Access Check / getPlanAccess| AccessControl[Role Validation]
+        APILayer -->|API Guardrails & Rate Limits| SecurityGate[Central Rate Limiter & Input Guardrail]
+    end
+
+    subgraph Core Engines
+        SecurityGate -->|Vercel AI SDK| GroqAPI[Groq API / Llama Inference]
+        AccessControl -->|Queries & Operations| SupabaseDB[Supabase Postgres DB]
+        SupabaseDB -->|Postgres Triggers| ActivityLogs[Activity Logging]
+        SupabaseDB -->|Edge Function Cron| EdgeFunctions[Supabase Edge Functions & Resend]
+    end
+
+    SupabaseDB -.->|Real-time Database Broadcasts| FE
+```
+
+---
 
 ## ✨ Features
 
-| Feature | Description |
-|---|---|
-| **AI Itinerary Generation** | Drop a prompt and get a fully personalized, day-by-day itinerary in seconds — powered by Groq's Llama 3.3 70B. |
-| **PlaBot Chat** | An AI travel assistant that can read and modify your itinerary through tool-calling, right inside the plan. |
-| **Group Sync** | Real-time collaborative workspace. Create groups, invite friends via link, and plan together. |
-| **Voting & Polls** | Up/down voting on itinerary items with automatic AI tie-breaking so decisions don't stall. |
-| **Momentum Engine** | Smart email nudges (via Resend) keep everyone engaged and accountable. Runs as a Supabase Edge Function on a cron schedule. |
-| **Budget Splitter** | Track expenses on the go and see who owes what — without the awkward math. |
-| **Trip Memories** | Shared collaborative photo dump to relive the best moments of your journey. |
-| **Transit Weaver** | AI-generated transit suggestions (flights, trains, cabs) for each group member, insertable directly into your itinerary. |
-| **PWA Support** | Installable Progressive Web App with offline caching via Serwist and push notifications via Web Push. |
-| **Input Guardrails & Rate Limiting** | Dynamic protection against prompt injections, code generation, and academic spam with a centralized IP-based rate limiter. |
-| **Fail-Safe Image Loader** | Dual-tier rendering that fetches scenic photos from `image.pollinations.ai` and falls back to curated Unsplash travel images if the AI API is rate-limited. |
+### 🧠 Advanced AI Itinerary Generation
+*   **Chronological Traveler Arc**: Generates structural day plans containing matching Morning (active sight), Lunch (local culinary), Afternoon (district-aligned secondary activity), Evening (leisure stroll), and Night (dinner & rest) blocks.
+*   **Neighborhood Spatial Cohorts**: Groups daily activities within localized neighborhoods to prevent zig-zag travel.
+*   **Trip Pacing & Volume Tuning**: Limits activity count dynamically to match traveler pacing profiles (`slow`: 1-2, `moderate`: 2-3, `fast`: 3-4 activities per day).
+*   **Arrival/Departure Safeguards**: Tailors lighter half-day schedules for Day 1 and the final day to respect airport/terminal travel constraints.
+
+### 💬 Collaborative Chat Agent (PlaBot)
+*   **Interactive Context Integration**: Allows group members to chat with PlaBot directly inside their trip plan to modify the itinerary.
+*   **Bulk Transaction Processing**: Executes multi-item edits, inserts, and deletions in a single tool call to optimize token performance and speed.
+*   **Democratic Interception**: Automatically places modifications suggested by regular group members into a "Pending Suggestions" state for voting, while allowing Trip Admins to apply edits directly.
+
+### 🗳️ Democratic Decision Engine
+*   **Consensus-Driven Promotion**: Automatically promotes group suggestions to the official itinerary when all members vote and the upvotes exceed downvotes, cleaning up alternatives in real time.
+*   **AI scout Tie-Breaker**: Automatically calls the Llama Scout tie-breaker tool when consensus results in a tie, suggesting an alternative item matching the budget and category.
+*   **Real-time synchronization**: Propagates voting cards and consensus actions instantly to all active browsers using Supabase Realtime subscriptions.
+
+### 📊 Expense Splitter & Receipt OCR Engine
+*   **High-Fidelity OCR Scanning**: Integrates Groq Vision to extract total, merchant, date, currency, and line items from receipts.
+*   **Collaborative Ledger**: Supports multiple currencies and calculates optimal repayment balances instantly, resolving who owes what.
 
 ---
 
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|---|---|
-| **Framework** | [Next.js 15](https://nextjs.org) (App Router, Turbopack) |
-| **Language** | TypeScript |
-| **Styling** | [Tailwind CSS v4](https://tailwindcss.com), [shadcn/ui](https://ui.shadcn.com) |
-| **Database** | [Supabase](https://supabase.com) (PostgreSQL + Row Level Security) |
-| **Auth** | Supabase Auth (email/password, OAuth) |
-| **AI** | [Vercel AI SDK](https://sdk.vercel.ai) + [Groq](https://groq.com) (Llama 3.3 70B) |
-| **Email** | [Resend](https://resend.com) |
-| **State** | [Zustand](https://github.com/pmndrs/zustand), React hooks |
-| **Animations** | [Framer Motion](https://www.framer.com/motion/) |
-| **PWA** | [Serwist](https://serwist.pages.dev) (service worker), Web Push API |
-| **Deployment** | [Vercel](https://vercel.com) |
-
----
-
-## 🏁 Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
+- **Node.js** &ge; 18.0.0
+- **pnpm** &ge; 9.0.0 (Recommended)
+- A **Supabase** project instance
+- A **Groq Cloud** API key
+- A **Resend** mail delivery account
+- A **LocationIQ** geocoding token
 
-- **Node.js** ≥ 18
-- **pnpm** (recommended) or npm
-- A [Supabase](https://supabase.com) project
-- A [Groq](https://console.groq.com) API key
-- A [Resend](https://resend.com) API key
-- A [LocationIQ](https://locationiq.com) API key
-
-### 1. Clone and install
-
+### 1. Clone & Install Dependencies
 ```bash
 git clone https://github.com/apoorvmaurya/planora.git
 cd planora
 pnpm install
 ```
 
-### 2. Configure environment
-
+### 2. Configure Environment Variables
+Copy the local template and fill in your keys:
 ```bash
 cp .env.local.example .env.local
 ```
+Key requirements:
+```properties
+# Supabase Database Settings
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 
-Fill in the values — see [`.env.local.example`](.env.local.example) for the full list:
+# LLM Inference (Groq)
+GROQ_API_KEY=your-groq-api-key
 
-```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
+# Geocoding & Mapping (LocationIQ)
+NEXT_PUBLIC_LOCATIONIQ_KEY=your-locationiq-key
 
-# AI (Groq)
-GROQ_API_KEY=
+# Email Dispatcher (Resend)
+RESEND_API_KEY=your-resend-key
 
-# Geocoding (LocationIQ)
-NEXT_PUBLIC_LOCATIONIQ_KEY=
-
-# Email (Resend)
-RESEND_API_KEY=
-
-# App
+# App Settings
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 
-# Web Push (VAPID)
-NEXT_PUBLIC_VAPID_PUBLIC_KEY=
-VAPID_PRIVATE_KEY=
+# Web Push Notifications (VAPID)
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=your-vapid-public-key
+VAPID_PRIVATE_KEY=your-vapid-private-key
 ```
 
-### 3. Run the development server
+### 3. Apply Schema Migrations
+Planora database schemas, trigger rules, Row Level Security (RLS) configurations, and Edge Functions are managed in the `supabase/` folder:
+```bash
+# Apply migrations to your remote database via Supabase CLI
+supabase db push
+```
 
+### 4. Launch Development Environment
 ```bash
 pnpm dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) to see the app.
-
-### 4. Database setup
-
-The Supabase project should have the required tables, RLS policies, and Edge Functions deployed. Migration files are in the [`supabase/`](supabase/) directory and can be applied via the Supabase CLI or the MCP integration.
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ---
 
-## 📂 Project Structure
+## 📂 Codebase Layout
 
 ```
 planora/
 ├── app/
-│   ├── (app)/              # Authenticated app pages (dashboard, plans, groups, etc.)
-│   ├── (auth)/             # Auth pages (login, signup, onboarding)
-│   ├── (public)/           # Public landing page
-│   ├── api/                # API routes (plans, groups, friends, AI, push, etc.)
-│   ├── auth/               # OAuth callback handler
-│   ├── layout.tsx          # Root layout (font, Toaster, SpeedInsights, SW)
-│   └── globals.css         # Design tokens, theme variables, performance layer
+│   ├── (app)/              # Authenticated dashboard, plans, groups and settings
+│   ├── (auth)/             # Authentication flow (sign up, sign in, onboarding)
+│   ├── (public)/           # High-conversion landing page
+│   ├── api/                # API routes (secure itinerary, voting, expenses, OCR, chat)
+│   └── globals.css         # Modern CSS system, HSL color tokens, and animations
 ├── components/
-│   ├── layout/             # Sidebar
-│   ├── providers/          # UserProvider (auth context)
-│   ├── shared/             # Reusable components (modals, cards, PlaBot, etc.)
-│   └── ui/                 # shadcn/ui primitives
-├── hooks/                  # Custom React hooks (useFriends, useGroup, useProfile)
+│   ├── layout/             # Navigation controls and sidebar
+│   ├── providers/          # Authentication context providers
+│   ├── shared/             # Reusable UI cards, PlaBot chat drawer, and Modals
+│   └── ui/                 # Atomic design primitives (shadcn/ui custom components)
+├── hooks/                  # Specialized reactive hooks (useGroup, useFriends)
 ├── lib/
-│   ├── supabase/           # Supabase client (browser, server, middleware)
-│   ├── ai/                 # AI utilities
-│   ├── locationiq/         # Geocoding helpers
-│   ├── push/               # Web Push utilities
-│   ├── utils/              # Business logic (expense calculator, etc.)
-│   └── utils.ts            # Tailwind `cn()` helper
-├── store/                  # Zustand stores
-├── supabase/               # Migrations & Edge Functions (Momentum Engine)
-├── public/                 # Static assets, PWA icons, service worker
-└── middleware.ts            # Next.js middleware (session refresh, route guards)
+│   ├── ai/                 # Centralized AI model configs (AI_MODELS) and prompts
+│   ├── itinerary/          # Logical sorting and database reordering utilities
+│   ├── locationiq/         # Geocoding helpers and request rate-limiting queues
+│   ├── security/           # Centralized authorization (getPlanAccess), rate-limiting, and input guardrails
+│   └── utils.ts            # UI styles class merging tool (cn)
+├── store/                  # Zustand state trees for local/offline reactivity
+├── supabase/               # Database migration scripts and edge functions
+└── public/                 # Static assets, Web manifest files, and PWA configurations
 ```
 
 ---
 
-<p align="center">
-  Made with 💖 for better trips.
-</p>
+## 🛡️ Security & Guardrails
+Planora is built with a defense-in-depth approach to security:
+1.  **Insecure Direct Object Reference (IDOR) Mitigation**: All write and read routes validate client requests against the centralized `getPlanAccess` guard.
+2.  **Input Guardrails**: Protects against jailbreak attempts and off-topic requests using a fast classification pass before LLM dispatch.
+3.  **Stateless Rate Limiting**: Centralized API request logs prevent system abuse and protect infrastructure from high token utilization.
+4.  **Supabase Row Level Security (RLS)**: Secures all tables with tenant-level RLS policies to prevent direct database leaks.
+
+---
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

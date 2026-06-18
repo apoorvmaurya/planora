@@ -75,12 +75,12 @@ export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps)
       animate={{ opacity: 1, y: 0 }}
       className="group bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800/80 overflow-hidden flex flex-col transition-all hover:shadow-md"
     >
-      <div className="h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-800">
+      <div className="aspect-[16/10] w-full relative overflow-hidden bg-slate-100 dark:bg-slate-800">
         <ScenicImage 
           destination={plan.destination_name}
           alt={plan.destination_name}
           width={800}
-          height={600}
+          height={500}
           fill
           priority
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -130,7 +130,7 @@ export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps)
                 />
               ))}
               {members.length > 4 && (
-                <div className="w-6 h-6 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-850 flex items-center justify-center text-[10px] font-bold text-slate-600 dark:text-slate-300">
+                <div className="w-6 h-6 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold text-slate-600 dark:text-slate-300">
                   +{members.length - 4}
                 </div>
               )}
@@ -139,15 +139,15 @@ export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps)
           
           <div className="flex items-center justify-between text-sm">
             <span className="text-slate-500 dark:text-slate-400 flex items-center gap-2"><Wallet className="w-4 h-4 text-slate-400" /> Budget</span>
-            <span className="font-semibold text-slate-900 dark:text-slate-150">{plan.budget_total} {plan.currency}</span>
+            <span className="font-semibold text-slate-900 dark:text-slate-100">{plan.budget_total} {plan.currency}</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 pt-4 border-t border-slate-100 dark:border-slate-800 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-2 pt-4 border-t border-slate-100 dark:border-slate-800 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
           {plan.status === 'draft' ? (
             <Link 
               href={`/plans/${plan.id}/edit`} 
-              className="flex-1 w-full py-2 bg-slate-100 dark:bg-slate-850 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-200"
+              className="flex-1 w-full py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-200"
             >
               <PenSquare className="w-4 h-4" /> Edit Draft
             </Link>
@@ -162,7 +162,7 @@ export const PlanCard = memo(function PlanCard({ plan, onShare }: PlanCardProps)
           {onShare && (
             <button 
               onClick={(e) => { e.preventDefault(); onShare(plan.id); }}
-              className="p-2 bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-350 rounded-xl transition-all duration-200 cursor-pointer"
+              className="p-2 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 text-slate-600 dark:text-slate-300 rounded-xl transition-all duration-200 cursor-pointer"
             >
               <Share2 className="w-4 h-4" />
             </button>

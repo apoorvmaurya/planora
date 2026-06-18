@@ -143,11 +143,11 @@ export default function GroupSettingsPage() {
   if (!isAdmin) {
     return (
       <div className="max-w-md mx-auto py-20 text-center space-y-6">
-        <div className="w-16 h-16 bg-red-100 dark:bg-red-950/30 rounded-2xl flex items-center justify-center mx-auto text-red-555">
+        <div className="w-16 h-16 bg-red-100 dark:bg-red-950/30 rounded-2xl flex items-center justify-center mx-auto text-red-600">
           <Shield className="w-8 h-8" />
         </div>
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Access Denied</h2>
-        <p className="text-slate-550 dark:text-slate-400">
+        <p className="text-slate-500 dark:text-slate-400">
           Only group administrators can access the group settings.
         </p>
         <Link href={`/groups/${groupId}`}>
@@ -330,7 +330,7 @@ export default function GroupSettingsPage() {
             className={`w-full text-left px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-3 ${
               activeTab === "general"
                 ? "bg-[#16795A] text-white shadow-lg shadow-[#16795A]/30"
-                : "text-slate-650 dark:text-slate-450 hover:bg-slate-105 dark:hover:bg-slate-800/50"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50"
             }`}
           >
             <ImageIcon className="w-4 h-4" /> General Info
@@ -340,7 +340,7 @@ export default function GroupSettingsPage() {
             className={`w-full text-left px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-3 ${
               activeTab === "members"
                 ? "bg-[#16795A] text-white shadow-lg shadow-[#16795A]/30"
-                : "text-slate-650 dark:text-slate-455 hover:bg-slate-105 dark:hover:bg-slate-800/50"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50"
             }`}
           >
             <Users className="w-4 h-4" /> Manage Members
@@ -350,7 +350,7 @@ export default function GroupSettingsPage() {
             className={`w-full text-left px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-3 ${
               activeTab === "invite"
                 ? "bg-[#16795A] text-white shadow-lg shadow-[#16795A]/30"
-                : "text-slate-650 dark:text-slate-450 hover:bg-slate-105 dark:hover:bg-slate-800/50"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50"
             }`}
           >
             <Copy className="w-4 h-4" /> Invite Link
@@ -361,7 +361,7 @@ export default function GroupSettingsPage() {
             className={`w-full text-left px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-3 ${
               activeTab === "danger"
                 ? "bg-red-500 text-white shadow-lg shadow-red-500/25"
-                : "text-red-500 hover:bg-red-55 dark:hover:bg-red-950/20"
+                : "text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20"
             }`}
           >
             <Trash2 className="w-4 h-4" /> Danger Zone
@@ -390,7 +390,7 @@ export default function GroupSettingsPage() {
                   {/* Cover Image Upload */}
                   <div className="space-y-2">
                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Group Cover Photo</label>
-                    <div className="relative group w-full h-48 bg-slate-100 dark:bg-slate-950/80 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-850 flex items-center justify-center overflow-hidden cursor-pointer hover:border-[#16795A] dark:hover:border-teal-400 transition-colors">
+                    <div className="relative group w-full h-48 bg-slate-100 dark:bg-slate-950/80 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center overflow-hidden cursor-pointer hover:border-[#16795A] dark:hover:border-teal-400 transition-colors">
                       {coverPreview ? (
                         <>
                           <img src={coverPreview} alt="Cover Preview" className="w-full h-full object-cover" />
@@ -421,7 +421,7 @@ export default function GroupSettingsPage() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Enter group name"
-                      className="h-12 rounded-xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-850 text-slate-900 dark:text-white focus-visible:ring-[#16795A] transition-colors"
+                      className="h-12 rounded-xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus-visible:ring-[#16795A] transition-colors"
                       required
                     />
                   </div>
@@ -435,12 +435,12 @@ export default function GroupSettingsPage() {
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder="What is this group planning?"
                       rows={4}
-                      className="resize-none rounded-xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-850 text-slate-900 dark:text-white focus-visible:ring-[#16795A] transition-colors"
+                      className="resize-none rounded-xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus-visible:ring-[#16795A] transition-colors"
                     />
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-slate-100 dark:border-slate-850 flex justify-end">
+                <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex justify-end">
                   <Button
                     type="submit"
                     disabled={isUpdating}
@@ -473,12 +473,12 @@ export default function GroupSettingsPage() {
                       <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2">
                         <UserPlus className="w-4 h-4 text-[#16795A]" /> Invite Friends (Pending Confirmation)
                       </h4>
-                      <p className="text-xs text-slate-400 dark:text-slate-550 mb-3">Invited friends will see a request on their dashboard and must accept it to join.</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">Invited friends will see a request on their dashboard and must accept it to join.</p>
                       <div className="flex flex-wrap gap-2">
                         {inviteableFriends.map((friend) => (
                           <div
                             key={friend.user.id}
-                            className="bg-white/90 dark:bg-slate-950/90 border border-slate-200/50 dark:border-slate-850 px-3 py-2 rounded-xl flex items-center justify-between gap-4 text-xs shadow-sm"
+                            className="bg-white/90 dark:bg-slate-950/90 border border-slate-200/50 dark:border-slate-800 px-3 py-2 rounded-xl flex items-center justify-between gap-4 text-xs shadow-sm"
                           >
                             <div className="flex items-center gap-2">
                               <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-xs overflow-hidden shrink-0">
@@ -505,14 +505,14 @@ export default function GroupSettingsPage() {
 
                   {/* Active Members section */}
                   <div className="space-y-3">
-                    <h4 className="text-xs font-bold text-slate-450 dark:text-slate-500 uppercase tracking-wider">Active Group Members</h4>
+                    <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Active Group Members</h4>
                     {members.map((member) => {
                       const isSelf = member.user.id === profile?.id
                       
                       return (
                         <div
                           key={member.id}
-                          className="bg-white/50 dark:bg-slate-950/50 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl flex items-center justify-between gap-4"
+                          className="bg-white/50 dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800 p-4 rounded-2xl flex items-center justify-between gap-4"
                         >
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0">
@@ -529,7 +529,7 @@ export default function GroupSettingsPage() {
                                 {member.user.full_name}
                                 {member.role === "admin" && <Shield className="w-3.5 h-3.5 text-[#16795A]" />}
                               </p>
-                              <p className="text-xs text-slate-505 dark:text-slate-400">@{member.user.username}</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400">@{member.user.username}</p>
                             </div>
                           </div>
 
@@ -550,7 +550,7 @@ export default function GroupSettingsPage() {
                                 variant="ghost"
                                 disabled={isProcessing}
                                 onClick={() => removeMember(member.user.id)}
-                                className="text-red-500 hover:text-red-650 hover:bg-red-50 dark:hover:bg-red-950/20 text-xs rounded-xl h-9 px-3"
+                                className="text-red-500 hover:text-red-655 hover:bg-red-50 dark:hover:bg-red-950/20 text-xs rounded-xl h-9 px-3"
                               >
                                 Kick
                               </Button>
@@ -563,15 +563,15 @@ export default function GroupSettingsPage() {
 
                   {/* Pending Invitations list */}
                   {pendingInvites.length > 0 && (
-                    <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-850">
-                      <h4 className="text-xs font-bold text-slate-450 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                      <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                         <Mail className="w-3.5 h-3.5" /> Sent Invites (Pending)
                       </h4>
                       <div className="space-y-3">
                         {pendingInvites.map((invite) => (
                           <div
                             key={invite.id}
-                            className="bg-slate-50/45 dark:bg-slate-950/30 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl flex items-center justify-between gap-4"
+                            className="bg-slate-50/45 dark:bg-slate-950/30 border border-slate-100 dark:border-slate-800 p-4 rounded-2xl flex items-center justify-between gap-4"
                           >
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0 flex items-center justify-center">
@@ -616,11 +616,11 @@ export default function GroupSettingsPage() {
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage the join link that people use to enter your group.</p>
                 </div>
 
-                <div className="bg-slate-50 dark:bg-slate-950/80 border border-slate-200/50 dark:border-slate-850 p-6 rounded-3xl space-y-4">
+                <div className="bg-slate-50 dark:bg-slate-950/80 border border-slate-200/50 dark:border-slate-800 p-6 rounded-3xl space-y-4">
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Active Group Link</p>
                   
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 rounded-xl px-4 py-3.5 text-sm text-slate-800 dark:text-slate-200 select-all font-mono truncate">
+                    <div className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3.5 text-sm text-slate-800 dark:text-slate-200 select-all font-mono truncate">
                       {originUrl ? `${originUrl}/invite/${group.invite_code}` : "Loading..."}
                     </div>
 
@@ -640,7 +640,7 @@ export default function GroupSettingsPage() {
                     </Button>
                   </div>
 
-                  <p className="text-xs text-slate-450 dark:text-slate-500 leading-relaxed pt-2">
+                  <p className="text-xs text-slate-400 dark:text-slate-500 leading-relaxed pt-2">
                     Share this link with anyone you want to invite to the group. They will be added as a member automatically when they visit.
                   </p>
                 </div>
@@ -648,13 +648,13 @@ export default function GroupSettingsPage() {
                 <div className="border border-dashed border-slate-200 dark:border-slate-800 p-6 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-6">
                   <div className="space-y-1">
                     <h4 className="text-sm font-bold text-slate-950 dark:text-white">Need to invalidate old links?</h4>
-                    <p className="text-xs text-slate-550 dark:text-slate-400">Regenerating the link will break any invite links you have previously shared.</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Regenerating the link will break any invite links you have previously shared.</p>
                   </div>
                   <Button
                     variant="outline"
                     onClick={handleRegenerateInviteCode}
                     disabled={isRegeneratingCode}
-                    className="border-slate-200 dark:border-slate-800 text-slate-750 dark:text-slate-350 rounded-xl h-11 px-5 font-semibold hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer flex items-center gap-2"
+                    className="border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 rounded-xl h-11 px-5 font-semibold hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer flex items-center gap-2"
                   >
                     {isRegeneratingCode ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
                     Regenerate Link
@@ -700,7 +700,7 @@ export default function GroupSettingsPage() {
                     <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                       <div className="space-y-1 max-w-lg">
                         <h4 className="text-sm font-bold text-slate-900 dark:text-white">Leave Group</h4>
-                        <p className="text-xs text-slate-505 dark:text-slate-400">
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
                           Exit the group. You will lose access to all collaborative itineraries and charts. You can rejoin if another member invites you.
                         </p>
                       </div>
@@ -732,12 +732,12 @@ export default function GroupSettingsPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-6 gap-2">
-            <AlertDialogClose render={<Button variant="outline" className="rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-650 dark:text-slate-350 cursor-pointer" />}>
+            <AlertDialogClose render={<Button variant="outline" className="rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300 cursor-pointer" />}>
               Cancel
             </AlertDialogClose>
             <Button
               onClick={deleteGroup}
-              className="bg-red-500 hover:bg-red-655 text-white rounded-xl px-5 h-11 cursor-pointer font-bold border-0"
+              className="bg-red-500 hover:bg-red-600 text-white rounded-xl px-5 h-11 cursor-pointer font-bold border-0"
             >
               Delete Permanently
             </Button>
@@ -755,12 +755,12 @@ export default function GroupSettingsPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-6 gap-2">
-            <AlertDialogClose render={<Button variant="outline" className="rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-650 dark:text-slate-350 cursor-pointer" />}>
+            <AlertDialogClose render={<Button variant="outline" className="rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300 cursor-pointer" />}>
               Cancel
             </AlertDialogClose>
             <Button
               onClick={() => removeMember(profile?.id || "")}
-              className="bg-red-500 hover:bg-red-655 text-white rounded-xl px-5 h-11 cursor-pointer font-bold border-0"
+              className="bg-red-500 hover:bg-red-600 text-white rounded-xl px-5 h-11 cursor-pointer font-bold border-0"
             >
               Leave Group
             </Button>

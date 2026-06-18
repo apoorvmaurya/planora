@@ -3,7 +3,7 @@ import Dexie, { type Table } from 'dexie';
 export interface QueuedOp {
   id?: number;
   planId: string;
-  action: 'VOTE' | 'CREATE_ITEM' | 'EDIT_ITEM' | 'DELETE_ITEM' | 'ADD_EXPENSE';
+  action: 'VOTE' | 'CREATE_ITEM' | 'EDIT_ITEM' | 'DELETE_ITEM' | 'ADD_EXPENSE' | 'MANUAL_ADD_ITEM';
   payload: any;
   timestamp: number;
 }
@@ -105,6 +105,13 @@ export async function syncOfflineOps(planId: string, onSyncComplete: () => Promi
           method: 'DELETE'
         });
         if (!res.ok) throw new Error("Sync DELETE_ITEM request failed");
+      } else if (op.action === 'MANUAL_ADD_ITEM') {
+        const res = await fetch(`/api/plans/${planId}/items`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(op.payload)
+        });
+        if (!res.ok) throw new Error("Sync MANUAL_ADD_ITEM request failed");
       } else if (op.action === 'ADD_EXPENSE') {
         const res = await fetch(`/api/plans/${planId}/expenses`, {
           method: 'POST',

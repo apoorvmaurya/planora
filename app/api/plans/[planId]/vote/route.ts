@@ -1,15 +1,21 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { generateText } from 'ai'
-import { groq } from '@ai-sdk/groq'
-import { forwardGeocode } from "@/lib/locationiq/geocode"
-import { safeJsonParse } from "@/lib/utils/jsonParser"
+import { generateObject } from 'ai'
+import { getCoordinatesForLocation } from "@/lib/locationiq/geocode"
+import { reorderDayItems } from "@/lib/itinerary/sort"
+import { z } from 'zod'
+import { getPlanAccess } from "@/lib/security/access"
+import { AI_MODELS } from "@/lib/ai/models"
 
 export async function POST(req: Request, { params }: { params: Promise<{ planId: string }> }) {
   const { planId } = await params
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  const { isAuthorized, plan } = await getPlanAccess(supabase, planId, user.id)
+  if (!plan) return NextResponse.json({ error: "Plan not found" }, { status: 404 })
+  if (!isAuthorized) return NextResponse.json({ error: "Access denied" }, { status: 403 })
 
   const { item_id, vote } = await req.json()
   if (!item_id || !vote) return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -39,8 +45,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ planId:
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  // Check for auto tie-breaker
-  const { data: plan } = await supabase.from('plans').select('group_id, destination_name, currency').eq('id', planId).single()
+  // Check for election / auto tie-breaker
   if (plan) {
     const { count: memberCount } = await supabase.from('group_members').select('*', { count: 'exact', head: true }).eq('group_id', plan.group_id)
     const { data: allVotes } = await supabase.from('member_votes').select('vote').eq('item_id', item_id)
@@ -49,67 +54,140 @@ export async function POST(req: Request, { params }: { params: Promise<{ planId:
       const upvotes = allVotes.filter(v => v.vote === 'up').length
       const downvotes = allVotes.filter(v => v.vote === 'down').length
       
-      if (upvotes === downvotes) {
-        // We have a tie! Run tie-breaker
-        const { data: item } = await supabase.from('itinerary_items').select('*').eq('id', item_id).single()
-        if (item) {
-          try {
-            const { text } = await generateText({
-              model: groq('llama-3.3-70b-versatile'),
-              prompt: `You are an expert travel planner AI for Planora.
+      const { data: item } = await supabase.from('itinerary_items').select('*').eq('id', item_id).single()
+      if (item) {
+        const isSuggestion = item.suggestion_status === 'suggestion'
+
+        if (isSuggestion) {
+          if (upvotes > downvotes) {
+            // Suggestion wins! Promote to official itinerary
+            if (item.is_delete_suggestion) {
+              if (item.parent_item_id) {
+                await supabase.from('itinerary_items').delete().eq('id', item.parent_item_id)
+              }
+              await supabase.from('itinerary_items').delete().eq('id', item.id)
+            } else if (item.parent_item_id) {
+              await supabase.from('itinerary_items').delete().eq('id', item.parent_item_id)
+              await supabase.from('itinerary_items').update({
+                suggestion_status: 'approved',
+                parent_item_id: null,
+                title: item.title.replace('[Tie-Breaker]', '').replace('[Delete Proposal]', '').trim()
+              }).eq('id', item.id)
+            } else {
+              await supabase.from('itinerary_items').update({
+                suggestion_status: 'approved'
+              }).eq('id', item.id)
+            }
+            // Clear votes
+            await supabase.from('member_votes').delete().eq('item_id', item_id)
+          } else if (downvotes > upvotes) {
+            // Suggestion loses! Reject and delete suggestion
+            await supabase.from('itinerary_items').delete().eq('id', item.id)
+            await supabase.from('member_votes').delete().eq('item_id', item_id)
+          } else {
+            // We have a tie! Run AI tie-breaker
+            try {
+              const { object: newItemData } = await generateObject({
+                model: AI_MODELS.structured,
+                schema: z.object({
+                  title: z.string(),
+                  description: z.string(),
+                  time_of_day: z.enum(['Morning', 'Afternoon', 'Evening', 'Night']),
+                  location_name: z.string(),
+                  category: z.enum(['activity', 'food', 'transport', 'accommodation', 'leisure']),
+                  duration_minutes: z.number(),
+                  estimated_cost: z.number()
+                }),
+                prompt: `You are an expert travel planner AI for Planora.
+The group is traveling to ${plan.destination_name}.
+They previously had a suggested itinerary item for ${item.time_of_day}:
+Title: ${item.title}
+Description: ${item.description}
+Cost: ${item.estimated_cost} ${plan.currency}
+
+This suggestion has resulted in a tied vote. Please generate a SINGLE alternative itinerary item that fits the same time of day (${item.time_of_day}) and similar budget. It should be completely different from "${item.title}".`,
+              })
+
+              const { lat, lng } = await getCoordinatesForLocation(newItemData.location_name, plan?.destination_name)
+
+              await supabase
+                .from('itinerary_items')
+                .update({
+                  title: `[Tie-Breaker] ${newItemData.title}`,
+                  description: newItemData.description,
+                  location_name: newItemData.location_name,
+                  lat: lat,
+                  lng: lng,
+                  category: newItemData.category,
+                  duration_minutes: newItemData.duration_minutes,
+                  estimated_cost: newItemData.estimated_cost
+                })
+                .eq('id', item_id)
+
+              // Reset votes
+              await supabase.from('member_votes').delete().eq('item_id', item_id)
+            } catch (e) {
+              console.error("Auto tie-breaker error on suggestion:", e)
+            }
+          }
+        } else {
+          // Voted on official/approved item
+          if (downvotes > upvotes) {
+            // Rejected! Remove official item from itinerary
+            await supabase.from('itinerary_items').delete().eq('id', item.id)
+            await supabase.from('member_votes').delete().eq('item_id', item_id)
+          } else if (upvotes > downvotes) {
+            // Approved! Keep item and clear votes
+            await supabase.from('member_votes').delete().eq('item_id', item_id)
+          } else {
+            // We have a tie! Run AI tie-breaker to replace official item
+            try {
+              const { object: newItemData } = await generateObject({
+                model: AI_MODELS.structured,
+                schema: z.object({
+                  title: z.string(),
+                  description: z.string(),
+                  time_of_day: z.enum(['Morning', 'Afternoon', 'Evening', 'Night']),
+                  location_name: z.string(),
+                  category: z.enum(['activity', 'food', 'transport', 'accommodation', 'leisure']),
+                  duration_minutes: z.number(),
+                  estimated_cost: z.number()
+                }),
+                prompt: `You are an expert travel planner AI for Planora.
 The group is traveling to ${plan.destination_name}.
 They previously had an itinerary item for ${item.time_of_day}:
 Title: ${item.title}
 Description: ${item.description}
 Cost: ${item.estimated_cost} ${plan.currency}
 
-This item has resulted in a tied vote. Please generate a SINGLE alternative itinerary item that fits the same time of day (${item.time_of_day}) and similar budget. It should be completely different from "${item.title}".
-Return the output strictly as a JSON object adhering to this schema:
-{
-  "title": "Short title for the activity",
-  "description": "Detailed description",
-  "time_of_day": "Morning" | "Afternoon" | "Evening" | "Night",
-  "location_name": "Name of the venue or location",
-  "category": "activity" | "food" | "transport" | "accommodation" | "leisure",
-  "duration_minutes": number,
-  "estimated_cost": number
-}`,
-            })
-
-            const newItemData = safeJsonParse(text)
-
-            let lat = 0
-            let lng = 0
-            try {
-              const coords = await forwardGeocode(newItemData.location_name, plan?.destination_name)
-              if (coords) {
-                lat = coords.lat
-                lng = coords.lng
-              }
-            } catch (err) {
-              console.error("Geocoding failed for tie-breaker:", err)
-            }
-
-            await supabase
-              .from('itinerary_items')
-              .update({
-                title: `[Tie-Breaker] ${newItemData.title}`,
-                description: newItemData.description,
-                location_name: newItemData.location_name,
-                lat: lat,
-                lng: lng,
-                category: newItemData.category,
-                duration_minutes: newItemData.duration_minutes,
-                estimated_cost: newItemData.estimated_cost
+This item has resulted in a tied vote. Please generate a SINGLE alternative itinerary item that fits the same time of day (${item.time_of_day}) and similar budget. It should be completely different from "${item.title}".`,
               })
-              .eq('id', item_id)
 
-            // Reset votes
-            await supabase.from('member_votes').delete().eq('item_id', item_id)
-          } catch (e) {
-            console.error("Auto tie-breaker error:", e)
+              const { lat, lng } = await getCoordinatesForLocation(newItemData.location_name, plan?.destination_name)
+
+              await supabase
+                .from('itinerary_items')
+                .update({
+                  title: `[Tie-Breaker] ${newItemData.title}`,
+                  description: newItemData.description,
+                  location_name: newItemData.location_name,
+                  lat: lat,
+                  lng: lng,
+                  category: newItemData.category,
+                  duration_minutes: newItemData.duration_minutes,
+                  estimated_cost: newItemData.estimated_cost
+                })
+                .eq('id', item_id)
+
+              // Reset votes
+              await supabase.from('member_votes').delete().eq('item_id', item_id)
+            } catch (e) {
+              console.error("Auto tie-breaker error on official item:", e)
+            }
           }
         }
+        // Automatically sort all items for this day chronologically and logically
+        await reorderDayItems(supabase, planId, item.day_number)
       }
     }
   }

@@ -323,7 +323,7 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
                       <FormLabel className="text-sm font-medium text-slate-500 dark:text-slate-400 transition-colors duration-500">Budget Level</FormLabel>
                       <div className="flex flex-wrap gap-2">
                         {['Budget', 'Mid-range', 'Luxury'].map(item => (
-                          <div key={item} className="flex items-center space-x-2 bg-slate-50 dark:bg-slate-905/40 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 transition-colors duration-500">
+                          <div key={item} className="flex items-center space-x-2 bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 transition-colors duration-500">
                             <Checkbox 
                               id={`budget-${item}`} 
                               checked={preferences.budget?.includes(item)}
@@ -339,7 +339,7 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
                       <FormLabel className="text-sm font-medium text-slate-500 dark:text-slate-400 transition-colors duration-500">Travel Style</FormLabel>
                       <div className="flex flex-wrap gap-2">
                         {['Adventure', 'Relaxed', 'Cultural', 'Nightlife'].map(item => (
-                          <div key={item} className="flex items-center space-x-2 bg-slate-50 dark:bg-slate-905/40 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 transition-colors duration-500">
+                          <div key={item} className="flex items-center space-x-2 bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 transition-colors duration-500">
                             <Checkbox 
                               id={`style-${item}`} 
                               checked={preferences.style?.includes(item)}

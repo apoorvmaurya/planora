@@ -69,6 +69,12 @@ export function AddExpenseModal({
     }
   })
 
+  React.useEffect(() => {
+    if (isOpen && members.length === 1) {
+      setValue("paid_by", members[0].user.id)
+    }
+  }, [isOpen, members, setValue])
+
   const splitType = watch("split_type")
   const amount = watch("amount") || 0
 
@@ -353,51 +359,55 @@ export function AddExpenseModal({
             {errors.title && <p className="text-sm text-red-500">{errors.title.message}</p>}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className={members.length > 1 ? "grid grid-cols-2 gap-4" : "space-y-6"}>
             <div className="space-y-2">
               <Label className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Amount</Label>
               <Input type="number" step="0.01" {...register("amount")} placeholder="0.00" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus-visible:ring-[#16795A] transition-all duration-300" />
               {errors.amount && <p className="text-sm text-red-500">{errors.amount.message}</p>}
             </div>
-            <div className="space-y-2">
-              <Label className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Paid By</Label>
-              <Controller
-                control={control}
-                name="paid_by"
-                render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus:ring-[#16795A] transition-all duration-300">
-                      <SelectValue placeholder="Select member" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
-                      {members.map(m => (
-                        <SelectItem key={m.user.id} value={m.user.id} className="text-slate-900 dark:text-slate-100 cursor-pointer">
-                          {m.user.full_name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.paid_by && <p className="text-sm text-red-500">{errors.paid_by.message}</p>}
+            {members.length > 1 && (
+              <div className="space-y-2">
+                <Label className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Paid By</Label>
+                <Controller
+                  control={control}
+                  name="paid_by"
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl focus:ring-[#16795A] transition-all duration-300">
+                        <SelectValue placeholder="Select member" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+                        {members.map(m => (
+                          <SelectItem key={m.user.id} value={m.user.id} className="text-slate-900 dark:text-slate-100 cursor-pointer">
+                            {m.user.full_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.paid_by && <p className="text-sm text-red-500">{errors.paid_by.message}</p>}
+              </div>
+            )}
+          </div>
+
+          {members.length > 1 && (
+            <div className="space-y-3">
+              <Label className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Split Options</Label>
+              <RadioGroup value={splitType} onValueChange={(val: string) => handleSplitTypeChange(val as 'equal' | 'custom')} className="flex gap-4">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="equal" id="equal" className="transition-all duration-200" />
+                  <Label htmlFor="equal" className="text-slate-700 dark:text-slate-350 cursor-pointer transition-colors duration-500">Split equally</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="custom" id="custom" className="transition-all duration-200" />
+                  <Label htmlFor="custom" className="text-slate-700 dark:text-slate-350 cursor-pointer transition-colors duration-500">Custom amounts</Label>
+                </div>
+              </RadioGroup>
             </div>
-          </div>
+          )}
 
-          <div className="space-y-3">
-            <Label className="text-slate-800 dark:text-slate-200 transition-colors duration-500">Split Options</Label>
-            <RadioGroup value={splitType} onValueChange={(val: string) => handleSplitTypeChange(val as 'equal' | 'custom')} className="flex gap-4">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="equal" id="equal" className="transition-all duration-200" />
-                <Label htmlFor="equal" className="text-slate-700 dark:text-slate-350 cursor-pointer transition-colors duration-500">Split equally</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="custom" id="custom" className="transition-all duration-200" />
-                <Label htmlFor="custom" className="text-slate-700 dark:text-slate-350 cursor-pointer transition-colors duration-500">Custom amounts</Label>
-              </div>
-            </RadioGroup>
-          </div>
-
-          {splitType === 'custom' && (
+          {members.length > 1 && splitType === 'custom' && (
             <div className="space-y-3 bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors duration-500">
               <Label className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">Exact Amounts</Label>
               {members.map(m => (

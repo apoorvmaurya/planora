@@ -207,3 +207,23 @@ async function getBiasFallback(biasDestination: string, cacheKey: string) {
 
   return null;
 }
+
+/**
+ * Enterprise geocoding wrapper that safely extracts coordinates from location names
+ * using a search query biased toward the trip destination. Returns 0,0 on failure.
+ */
+export async function getCoordinatesForLocation(
+  locationName: string,
+  destinationName?: string
+): Promise<{ lat: number; lng: number }> {
+  try {
+    const coords = await forwardGeocode(locationName, destinationName)
+    if (coords) {
+      return { lat: coords.lat, lng: coords.lng }
+    }
+  } catch (err) {
+    console.error(`[Geocoding Helper] Failed for location "${locationName}" with destination "${destinationName}":`, err)
+  }
+  return { lat: 0, lng: 0 }
+}
+

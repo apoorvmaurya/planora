@@ -12,6 +12,8 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { createClient } from "@/lib/supabase/client"
+import { Breadcrumb } from "@/components/shared/Breadcrumb"
 
 /* ── tool name → friendly label & icon mapping ── */
 const toolMeta: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
@@ -29,6 +31,14 @@ function getToolName(partType: string): string {
 export default function PlanChatPage() {
   const params = useParams()
   const planId = params.planId as string
+  const supabase = createClient()
+  const [planName, setPlanName] = useState("Trip Itinerary")
+
+  useEffect(() => {
+    supabase.from('plans').select('title').eq('id', planId).single().then(({ data }) => {
+      if (data?.title) setPlanName(data.title)
+    })
+  }, [planId])
 
   /* ── transport: tells useChat where to POST ── */
   const [transport] = useState(
@@ -87,6 +97,13 @@ export default function PlanChatPage() {
 
   return (
     <div className="max-w-3xl mx-auto h-[calc(100dvh-100px)] flex flex-col pb-4">
+      <Breadcrumb
+        items={[
+          { label: "Plans", href: "/plans" },
+          { label: planName, href: `/plans/${planId}` },
+          { label: "AI Chat" }
+        ]}
+      />
       {/* ── Header ── */}
       <div className="flex items-center gap-4 mb-4">
         <Link href={`/plans/${planId}`}>

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react"
 import { useFriends } from "@/hooks/useFriends"
 import { FriendCard } from "@/components/shared/FriendCard"
+import { FriendsSkeleton } from "@/components/shared/PageSkeleton"
 import { motion } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
@@ -41,6 +42,10 @@ export default function FriendsPage() {
     return () => clearTimeout(delayDebounceFn)
   }, [searchQuery])
 
+  if (isLoading) {
+    return <FriendsSkeleton />
+  }
+
   return (
     <div className="space-y-8 pb-10 max-w-5xl mx-auto">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -73,7 +78,7 @@ export default function FriendsPage() {
           <TabsTrigger value="requests" className="rounded-xl data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm data-[state=active]:text-slate-900 data-[state=active]:dark:text-white dark:text-slate-400 transition-all duration-300 cursor-pointer">
             <Inbox className="w-4 h-4 mr-2" /> Requests 
             {incomingRequests.length > 0 && (
-              <span className="ml-2 bg-red-100 dark:bg-red-950/40 text-red-650 dark:text-red-400 py-0.5 px-2 rounded-full text-xs font-bold transition-colors duration-500">{incomingRequests.length}</span>
+              <span className="ml-2 bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 py-0.5 px-2 rounded-full text-xs font-bold transition-colors duration-500">{incomingRequests.length}</span>
             )}
           </TabsTrigger>
           <TabsTrigger value="find" className="rounded-xl data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm data-[state=active]:text-slate-900 data-[state=active]:dark:text-white dark:text-slate-400 transition-all duration-300 cursor-pointer">

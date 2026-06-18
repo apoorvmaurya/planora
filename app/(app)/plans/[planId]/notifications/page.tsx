@@ -8,6 +8,7 @@ import { motion } from "framer-motion"
 import { Bell, Sparkles, Loader2, CalendarClock, Briefcase, CloudSun, MapPin } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
 import { ErrorState } from "@/components/shared/ErrorState"
+import { Breadcrumb } from "@/components/shared/Breadcrumb"
 
 type Preferences = {
   opt_out_t30: boolean;
@@ -87,7 +88,7 @@ export default function NotificationsPage() {
     }
   }
 
-  if (isLoading) return <div className="text-center py-20 text-slate-500 dark:text-slate-450 transition-colors duration-500">Loading settings...</div>
+  if (isLoading) return <div className="text-center py-20 text-slate-500 dark:text-slate-400 transition-colors duration-300">Loading settings...</div>
   if (!plan) return <ErrorState variant="not_found" title="Plan not found" backHref="/plans" backLabel="Back to plans" />
 
   const triggers = [
@@ -123,8 +124,15 @@ export default function NotificationsPage() {
 
   return (
     <div className="max-w-3xl mx-auto pb-20 space-y-8 px-4 sm:px-0">
+      <Breadcrumb
+        items={[
+          { label: "Plans", href: "/plans" },
+          { label: plan?.title || "Trip Itinerary", href: `/plans/${planId}` },
+          { label: "Momentum Engine" }
+        ]}
+      />
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white transition-colors duration-550">Momentum Engine</h1>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white transition-colors duration-500">Momentum Engine</h1>
         <p className="text-slate-500 dark:text-slate-400 mt-1 flex flex-wrap items-center gap-2 transition-colors duration-500">
           Manage AI-powered push notifications for this trip. 
           <span className="inline-flex items-center gap-1 text-[#16795A] dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 px-2 py-0.5 rounded-full text-xs font-semibold transition-colors duration-500">
@@ -143,7 +151,7 @@ export default function NotificationsPage() {
             className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 hover:bg-slate-50 dark:hover:bg-slate-800/35 transition-colors duration-500"
           >
             <div className="flex gap-4 items-start flex-1">
-              <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl text-slate-600 dark:text-slate-350 shrink-0 transition-colors duration-500">
+              <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl text-slate-600 dark:text-slate-300 shrink-0 transition-colors duration-500">
                 {trigger.icon}
               </div>
               <div className="flex-1 min-w-0">
@@ -151,7 +159,7 @@ export default function NotificationsPage() {
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 transition-colors duration-500">{trigger.description}</p>
                 
                 <div className="mt-4 bg-slate-900 dark:bg-slate-950 text-white p-4 rounded-2xl shadow-lg inline-block relative max-w-sm border border-slate-800">
-                  <div className="absolute -top-2 left-4 w-4 h-4 bg-slate-900 dark:bg-slate-950 border-t border-l border-slate-850 dark:border-slate-800 rotate-45" />
+                  <div className="absolute -top-2 left-4 w-4 h-4 bg-slate-900 dark:bg-slate-950 border-t border-l border-slate-800 dark:border-slate-800 rotate-45" />
                   <div className="flex items-center gap-2 mb-1">
                     <img src="/icon-192.png" className="w-4 h-4 rounded-sm bg-white" alt="" />
                     <span className="text-[10px] font-bold text-white/60 uppercase tracking-wider">Planora</span>

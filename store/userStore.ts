@@ -12,6 +12,7 @@ export interface UserProfile {
   longitude: number | null
   timezone: string | null
   travel_preferences: any
+  cover_image_url: string | null
 }
 
 interface UserState {

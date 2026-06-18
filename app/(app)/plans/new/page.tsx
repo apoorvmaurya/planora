@@ -41,6 +41,20 @@ export default function NewPlanPage() {
       }
     }
   }, [])
+
+  const todayStr = new Date().toISOString().split('T')[0]
+
+  const handleStep1Next = () => {
+    if (startDate < todayStr) {
+      toast.error("Start date cannot be in the past.")
+      return
+    }
+    if (endDate < startDate) {
+      toast.error("End date must be on or after the start date.")
+      return
+    }
+    setStep(2)
+  }
   
   const [tripType, setTripType] = useState("leisure")
   const [pace, setPace] = useState("moderate")
@@ -49,12 +63,14 @@ export default function NewPlanPage() {
   const [avoid, setAvoid] = useState("")
 
   const [isGenerating, setIsGenerating] = useState(false)
+  const [generationStatus, setGenerationStatus] = useState<'idle' | 'initializing' | 'streaming' | 'saving' | 'ready'>('idle')
   const planIdRef = React.useRef<string | null>(null)
 
   const { object, submit, isLoading, error } = useObject({
     api: '/api/plans/generate',
     schema: itineraryResponseSchema,
     onFinish: () => {
+      setGenerationStatus('saving')
       toast.info("Saving itinerary to your workspace...")
       if (planIdRef.current) {
         const pollInterval = setInterval(async () => {
@@ -67,8 +83,11 @@ export default function NewPlanPage() {
             
             if (data && data.length > 0) {
               clearInterval(pollInterval)
+              setGenerationStatus('ready')
               toast.success("Itinerary generated and saved successfully!")
-              router.push(`/plans/${planIdRef.current}`)
+              setTimeout(() => {
+                router.push(`/plans/${planIdRef.current}`)
+              }, 2000)
             }
           } catch (err) {
             console.error("Polling database for items failed:", err)
@@ -110,7 +129,18 @@ export default function NewPlanPage() {
       return
     }
 
+    if (startDate < todayStr) {
+      toast.error("Start date cannot be in the past.")
+      return
+    }
+
+    if (endDate < startDate) {
+      toast.error("End date must be on or after the start date.")
+      return
+    }
+
     setIsGenerating(true)
+    setGenerationStatus('initializing')
 
     try {
       // Step 1: Create the plan and get a guaranteed plan ID
@@ -136,6 +166,7 @@ export default function NewPlanPage() {
       const { planId } = await createRes.json()
       planIdRef.current = planId
 
+      setGenerationStatus('streaming')
       // Step 2: Stream the AI itinerary generation
       submit({
         planId,
@@ -150,8 +181,65 @@ export default function NewPlanPage() {
     } catch (err: any) {
       toast.error(err.message || "Generation failed")
       setIsGenerating(false)
+      setGenerationStatus('idle')
     }
   }
+
+  const getStatusDetails = () => {
+    switch (generationStatus) {
+      case 'initializing':
+        return {
+          title: "Analyzing Destination & Setting Up...",
+          description: "Evaluating regional constraints, travel pacing, and preparing your custom workspace...",
+          icon: <Loader2 className="w-12 h-12 text-[#16795A] dark:text-teal-400 mx-auto mb-4 animate-spin" />,
+          progressWidth: "15%",
+          progressDuration: 1.5
+        }
+      case 'streaming':
+        return {
+          title: "Planora AI is crafting your trip...",
+          description: "Streaming your itinerary from AI, optimizing distances, budgets, and sequencing daily activities...",
+          icon: <Sparkles className="w-12 h-12 text-[#16795A] dark:text-teal-400 mx-auto mb-4 animate-pulse" />,
+          progressWidth: "65%",
+          progressDuration: 8
+        }
+      case 'saving':
+        return {
+          title: "Saving Itinerary to Workspace...",
+          description: "Structuring the itinerary days, caching locations, and preparing your dashboard views...",
+          icon: <Loader2 className="w-12 h-12 text-[#16795A] dark:text-teal-400 mx-auto mb-4 animate-spin" />,
+          progressWidth: "90%",
+          progressDuration: 3
+        }
+      case 'ready':
+        return {
+          title: "Itinerary is Ready!",
+          description: "Successfully saved. Redirecting you to your beautiful new trip workspace...",
+          icon: (
+            <motion.div 
+              initial={{ scale: 0.5, opacity: 0 }} 
+              animate={{ scale: 1, opacity: 1 }} 
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              className="w-16 h-16 bg-[#16795A] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-teal-900/35"
+            >
+              <Check className="w-8 h-8 text-white stroke-[3.5px]" />
+            </motion.div>
+          ),
+          progressWidth: "100%",
+          progressDuration: 0.5
+        }
+      default:
+        return {
+          title: "Preparing Generation...",
+          description: "Starting AI generation process...",
+          icon: <Sparkles className="w-12 h-12 text-[#16795A] dark:text-teal-400 mx-auto mb-4" />,
+          progressWidth: "5%",
+          progressDuration: 1
+        }
+    }
+  }
+
+  const statusDetails = getStatusDetails()
 
   return (
     <div className="max-w-4xl mx-auto pb-20 px-4 sm:px-0">
@@ -209,11 +297,11 @@ export default function NewPlanPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1.5 transition-colors duration-500">Start Date</label>
-                      <Input type="date" className="h-12 rounded-xl bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800" value={startDate} onChange={e => setStartDate(e.target.value)} />
+                      <Input type="date" min={todayStr} className="h-12 rounded-xl bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800" value={startDate} onChange={e => setStartDate(e.target.value)} />
                     </div>
                     <div>
                       <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1.5 transition-colors duration-500">End Date</label>
-                      <Input type="date" className="h-12 rounded-xl bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800" value={endDate} onChange={e => setEndDate(e.target.value)} />
+                      <Input type="date" min={startDate || todayStr} className="h-12 rounded-xl bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800" value={endDate} onChange={e => setEndDate(e.target.value)} />
                     </div>
                   </div>
 
@@ -238,7 +326,7 @@ export default function NewPlanPage() {
                 </div>
 
                 <div className="flex justify-end pt-6">
-                  <Button onClick={() => setStep(2)} disabled={!destination || !startDate || !endDate || !budget} className="bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl h-12 px-8 shadow-sm">
+                  <Button onClick={handleStep1Next} disabled={!destination || !startDate || !endDate || !budget} className="bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl h-12 px-8 shadow-sm">
                     Next <ChevronRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
@@ -285,7 +373,7 @@ export default function NewPlanPage() {
                 </div>
 
                 <div className="flex justify-between pt-6">
-                  <Button variant="ghost" onClick={() => setStep(1)} className="rounded-xl h-12 px-8 border border-slate-200 dark:border-slate-850 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-350 font-semibold transition-colors duration-300">Back</Button>
+                  <Button variant="ghost" onClick={() => setStep(1)} className="rounded-xl h-12 px-8 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold transition-colors duration-300">Back</Button>
                   <Button onClick={() => setStep(3)} disabled={!groupId} className="bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl h-12 px-8 shadow-sm">
                     Next <ChevronRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -337,7 +425,7 @@ export default function NewPlanPage() {
                 </div>
 
                 <div className="flex justify-between pt-6">
-                  <Button variant="ghost" onClick={() => setStep(2)} className="rounded-xl h-12 px-8 border border-slate-200 dark:border-slate-855 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold transition-colors duration-300">Back</Button>
+                  <Button variant="ghost" onClick={() => setStep(2)} className="rounded-xl h-12 px-8 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold transition-colors duration-300">Back</Button>
                   <Button onClick={() => setStep(4)} className="bg-[#16795A] hover:bg-[#115E46] text-white rounded-xl h-12 px-8 shadow-sm">
                     Next <ChevronRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -365,7 +453,7 @@ export default function NewPlanPage() {
                 </div>
 
                 <div className="flex justify-between pt-6">
-                  <Button variant="ghost" onClick={() => setStep(3)} className="rounded-xl h-12 px-8 border border-slate-200 dark:border-slate-850 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-350 font-semibold transition-colors duration-300">Back</Button>
+                  <Button variant="ghost" onClick={() => setStep(3)} className="rounded-xl h-12 px-8 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold transition-colors duration-300">Back</Button>
                   <Button onClick={handleGenerate} className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 rounded-xl h-12 px-8 shadow-md font-extrabold text-base flex items-center justify-center gap-2 transition-colors duration-500">
                     <Sparkles className="w-5 h-5 shrink-0" /> Generate Itinerary
                   </Button>
@@ -378,16 +466,16 @@ export default function NewPlanPage() {
         <div className="space-y-8">
           <div className="bg-slate-900 dark:bg-gradient-to-br dark:from-[#0b1b17] dark:via-slate-900 dark:to-slate-950 text-white rounded-3xl p-8 text-center relative overflow-hidden shadow-2xl border border-transparent dark:border-slate-800/80 transition-colors duration-500">
             <div className="absolute inset-0 bg-gradient-to-tr from-[#16795A]/10 to-transparent pointer-events-none" />
-            <Sparkles className="w-12 h-12 text-[#16795A] dark:text-teal-400 mx-auto mb-4 animate-pulse transition-colors duration-500" />
-            <h2 className="text-2xl font-bold mb-2">Planora AI is crafting your trip...</h2>
-            <p className="text-slate-400 dark:text-slate-400 max-w-md mx-auto">Analyzing destinations, checking distances, optimizing budgets, and piecing together the perfect itinerary for your group.</p>
+            {statusDetails.icon}
+            <h2 className="text-2xl font-bold mb-2">{statusDetails.title}</h2>
+            <p className="text-slate-400 dark:text-slate-400 max-w-md mx-auto">{statusDetails.description}</p>
             
             <div className="w-full bg-slate-800 dark:bg-slate-950/80 h-2 rounded-full mt-8 overflow-hidden transition-colors duration-500">
               <motion.div 
                 className="h-full bg-[#16795A]"
                 initial={{ width: "0%" }}
-                animate={{ width: isLoading ? "80%" : "100%" }}
-                transition={{ duration: 10, ease: "linear" }}
+                animate={{ width: statusDetails.progressWidth }}
+                transition={{ duration: statusDetails.progressDuration, ease: "easeInOut" }}
               />
             </div>
           </div>
@@ -396,7 +484,7 @@ export default function NewPlanPage() {
             <div className="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 p-4 rounded-2xl flex items-center gap-3 border border-red-500/10 transition-colors duration-500">
               <AlertCircle className="w-5 h-5" />
               <p>Generation failed: {error.message}. Please try again.</p>
-              <Button variant="outline" onClick={() => setIsGenerating(false)} className="ml-auto bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-350 border-slate-200 dark:border-slate-800">Go Back</Button>
+              <Button variant="outline" onClick={() => setIsGenerating(false)} className="ml-auto bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800">Go Back</Button>
             </div>
           )}
 
@@ -409,7 +497,7 @@ export default function NewPlanPage() {
                   animate={{ opacity: 1, y: 0 }}
                   className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800/80 shadow-sm transition-colors duration-500"
                 >
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 pb-4 border-b border-slate-100 dark:border-slate-800 transition-colors duration-550">Day {day.day_number}</h3>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 pb-4 border-b border-slate-100 dark:border-slate-800 transition-colors duration-500">Day {day.day_number}</h3>
                   <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 dark:before:via-slate-800 before:to-transparent">
                     {day.itinerary_items?.map((item: any, j: number) => (
                       <div key={j} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
@@ -421,7 +509,7 @@ export default function NewPlanPage() {
                             <h4 className="font-bold text-slate-900 dark:text-white transition-colors duration-500">{item.title}</h4>
                             <span className="text-xs font-bold text-[#16795A] dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 px-2 py-1 rounded-md shrink-0 transition-colors duration-500">{item.time_of_day}</span>
                           </div>
-                          <p className="text-sm text-slate-650 dark:text-slate-350 mb-3 transition-colors duration-500">{item.description}</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300 mb-3 transition-colors duration-500">{item.description}</p>
                           <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 transition-colors duration-500">
                             <span className="flex items-center truncate mr-2"><MapPin className="w-3 h-3 mr-1 text-slate-400 dark:text-slate-500 shrink-0" />{item.location_name}</span>
                             <span className="shrink-0">{item.duration_minutes} min • {item.estimated_cost} {currency}</span>

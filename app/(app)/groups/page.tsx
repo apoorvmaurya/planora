@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Users, Plus, Mail, Check, X, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { CreateGroupModal } from "@/components/shared/CreateGroupModal"
+import { GroupsSkeleton } from "@/components/shared/PageSkeleton"
 import { createClient } from "@/lib/supabase/client"
 import { useUserStore } from "@/store/userStore"
 import { toast } from "sonner"
@@ -136,6 +137,10 @@ export default function GroupsPage() {
     }
   }
 
+  if (isLoading) {
+    return <GroupsSkeleton />
+  }
+
   return (
     <div className="space-y-8 pb-10 max-w-6xl mx-auto relative">
       {/* Background Fluid Bubbles */}
@@ -178,7 +183,7 @@ export default function GroupsPage() {
                 <motion.div
                   layout
                   key={invite.id}
-                  className="bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-850 rounded-2xl p-4 flex items-center justify-between gap-4 shadow-sm"
+                  className="bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between gap-4 shadow-sm"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0 border border-slate-200 dark:border-slate-800">
@@ -203,7 +208,7 @@ export default function GroupsPage() {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDeclineInvite(invite.id)}
-                      className="text-slate-450 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl h-9 px-3 border border-slate-200 dark:border-slate-800 cursor-pointer"
+                      className="text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl h-9 px-3 border border-slate-200 dark:border-slate-800 cursor-pointer"
                     >
                       <X className="w-4 h-4" />
                     </Button>
@@ -258,7 +263,7 @@ export default function GroupsPage() {
                 }}
                 className="bg-white dark:bg-slate-900/60 backdrop-blur-md rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm hover:shadow-lg dark:shadow-none hover:border-[#16795A]/40 dark:hover:border-teal-500/40 transition-all duration-300 overflow-hidden group cursor-pointer h-full flex flex-col"
               >
-                <div className="h-32 bg-slate-100 dark:bg-slate-800 relative overflow-hidden transition-colors duration-500">
+                <div className="aspect-[21/9] w-full bg-slate-100 dark:bg-slate-800 relative overflow-hidden transition-colors duration-500">
                   {group.cover_image_url ? (
                     <img src={group.cover_image_url} alt={group.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (

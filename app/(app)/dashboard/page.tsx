@@ -17,6 +17,7 @@ import {
   Compass
 } from "lucide-react"
 import { ScenicImage } from "@/components/shared/ScenicImage"
+import { DashboardSkeleton } from "@/components/shared/PageSkeleton"
 
 export default function DashboardPage() {
   const { profile } = useUserStore()
@@ -169,6 +170,10 @@ export default function DashboardPage() {
     return Math.ceil(diff / (1000 * 3600 * 24));
   };
 
+  if (isLoading) {
+    return <DashboardSkeleton />
+  }
+
   return (
     <div className="space-y-8 pb-10">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -220,7 +225,7 @@ export default function DashboardPage() {
                 )}
               </div>
               <div>
-                <p className="text-slate-500 dark:text-slate-400 font-bold text-sm tracking-wide uppercase text-xs">
+                <p className="text-slate-500 dark:text-slate-400 font-bold tracking-wide uppercase text-xs">
                   {card.title}
                 </p>
                 <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
@@ -273,7 +278,7 @@ export default function DashboardPage() {
                     }}
                     className="bg-white dark:bg-slate-900/40 backdrop-blur-md p-4 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm flex flex-col sm:flex-row gap-4 items-center group hover:border-[#16795A]/40 dark:hover:border-teal-500/40 hover:shadow-md dark:hover:shadow-teal-950/10 transition-all duration-300 cursor-pointer mb-4"
                   >
-                    <div className="w-full sm:w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800/85 shrink-0 transition-colors duration-500 relative">
+                    <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800/85 shrink-0 transition-colors duration-500 relative">
                       <ScenicImage 
                         destination={plan.destination_name}
                         alt={plan.destination_name}
@@ -295,7 +300,7 @@ export default function DashboardPage() {
                           {plan.status || 'draft'}
                         </span>
                       </div>
-                      <div className="flex flex-wrap gap-4 text-sm text-slate-500 dark:text-slate-400 transition-colors duration-550">
+                      <div className="flex flex-wrap gap-4 text-sm text-slate-500 dark:text-slate-400 transition-colors duration-500">
                         <div className="flex items-center gap-1.5">
                           <CalendarDays className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                           <span className="font-medium">{mounted ? `${formatDate(plan.start_date)} - ${formatDate(plan.end_date)}` : ""}</span>
@@ -323,7 +328,7 @@ export default function DashboardPage() {
               <motion.div 
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 450, damping: 25 }}
-                className="bg-slate-900 dark:bg-gradient-to-br dark:from-[#0b1b17] dark:via-slate-900 dark:to-slate-950 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden group border border-transparent dark:border-slate-800/80 cursor-pointer transition-all duration-550"
+                className="bg-slate-900 dark:bg-gradient-to-br dark:from-[#0b1b17] dark:via-slate-900 dark:to-slate-950 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden group border border-transparent dark:border-slate-800/80 cursor-pointer transition-all duration-500"
               >
                 {/* Glowing Premium Aurora Layers */}
                 <div className="absolute top-0 right-0 w-44 h-44 bg-[#16795A] rounded-full blur-[90px] opacity-20 -mr-12 -mt-12 group-hover:opacity-35 group-hover:scale-110 transition-all duration-700"></div>
@@ -379,7 +384,7 @@ export default function DashboardPage() {
             </div>
           )}
 
-          <div className="bg-white dark:bg-slate-900/40 backdrop-blur-md rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm space-y-4 transition-all duration-550">
+          <div className="bg-white dark:bg-slate-900/40 backdrop-blur-md rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm space-y-4 transition-all duration-500">
             <h3 className="font-extrabold text-slate-900 dark:text-white tracking-tight border-b border-slate-100 dark:border-slate-800/60 pb-3 transition-colors duration-500">Quick Actions</h3>
             <Link href="/groups" className="w-full flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/30 border border-transparent hover:border-slate-100 dark:hover:border-slate-800/80 transition-all text-left group">
               <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-950/25 border border-orange-100 dark:border-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400 group-hover:scale-108 group-hover:rotate-3 transition-all duration-300">

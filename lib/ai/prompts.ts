@@ -68,20 +68,48 @@ export async function buildPromptContext({
 
     Overall Trip Preferences:
     - Trip Type: ${preferences.tripType}
-    - Pace: ${preferences.pace}
+    - Pace: ${preferences.pace} (slow: 1 major sight/day; moderate: 1-2 major sights/day; fast: 2-3 major sights/day)
     - Dietary Notes: ${preferences.dietaryNotes || 'None'}
     - Must Haves: ${preferences.mustHaves || 'None'}
     - Things to Avoid: ${preferences.avoid || 'None'}
 
-    Requirements:
-    1. Provide exactly ${totalDays} days.
-    2. Provide 3-5 activities per day (Morning, Afternoon, Evening).
-    3. Include estimated costs per activity that sum up reasonably to the total budget.
-    4. Provide accurate real-world locations (approximate lat/lng within the destination).
-    5. The schedule should reflect the requested pace (${preferences.pace}).
-    6. **Absolute Spatial Coherence & Neighborhood Clustering**: Group daily activities strictly within a single local neighborhood, district, or sub-region of ${destination.name}. Consecutive morning, afternoon, and evening venues must be within short walking distance or less than 20-30 minutes of travel time.
-    7. **No Wild Geographical Jumps**: NEVER suggest visiting far-flung cities, venues, or regions on the same day (e.g., do NOT suggest visiting Delhi in the morning and Chennai in the evening; Chennai is thousands of kilometers away from Delhi). Keep all daily activities strictly local to the destination area.
-    8. **Realistic Chronological Routing**: Schedule activities in a geographically logical sequence (e.g. Morning Activity -> walk to nearby Lunch -> walk to Afternoon Activity) to avoid backtracking or excessive transit.
-    9. **JSON Format**: The output must be returned strictly as a JSON object adhering to the schema.
+    **State-of-the-Art Traveling Planning Rules & Heuristics:**
+
+    1. **Attraction Selection & Priority Ranking (Day Constraints)**:
+       - Identify the top primary sights, landmarks, and experiences in and around ${destination.name}.
+       - Compute a realistic capacity of major attractions based on the trip length (${totalDays} days) and selected pace (${preferences.pace}):
+         - If slow: Select exactly ${totalDays} top-tier must-visit attractions.
+         - If moderate: Select exactly ${Math.round(totalDays * 1.5)} top-tier must-visit attractions.
+         - If fast: Select exactly ${totalDays * 2} top-tier must-visit attractions.
+       - Discard minor sights, lesser-known spots, or fillers. Prioritize the absolute best sights first.
+
+    2. **Logistics vs. Tourism (No Transit Hub Sightseeing)**:
+       - Transit hubs (e.g., airports, train/railway stations, bus terminals) are NOT sightseeing spots. Never schedule a transit hub as a sightseeing attraction in the middle of a trip.
+       - Transit/arrival slots belong ONLY on Day 1 (Morning or Afternoon) and departure slots belong ONLY on the final day (Afternoon or Evening).
+
+    3. **Arrival & Departure Half-Day Logistics**:
+       - **Day 1 (Arrival Day)**: Assume travelers are arriving. Start the itinerary with Afternoon hotel check-in / transit, followed by 1 light sightseeing spot in the afternoon, followed by dinner and evening stroll. Do not overstuff Day 1.
+       - **Final Day (Departure Day)**: Assume travelers are departing. Plan only 1 Morning sight, followed by Lunch, and then transit to the airport/station. Do not schedule afternoon/evening activities.
+
+    4. **Cohesive Daily Arc & Slot Rules**:
+       - Every day must follow a logical chronological arc representing a realistic day:
+         - **Morning**: Primary high-energy activity (museum, historical monument, active sightseeing).
+         - **Afternoon**: Lunch nearby (recommend specific local culinary spot, cafe, or restaurant area) followed by a lighter secondary activity (shopping street, local park, scenic overlook).
+         - **Evening**: Sunset viewing, leisure walk, coffee, or local market exploration.
+         - **Night**: Dinner at a highly rated local restaurant, followed by nightlife/leisure and overnight stay lodging (hotel/hotel stay must always be the final item in the 'Night' slot).
+       - Never leave massive time gaps (e.g. going from lunch straight to dinner with no afternoon plan). If the pace is "slow", fill afternoon slots with explicit "leisure time / relaxation at hotel" rather than leaving it empty.
+
+    5. **Spatial Coherence & Walking Clusters**:
+       - Group daily activities strictly within a single local district, neighborhood, or sub-region of ${destination.name}.
+       - Consecutive spots must be within walking distance (less than 15 min) or a very short 10-minute drive.
+       - Avoid zigzagging or backtracking. The path of activities must follow a logical geographical routing (e.g., Spot A -> nearby Lunch -> nearby Spot B).
+
+    6. **Group Interest Fusion**:
+       - Blend the group members' preferences. For example, if someone prefers historic sights and another prefers nature, alternate days or suggest spots that blend both.
+
+    7. **Budget Realism**:
+       - If the budget is low, prioritize free parks, walking tours, and budget street food. If the budget is high, recommend premium tours, ticketed museums, and upscale dining.
+
+    8. **JSON Format**: Output must be returned strictly as a JSON object adhering to the schema.
   `
 }

@@ -1,8 +1,13 @@
-# Supabase
-.branches
-.temp
+# ────────────────────────────────────────────────────────────────────────
+# PLANORA SUPABASE CONFIGURATION: GIT IGNORE PATTERNS
+# ────────────────────────────────────────────────────────────────────────
 
-# dotenvx
+# ── Local DB Engine State ──
+.branches/
+.temp/
+
+# ── Environment & Keyrings ──
 .env.keys
 .env.local
 .env.*.local
+*.key

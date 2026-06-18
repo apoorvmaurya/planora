@@ -71,7 +71,7 @@ export function PlansGrid({ plans }: PlansGridProps) {
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-300 ${
+              className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-300 cursor-pointer ${
                 activeFilter === filter 
                   ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 shadow-md' 
                   : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
@@ -92,7 +92,7 @@ export function PlansGrid({ plans }: PlansGridProps) {
           />
         </div>
       </div>
-
+ 
       <AnimatePresence mode="popLayout">
         {filteredPlans.length === 0 ? (
           <motion.div 
@@ -106,7 +106,7 @@ export function PlansGrid({ plans }: PlansGridProps) {
                activeFilter === 'Completed' ? <Map className="w-10 h-10" /> :
                <Compass className="w-10 h-10" />}
             </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 transition-colors duration-550">No {activeFilter.toLowerCase()} plans found</h3>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 transition-colors duration-500">No {activeFilter.toLowerCase()} plans found</h3>
             <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-8 transition-colors duration-500">
               {searchQuery ? "Try adjusting your search terms." : "Ready for your next adventure? Start planning a new trip with your group."}
             </p>

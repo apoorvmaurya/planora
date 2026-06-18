@@ -9,9 +9,10 @@ import { Badge } from "@/components/ui/badge"
 import { EditProfileSheet } from "@/components/shared/EditProfileSheet"
 import { createClient } from "@/lib/supabase/client"
 import Link from "next/link"
+import { toast } from "sonner"
 
 export default function ProfilePage() {
-  const { profile } = useUserStore()
+  const { profile, setProfile } = useUserStore()
   const supabase = createClient()
   
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false)
@@ -19,6 +20,48 @@ export default function ProfilePage() {
   const [tripMemories, setTripMemories] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
+  const [isUploadingCover, setIsUploadingCover] = useState(false)
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0] && profile?.id) {
+      const file = e.target.files[0]
+      setIsUploadingCover(true)
+      const toastId = toast.loading("Uploading cover image...")
+      try {
+        const fileExt = file.name.split('.').pop()
+        const fileName = `${profile.id}-${Math.random()}.${fileExt}`
+        
+        const { error: uploadError } = await supabase.storage
+          .from('profile-covers')
+          .upload(fileName, file)
+
+        if (uploadError) throw new Error("Failed to upload cover: " + uploadError.message)
+
+        const { data: publicUrlData } = supabase.storage.from('profile-covers').getPublicUrl(fileName)
+        const publicUrl = publicUrlData.publicUrl
+
+        const { error: dbError } = await supabase
+          .from('profiles')
+          .update({ cover_image_url: publicUrl })
+          .eq('id', profile.id)
+
+        if (dbError) throw dbError
+
+        // Update local Zustand store
+        setProfile({
+          ...profile,
+          cover_image_url: publicUrl
+        })
+
+        toast.success("Cover image updated successfully!", { id: toastId })
+      } catch (err: any) {
+        console.error("Failed to upload cover", err)
+        toast.error(err.message || "Failed to upload cover image", { id: toastId })
+      } finally {
+        setIsUploadingCover(false)
+      }
+    }
+  }
 
   useEffect(() => {
     setMounted(true)
@@ -101,12 +144,24 @@ export default function ProfilePage() {
     <div className="pb-12 max-w-4xl mx-auto space-y-8">
       {/* Cover & Header */}
       <div className="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-100 dark:border-slate-800/80 shadow-sm shadow-slate-200/50 dark:shadow-none transition-colors duration-500">
-        <div className="h-48 bg-gradient-to-r from-teal-400 via-[#16795A] to-emerald-600 relative group cursor-pointer">
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white font-medium flex items-center gap-2">
-              <Camera className="w-5 h-5" /> Edit Cover
+        <div className="h-36 sm:h-44 md:h-48 relative group cursor-pointer overflow-hidden">
+          {profile?.cover_image_url ? (
+            <img src={profile.cover_image_url} alt="Cover" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-r from-teal-400 via-[#16795A] to-emerald-600" />
+          )}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+            <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white font-medium flex items-center gap-2 bg-black/40 px-4 py-2 rounded-full backdrop-blur-sm shadow-md">
+              <Camera className="w-5 h-5" /> {isUploadingCover ? "Uploading..." : "Edit Cover"}
             </span>
           </div>
+          <input 
+            type="file" 
+            accept="image/*" 
+            onChange={handleCoverUpload} 
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            disabled={isUploadingCover}
+          />
         </div>
         
         <div className="px-8 pb-8 relative">
@@ -123,7 +178,7 @@ export default function ProfilePage() {
             
             <div className="flex-1 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight transition-colors duration-550">
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight transition-colors duration-500">
                   {profile?.full_name || "New Traveler"}
                 </h1>
                 <p className="text-slate-500 dark:text-slate-400 font-medium">@{profile?.username || "traveler"}</p>
@@ -131,7 +186,7 @@ export default function ProfilePage() {
               <Button 
                 onClick={() => setIsEditSheetOpen(true)}
                 variant="outline" 
-                className="rounded-xl border-slate-200 dark:border-slate-850 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold"
+                className="rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold"
               >
                 <Edit2 className="w-4 h-4 mr-2" />
                 Edit Profile
@@ -199,10 +254,10 @@ export default function ProfilePage() {
             <div className="w-16 h-16 bg-teal-50 dark:bg-teal-950/20 rounded-full flex items-center justify-center mb-4">
               <Camera className="w-8 h-8 text-[#16795A] dark:text-teal-400" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 transition-colors duration-550">No memories yet</h3>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 transition-colors duration-500">No memories yet</h3>
             <p className="text-slate-500 dark:text-slate-400 max-w-sm mb-6 transition-colors duration-500">Capture moments from your trips and they will appear here as a beautiful gallery.</p>
             <Link href="/plans">
-              <Button className="bg-[#16795A] hover:bg-[#115E46] rounded-xl text-white font-semibold shadow-md shadow-teal-550/20">
+              <Button className="bg-[#16795A] hover:bg-[#115E46] rounded-xl text-white font-semibold shadow-md shadow-teal-500/20">
                 Go to Plans
               </Button>
             </Link>

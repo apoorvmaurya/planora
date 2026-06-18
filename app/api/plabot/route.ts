@@ -1,6 +1,6 @@
 import { streamText } from 'ai'
-import { groq } from '@ai-sdk/groq'
 import { z } from 'zod'
+import { AI_MODELS } from '@/lib/ai/models'
 import { rateLimit } from '@/lib/security/rateLimiter'
 import { runInputGuardrail } from '@/lib/security/guardrails'
 
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
   `
 
   const result = streamText({
-    model: groq('llama-3.3-70b-versatile'),
+    model: AI_MODELS.chat,
     system: systemPrompt,
     messages: messages,
     maxOutputTokens: 400,

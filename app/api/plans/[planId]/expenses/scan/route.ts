@@ -1,25 +1,14 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { generateText } from 'ai'
-import { groq } from '@ai-sdk/groq'
-import { safeJsonParse } from "@/lib/utils/jsonParser"
+import { generateObject } from 'ai'
+import { z } from 'zod'
+import { getPlanAccess } from "@/lib/security/access"
+import { AI_MODELS } from "@/lib/ai/models"
+import { rateLimit } from "@/lib/security/rateLimiter"
 
 export const maxDuration = 60
 
-// In-memory sliding window rate-limiter (15-second cooldown per user to prevent Groq free-tier 429s)
-const rateLimitStore = new Map<string, number>()
-const COOLDOWN_MS = 15000
 
-function checkRateLimit(userId: string): { limited: boolean; retryAfter: number } {
-  const now = Date.now()
-  const lastRequest = rateLimitStore.get(userId)
-  if (lastRequest && (now - lastRequest) < COOLDOWN_MS) {
-    const retryAfter = Math.ceil((COOLDOWN_MS - (now - lastRequest)) / 1000)
-    return { limited: true, retryAfter }
-  }
-  rateLimitStore.set(userId, now)
-  return { limited: false, retryAfter: 0 }
-}
 
 export async function POST(
   req: Request,
@@ -32,41 +21,30 @@ export async function POST(
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    // Apply Rate Limiting
-    const limitCheck = checkRateLimit(user.id)
-    if (limitCheck.limited) {
+    // Apply Centralized Rate Limiting
+    const rateLimitResult = await rateLimit({
+      userId: user.id,
+      endpoint: `/api/plans/[planId]/expenses/scan`,
+      limit: 1,
+      windowMs: 15000
+    })
+
+    if (!rateLimitResult.success) {
       return NextResponse.json(
-        { error: `Rate limit exceeded. Please wait ${limitCheck.retryAfter} seconds before scanning another receipt.` },
+        { error: "Rate limit exceeded. Please wait 15 seconds before scanning another receipt." },
         { status: 429 }
       )
     }
 
-    // Verify user is in the group/trip
-    const { data: plan, error: planError } = await supabase
-      .from("plans")
-      .select("id, group_id, created_by")
-      .eq("id", planId)
-      .single()
+    // Verify user is in the group/trip using centralized plan access checker
+    const { isAuthorized, plan } = await getPlanAccess(supabase, planId, user.id)
 
-    if (planError || !plan) {
+    if (!plan) {
       return NextResponse.json({ error: "Plan not found" }, { status: 404 })
     }
 
-    if (plan.group_id) {
-      const { data: membership } = await supabase
-        .from("group_members")
-        .select("*")
-        .eq("group_id", plan.group_id)
-        .eq("user_id", user.id)
-        .single()
-
-      if (!membership) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-      }
-    } else {
-      if (plan.created_by !== user.id) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-      }
+    if (!isAuthorized) {
+      return NextResponse.json({ error: "Unauthorized access to plan expenses" }, { status: 403 })
     }
 
     // Parse image from multipart/form-data
@@ -81,29 +59,28 @@ export async function POST(
     const base64Image = buffer.toString('base64')
 
     // Call Groq Vision using Vercel AI SDK
-    const { text } = await generateText({
-      model: groq('llama-3.2-11b-vision-preview'),
+    const { object } = await generateObject({
+      model: AI_MODELS.structured,
+      schema: z.object({
+        merchant: z.string().describe("The name of the merchant/store"),
+        total: z.number().describe("Total amount of the transaction"),
+        currency: z.string().describe("The currency code if found, e.g. USD, EUR, INR. Otherwise default empty."),
+        description: z.string().describe("A summary of items purchased or description"),
+        date: z.string().describe("The date of the transaction if found in ISO format (YYYY-MM-DD), otherwise empty string"),
+        suggestedSplits: z.array(
+          z.object({
+            itemName: z.string().describe("Name of the item on the receipt"),
+            cost: z.number().describe("Cost of the item")
+          })
+        )
+      }),
       messages: [
         {
           role: 'user',
           content: [
             { 
               type: 'text', 
-              text: `Perform high-fidelity OCR scanning on this receipt image. Extract: merchant name, total amount, transaction date, and currency. Identify individual items for optional group splits.
-Return the output strictly as a JSON object adhering to this schema:
-{
-  "merchant": "The name of the merchant/store",
-  "total": number,
-  "currency": "The currency code if found, e.g. USD, EUR, INR. Otherwise default empty.",
-  "description": "A summary of items purchased or description",
-  "date": "The date of the transaction if found in ISO format (YYYY-MM-DD), otherwise empty string",
-  "suggestedSplits": [
-    {
-      "itemName": "Name of the item on the receipt",
-      "cost": number
-    }
-  ]
-}` 
+              text: `Perform high-fidelity OCR scanning on this receipt image. Extract: merchant name, total amount, transaction date, and currency. Identify individual items for optional group splits.` 
             },
             {
               type: 'image',
@@ -113,8 +90,6 @@ Return the output strictly as a JSON object adhering to this schema:
         }
       ]
     })
-
-    const object = safeJsonParse(text)
 
     return NextResponse.json({ success: true, receipt: object })
 

@@ -248,7 +248,7 @@ export default function NewPlanPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 pb-8 border-b border-slate-100 dark:border-slate-800 gap-4 transition-colors duration-500">
             <div>
               <h1 className="text-3xl font-bold text-slate-900 dark:text-white transition-colors duration-550">Craft your plan</h1>
-              <p className="text-slate-500 dark:text-slate-400 mt-1 transition-colors duration-500">Let Planora's AI build the perfect itinerary for your group.</p>
+              <p className="text-slate-500 dark:text-slate-400 mt-1 transition-colors duration-500">Let Planora&apos;s AI build the perfect itinerary for your group.</p>
             </div>
             <div className="flex items-center gap-2">
               {[1, 2, 3, 4].map(s => (
@@ -336,7 +336,7 @@ export default function NewPlanPage() {
             {step === 2 && (
               <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white transition-colors duration-500">Step 2: Who is going?</h2>
-                <p className="text-slate-500 dark:text-slate-400 transition-colors duration-500">Select the group this plan belongs to. We'll use everyone's preferences to build the itinerary.</p>
+                <p className="text-slate-500 dark:text-slate-400 transition-colors duration-500">Select the group this plan belongs to. We&apos;ll use everyone&apos;s preferences to build the itinerary.</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div 
@@ -449,7 +449,7 @@ export default function NewPlanPage() {
 
                 <div className="bg-teal-50 dark:bg-teal-950/20 text-[#16795A] dark:text-teal-400 p-4 rounded-xl flex items-start gap-3 text-sm transition-colors duration-500">
                   <Sparkles className="w-5 h-5 shrink-0 mt-0.5" />
-                  <p>Planora AI will analyze all group members' locations and preferences alongside your inputs to craft a customized itinerary.</p>
+                  <p>Planora AI will analyze all group members&apos; locations and preferences alongside your inputs to craft a customized itinerary.</p>
                 </div>
 
                 <div className="flex justify-between pt-6">

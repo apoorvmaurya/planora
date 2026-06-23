@@ -31,7 +31,7 @@ export async function POST(
 
     // Geocode and prep items for insertion
     const itemsToInsert = []
-    let sortOrderCounter: Record<number, number> = {}
+    const sortOrderCounter: Record<number, number> = {}
 
     for (const item of items) {
       let lat = item.lat

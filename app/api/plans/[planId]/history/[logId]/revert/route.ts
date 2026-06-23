@@ -26,6 +26,19 @@ export async function POST(
     .single()
   if (!log || log.plan_id !== planId) return NextResponse.json({ error: "Log not found" }, { status: 404 })
 
+  // Check if this log entry has already been reverted to prevent duplicate execution errors
+  const { data: existingRevert } = await supabase
+    .from('plan_activity_logs')
+    .select('id')
+    .eq('plan_id', planId)
+    .eq('activity_type', 'REVERT_ACTION')
+    .contains('payload', { reverted_log_id: logId })
+    .maybeSingle()
+
+  if (existingRevert) {
+    return NextResponse.json({ error: "This change has already been reverted" }, { status: 400 })
+  }
+
   // 3. Perform reversion based on activity_type
   const payload = log.payload || {}
   const { old_item, new_item, deleted_item, promoted_item, old_parent_item } = payload

@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from "react"
 import L from "leaflet"
 import { AlertCircle, MapPin, Sparkles } from "lucide-react"
+import { useTheme } from "next-themes"
  
 // Re-wire default Leaflet marker assets to avoid Next.js module path bundling bugs
 delete (L.Icon.Default.prototype as any)._getIconUrl
@@ -31,6 +32,8 @@ export function MapComponent({ items, planDestination }: MapComponentProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
   const layerGroupRef = useRef<L.LayerGroup | null>(null)
+  const tileLayerRef = useRef<L.TileLayer | null>(null)
+  const { resolvedTheme } = useTheme()
  
   // 1. Filter out only items that have valid geocoded lat & lng coordinates
   const geocodedItems = items.filter(
@@ -61,11 +64,17 @@ export function MapComponent({ items, planDestination }: MapComponentProps) {
  
     mapRef.current = map
  
-    // Render CartoDB Positron maps (premium, clean, light-colored tile server)
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+    // Render CartoDB Voyager maps or Dark Matter based on active theme
+    const tileUrl = resolvedTheme === "dark"
+      ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+      : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+      
+    const tileLayer = L.tileLayer(tileUrl, {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       maxZoom: 20,
     }).addTo(map)
+    
+    tileLayerRef.current = tileLayer
  
     // Layer Group to easily clean/replace pins on hot re-renders
     const layerGroup = L.layerGroup().addTo(map)
@@ -186,6 +195,16 @@ export function MapComponent({ items, planDestination }: MapComponentProps) {
       map.fitBounds(bounds, { padding: [40, 40] })
     }
   }, [items]) // Triggers on itinerary additions, modifications, re-suggestions, or deletions
+ 
+  // 4. Update tile layer dynamically on theme toggle
+  useEffect(() => {
+    if (tileLayerRef.current) {
+      const tileUrl = resolvedTheme === "dark"
+        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+      tileLayerRef.current.setUrl(tileUrl)
+    }
+  }, [resolvedTheme])
  
   return (
     <div className="relative w-full h-[500px] rounded-[2rem] overflow-hidden border border-slate-100 dark:border-slate-800 shadow-md">

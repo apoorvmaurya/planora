@@ -20,6 +20,8 @@ export async function POST(
       title, 
       description, 
       location_name, 
+      lat: customLat,
+      lng: customLng,
       category, 
       duration_minutes, 
       estimated_cost,
@@ -50,8 +52,14 @@ export async function POST(
 
     const nextSort = (existingItems?.[0]?.sort_order || 0) + 1
 
-    // Geocode location using centralized coordinates helper
-    const { lat, lng } = await getCoordinatesForLocation(location_name, plan.destination_name)
+    // Geocode location using centralized coordinates helper if not supplied by client
+    let lat = customLat
+    let lng = customLng
+    if (lat === undefined || lng === undefined || (Math.abs(lat) < 0.001 && Math.abs(lng) < 0.001)) {
+      const coords = await getCoordinatesForLocation(location_name, plan.destination_name)
+      lat = coords.lat
+      lng = coords.lng
+    }
 
     // Insert new item
     const { data: item, error: insertError } = await supabase

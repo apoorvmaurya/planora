@@ -1,4 +1,4 @@
-import React, { useState, memo } from "react"
+import React, { useState, useEffect, memo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Check, ThumbsUp, ThumbsDown, Edit2, Sparkles, MapPin, Loader2, History, RotateCcw, Save, Trash2, XCircle } from "lucide-react"
 import { toast } from "sonner"
@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { queueOfflineOp, offlineDB } from "@/lib/supabase/offlineSync"
+import { autocomplete } from "@/lib/locationiq/geocode"
 
 export const ItineraryItemCard = memo(function ItineraryItemCard({ 
   item, 
@@ -37,8 +38,66 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
     time_of_day: item.time_of_day,
     location_name: item.location_name,
     duration_minutes: item.duration_minutes,
-    estimated_cost: item.estimated_cost
+    estimated_cost: item.estimated_cost,
+    lat: item.lat || 0,
+    lng: item.lng || 0
   })
+
+  // Location Geocoding Autocomplete States
+  const [locationResults, setLocationResults] = useState<any[]>([])
+  const [isSearchingLocation, setIsSearchingLocation] = useState(false)
+  const [locationQuery, setLocationQuery] = useState("")
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (locationQuery.length > 2) {
+        setIsSearchingLocation(true)
+        try {
+          const results = await autocomplete(locationQuery)
+          setLocationResults(results || [])
+        } catch (error) {
+          console.error("Location search failed", error)
+        } finally {
+          setIsSearchingLocation(false)
+        }
+      } else {
+        setLocationResults([])
+      }
+    }, 450)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [locationQuery])
+
+  useEffect(() => {
+    if (!isEditing) {
+      setLocationQuery("")
+      setLocationResults([])
+    } else {
+      setLocationQuery(item.location_name)
+      setEditData({
+        title: item.title,
+        description: item.description,
+        time_of_day: item.time_of_day,
+        location_name: item.location_name,
+        duration_minutes: item.duration_minutes,
+        estimated_cost: item.estimated_cost,
+        lat: item.lat || 0,
+        lng: item.lng || 0
+      })
+    }
+  }, [isEditing, item])
+
+  const handleSelectLocation = (loc: any) => {
+    const name = loc.display_name.split(',')[0] || loc.display_name
+    setEditData(prev => ({
+      ...prev,
+      location_name: name,
+      lat: parseFloat(loc.lat),
+      lng: parseFloat(loc.lon)
+    }))
+    setLocationQuery(name)
+    setLocationResults([])
+  }
 
   const isTieBreaker = item.title.includes('[Tie-Breaker]')
   const displayTitle = item.title.replace('[Tie-Breaker]', '').replace('[Delete Proposal]', '').trim()
@@ -387,9 +446,34 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
+                      <div className="space-y-2 relative">
                         <Label>Location</Label>
-                        <Input value={editData.location_name} onChange={e => setEditData({...editData, location_name: e.target.value})} className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800" />
+                        <div className="relative">
+                          <Input 
+                            value={locationQuery} 
+                            onChange={e => {
+                              setLocationQuery(e.target.value)
+                              setEditData(prev => ({ ...prev, location_name: e.target.value }))
+                            }} 
+                            className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 pr-9" 
+                          />
+                          {isSearchingLocation && (
+                            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 animate-spin" />
+                          )}
+                        </div>
+                        {locationResults.length > 0 && (
+                          <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-100 dark:border-slate-800 max-h-48 overflow-y-auto">
+                            {locationResults.map((loc, i) => (
+                              <div 
+                                key={i} 
+                                className="p-3 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer border-b border-slate-50 dark:border-slate-800/40 last:border-0 text-xs text-slate-700 dark:text-slate-300 truncate"
+                                onClick={() => handleSelectLocation(loc)}
+                              >
+                                {loc.display_name}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <Label>Est. Cost</Label>

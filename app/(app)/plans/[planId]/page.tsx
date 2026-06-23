@@ -27,6 +27,7 @@ import dynamic from "next/dynamic"
 import { syncOfflineOps, queueOfflineOp, offlineDB } from "@/lib/supabase/offlineSync"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
+import { autocomplete } from "@/lib/locationiq/geocode"
 
 const MapComponent = dynamic(
   () => import("@/components/shared/MapComponent").then((mod) => mod.MapComponent),
@@ -70,6 +71,7 @@ export default function PlanDetailPage() {
   const [selectedDayForAdd, setSelectedDayForAdd] = useState(1)
   const [activityLogs, setActivityLogs] = useState<any[]>([])
   const [isHistoryOpen, setIsHistoryOpen] = useState(false)
+  const [revertingLogIds, setRevertingLogIds] = useState<string[]>([])
   const [newActivity, setNewActivity] = useState({
     title: "",
     description: "",
@@ -77,8 +79,56 @@ export default function PlanDetailPage() {
     time_of_day: "Morning",
     location_name: "",
     duration_minutes: 60,
-    estimated_cost: 0
+    estimated_cost: 0,
+    lat: 0,
+    lng: 0
   })
+
+  // Location Geocoding Autocomplete States
+  const [locationResults, setLocationResults] = useState<any[]>([])
+  const [isSearchingLocation, setIsSearchingLocation] = useState(false)
+  const [locationQuery, setLocationQuery] = useState("")
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (locationQuery.length > 2) {
+        setIsSearchingLocation(true)
+        try {
+          const results = await autocomplete(locationQuery)
+          setLocationResults(results || [])
+        } catch (error) {
+          console.error("Location search failed", error)
+        } finally {
+          setIsSearchingLocation(false)
+        }
+      } else {
+        setLocationResults([])
+      }
+    }, 450)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [locationQuery])
+
+  useEffect(() => {
+    if (!isAddDialogOpen) {
+      setLocationQuery("")
+      setLocationResults([])
+    } else {
+      setLocationQuery(newActivity.location_name)
+    }
+  }, [isAddDialogOpen])
+
+  const handleSelectLocation = (loc: any) => {
+    const name = loc.display_name.split(',')[0] || loc.display_name
+    setNewActivity(prev => ({
+      ...prev,
+      location_name: name,
+      lat: parseFloat(loc.lat),
+      lng: parseFloat(loc.lon)
+    }))
+    setLocationQuery(name)
+    setLocationResults([])
+  }
 
   const [chatTransport] = useState(() => new DefaultChatTransport({ api: `/api/plans/${planId}/chat` }))
   const { messages, sendMessage, status, setMessages } = useChat({
@@ -135,7 +185,9 @@ export default function PlanDetailPage() {
           time_of_day: "Morning",
           location_name: "",
           duration_minutes: 60,
-          estimated_cost: 0
+          estimated_cost: 0,
+          lat: 0,
+          lng: 0
         })
       } catch (err) {
         console.error("Offline manual add failed:", err)
@@ -167,7 +219,9 @@ export default function PlanDetailPage() {
           time_of_day: "Morning",
           location_name: "",
           duration_minutes: 60,
-          estimated_cost: 0
+          estimated_cost: 0,
+          lat: 0,
+          lng: 0
         })
       } else {
         throw new Error(data.error || "Failed to create activity")
@@ -492,6 +546,8 @@ export default function PlanDetailPage() {
     const confirmRevert = window.confirm("Are you sure you want to revert this change?")
     if (!confirmRevert) return
 
+    setRevertingLogIds(prev => [...prev, logId])
+
     try {
       const res = await fetch(`/api/plans/${planId}/history/${logId}/revert`, {
         method: "POST"
@@ -511,6 +567,8 @@ export default function PlanDetailPage() {
       }
     } catch {
       toast.error("Failed to revert change due to a network error")
+    } finally {
+      setRevertingLogIds(prev => prev.filter(id => id !== logId))
     }
   }
 
@@ -1570,14 +1628,35 @@ export default function PlanDetailPage() {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Location</Label>
-                <Input 
-                  placeholder="e.g. Bondi Beach" 
-                  value={newActivity.location_name} 
-                  onChange={e => setNewActivity({...newActivity, location_name: e.target.value})} 
-                  className="rounded-xl bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
-                />
+                <div className="relative">
+                  <Input 
+                    placeholder="e.g. Bondi Beach" 
+                    value={locationQuery} 
+                    onChange={e => {
+                      setLocationQuery(e.target.value)
+                      setNewActivity(prev => ({ ...prev, location_name: e.target.value }))
+                    }} 
+                    className="rounded-xl bg-white dark:bg-slate-955 border-slate-200 dark:border-slate-800 pr-9"
+                  />
+                  {isSearchingLocation && (
+                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 animate-spin" />
+                  )}
+                </div>
+                {locationResults.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-100 dark:border-slate-800 max-h-48 overflow-y-auto">
+                    {locationResults.map((loc, i) => (
+                      <div 
+                        key={i} 
+                        className="p-3 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer border-b border-slate-50 dark:border-slate-800/40 last:border-0 text-xs text-slate-700 dark:text-slate-300 truncate"
+                        onClick={() => handleSelectLocation(loc)}
+                      >
+                        {loc.display_name}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-2">
@@ -1933,18 +2012,37 @@ export default function PlanDetailPage() {
                           {renderPayloadDiff(log)}
 
                           {/* Revert Action */}
-                          {isAdmin && ["ADD_ITEM", "DELETE_ITEM", "UPDATE_ITEM", "PROMOTE_ITEM"].includes(log.activity_type) && (
-                            <div className="mt-3 pt-3 border-t border-slate-100/50 dark:border-slate-800/50 flex justify-end">
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => handleRevertChange(log.id)}
-                                className="h-7 text-[10px] font-extrabold text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 flex items-center gap-1 hover:bg-slate-100 dark:hover:bg-slate-800 px-2 rounded-lg cursor-pointer transition-colors"
-                              >
-                                <RotateCcw className="w-3 h-3" /> Revert Change
-                              </Button>
-                            </div>
-                          )}
+                          {isAdmin && ["ADD_ITEM", "DELETE_ITEM", "UPDATE_ITEM", "PROMOTE_ITEM"].includes(log.activity_type) && (() => {
+                            const isReverted = activityLogs.some(
+                              (l) => l.activity_type === "REVERT_ACTION" && l.payload?.reverted_log_id === log.id
+                            )
+                            const isReverting = revertingLogIds.includes(log.id)
+
+                            if (isReverted) {
+                              return (
+                                <div className="mt-3 pt-3 border-t border-slate-100/50 dark:border-slate-800/50 flex justify-end">
+                                  <span className="text-[10px] font-extrabold text-slate-450 dark:text-slate-500 flex items-center gap-1 px-2 py-1 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                                    ↩️ Reverted
+                                  </span>
+                                </div>
+                              )
+                            }
+
+                            return (
+                              <div className="mt-3 pt-3 border-t border-slate-100/50 dark:border-slate-800/50 flex justify-end">
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  disabled={isReverting}
+                                  onClick={() => handleRevertChange(log.id)}
+                                  className="h-7 text-[10px] font-extrabold text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 flex items-center gap-1 hover:bg-slate-100 dark:hover:bg-slate-800 px-2 rounded-lg cursor-pointer transition-colors disabled:opacity-50"
+                                >
+                                  <RotateCcw className={`w-3 h-3 ${isReverting ? "animate-spin" : ""}`} />
+                                  {isReverting ? "Reverting..." : "Revert Change"}
+                                </Button>
+                              </div>
+                            )
+                          })()}
                         </div>
                       </div>
                     )

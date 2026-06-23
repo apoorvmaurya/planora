@@ -28,10 +28,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ planId
   const isDirectUpdateAllowed = isAdmin || !plan.group_id || isSuggestionUpdate
 
   if (isDirectUpdateAllowed) {
-    let lat = item.lat
-    let lng = item.lng
+    let lat = updates.lat !== undefined ? updates.lat : item.lat
+    let lng = updates.lng !== undefined ? updates.lng : item.lng
 
-    if (updates.location_name && updates.location_name !== item.location_name) {
+    if (updates.location_name && updates.location_name !== item.location_name && updates.lat === undefined) {
       const coords = await getCoordinatesForLocation(updates.location_name, plan.destination_name)
       lat = coords.lat
       lng = coords.lng
@@ -92,11 +92,11 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ planId
     return NextResponse.json({ success: true, item: reorderedItem || updatedItem })
   } else {
     // Intercept: Propose an alternative suggestion instead of modifying the official item directly
-    let lat = item.lat
-    let lng = item.lng
+    let lat = updates.lat !== undefined ? updates.lat : item.lat
+    let lng = updates.lng !== undefined ? updates.lng : item.lng
 
     const locationName = updates.location_name !== undefined ? updates.location_name : item.location_name
-    if (updates.location_name && updates.location_name !== item.location_name) {
+    if (updates.location_name && updates.location_name !== item.location_name && updates.lat === undefined) {
       const coords = await getCoordinatesForLocation(locationName, plan.destination_name)
       lat = coords.lat
       lng = coords.lng

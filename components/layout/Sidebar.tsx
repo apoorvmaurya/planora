@@ -208,7 +208,7 @@ export function Sidebar() {
       </motion.nav>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 h-screen fixed left-0 top-0 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-800/50 z-40 overflow-hidden">
+      <aside className="hidden md:flex flex-col w-64 h-screen fixed left-0 top-0 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-800/50 z-40 overflow-y-auto">
         {/* Refracting Glass Bubbles Background */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-40 dark:opacity-60">
           <div className="glass-bubble bubble-anim-1 w-24 h-24 -left-6" style={{ animationDelay: "0s" }} />
@@ -216,7 +216,7 @@ export function Sidebar() {
           <div className="glass-bubble bubble-anim-3 w-32 h-32 left-10" style={{ animationDelay: "-15s" }} />
           <div className="glass-bubble bubble-anim-1 w-20 h-20 right-6" style={{ animationDelay: "-22s" }} />
         </div>
-        <div className="relative z-10 flex flex-col h-full flex-1">
+        <div className="relative z-10 flex flex-col min-h-full flex-1">
           {SidebarContent}
         </div>
       </aside>
@@ -237,7 +237,7 @@ export function Sidebar() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", bounce: 0, duration: 0.3 }}
-              className="md:hidden fixed left-0 top-0 h-screen w-64 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-800/50 shadow-2xl z-50 flex flex-col pt-16 overflow-hidden"
+              className="md:hidden fixed left-0 top-0 h-screen w-64 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-800/50 shadow-2xl z-50 flex flex-col pt-16 overflow-y-auto"
             >
               {/* Refracting Glass Bubbles Background */}
               <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-40 dark:opacity-60">
@@ -245,7 +245,7 @@ export function Sidebar() {
                 <div className="glass-bubble bubble-anim-2 w-14 h-14 -right-2" style={{ animationDelay: "-12s" }} />
                 <div className="glass-bubble bubble-anim-3 w-28 h-28 left-8" style={{ animationDelay: "-20s" }} />
               </div>
-              <div className="relative z-10 flex flex-col h-full flex-1">
+              <div className="relative z-10 flex flex-col min-h-full flex-1">
                 {SidebarContent}
               </div>
             </motion.aside>

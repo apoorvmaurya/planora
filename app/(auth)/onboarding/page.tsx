@@ -66,7 +66,7 @@ export default function OnboardingPage() {
       if (locationQuery.length > 2) {
         setIsSearchingLocation(true);
         try {
-          const res = await fetch(`https://us1.locationiq.com/v1/autocomplete?key=${process.env.NEXT_PUBLIC_LOCATIONIQ_KEY}&q=${locationQuery}`);
+          const res = await fetch(`/api/autocomplete?q=${encodeURIComponent(locationQuery)}`);
           const data = await res.json();
           if (Array.isArray(data)) {
             setLocationResults(data);

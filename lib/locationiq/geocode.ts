@@ -1,4 +1,4 @@
-const LOCATIONIQ_KEY = process.env.NEXT_PUBLIC_LOCATIONIQ_KEY;
+const LOCATIONIQ_KEY = process.env.LOCATIONIQ_KEY;
 
 // ── In-Memory Cache to minimize API calls ──
 const geocodeCache = new Map<string, { lat: number; lng: number; display_name: string } | null>();

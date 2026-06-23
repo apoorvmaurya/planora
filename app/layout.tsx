@@ -7,6 +7,9 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from '@vercel/analytics/next';
 
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { validateEnv } from "@/lib/security/env";
+
+validateEnv();
 
 const dmSans = DM_Sans({
   variable: "--font-sans",

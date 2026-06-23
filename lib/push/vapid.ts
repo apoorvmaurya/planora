@@ -1,13 +1,19 @@
 import webpush from 'web-push'
 
-// Configure web-push with VAPID keys
-webpush.setVapidDetails(
-  'mailto:support@planora.app', // Your contact email
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY as string,
-  process.env.VAPID_PRIVATE_KEY as string
-)
+let isVapidConfigured = false
+
+function configureVapid() {
+  if (isVapidConfigured) return
+  webpush.setVapidDetails(
+    'mailto:support@planora.app',
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY as string,
+    process.env.VAPID_PRIVATE_KEY as string
+  )
+  isVapidConfigured = true
+}
 
 export async function sendPushNotification(subscription: webpush.PushSubscription, payload: any) {
+  configureVapid()
   try {
     const result = await webpush.sendNotification(subscription, JSON.stringify(payload))
     return result

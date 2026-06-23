@@ -11,16 +11,19 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     ignores: [
-      "node_modules/**",
-      ".next/**",
-      "out/**",
-      "build/**",
-      "next-env.d.ts",
+      "**/node_modules/**",
+      "**/.next/**",
+      "**/out/**",
+      "**/build/**",
+      "**/.vercel/**",
+      "**/next-env.d.ts",
+      "**/scratch/**",
+      "**/.agents/**",
     ],
   },
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     settings: {
       tailwindcss: {
@@ -36,7 +39,7 @@ const eslintConfig = [
       "@typescript-eslint/no-unused-vars": "warn",
       "tailwindcss/classnames-order": "warn",
       "tailwindcss/no-contradicting-classname": "error",
-      "tailwindcss/no-custom-classname": "warn",
+      "tailwindcss/no-custom-classname": "off",
     },
   },
 ];

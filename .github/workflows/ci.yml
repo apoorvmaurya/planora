@@ -58,5 +58,6 @@ jobs:
           NEXT_PUBLIC_APP_URL: "http://localhost:3000"
           NEXT_PUBLIC_VAPID_PUBLIC_KEY: "mock-vapid-public-key"
           VAPID_PRIVATE_KEY: "mock-vapid-private-key"
+          SUPABASE_SERVICE_ROLE_KEY: "mock-service-role-key"
           # Disable Next.js telemetry
           NEXT_TELEMETRY_DISABLED: 1

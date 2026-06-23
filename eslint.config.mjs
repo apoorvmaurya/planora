@@ -22,6 +22,11 @@ const eslintConfig = [
     ],
   },
   {
+    settings: {
+      tailwindcss: {
+        config: {},
+      },
+    },
     plugins: {
       tailwindcss: tailwindcssPlugin,
     },

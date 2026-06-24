@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { queueOfflineOp, offlineDB } from "@/lib/supabase/offlineSync"
-import { autocomplete } from "@/lib/locationiq/geocode"
 
 export const ItineraryItemCard = memo(function ItineraryItemCard({ 
   item, 
@@ -53,10 +52,16 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
       if (locationQuery.length > 2) {
         setIsSearchingLocation(true)
         try {
-          const results = await autocomplete(locationQuery)
-          setLocationResults(results || [])
+          const res = await fetch(`/api/autocomplete?q=${encodeURIComponent(locationQuery)}`)
+          if (res.ok) {
+            const results = await res.json()
+            setLocationResults(results || [])
+          } else {
+            setLocationResults([])
+          }
         } catch (error) {
           console.error("Location search failed", error)
+          setLocationResults([])
         } finally {
           setIsSearchingLocation(false)
         }

@@ -7,13 +7,12 @@ import { useUserStore } from "@/store/userStore"
 import { toast } from "sonner"
 import { motion, AnimatePresence } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
-import { autocomplete } from "@/lib/locationiq/geocode"
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Check, ChevronRight, Loader2, MapPin, Sparkles, AlertCircle } from "lucide-react"
+import { Check, ChevronRight, Loader2, MapPin, Sparkles, AlertCircle, X } from "lucide-react"
 import { itineraryResponseSchema } from "@/lib/ai/prompts"
 
 export default function NewPlanPage() {
@@ -31,6 +30,22 @@ export default function NewPlanPage() {
   const [currency, setCurrency] = useState("USD")
   
   const [groupId, setGroupId] = useState("")
+
+  const [isSearchingLocation, setIsSearchingLocation] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState(false)
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1)
+  const dropdownRef = React.useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpenDropdown(false)
+        setActiveSuggestionIndex(-1)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -114,14 +129,89 @@ export default function NewPlanPage() {
   useEffect(() => {
     const timer = setTimeout(async () => {
       if (destinationQuery.length > 2 && !destination) {
-        const results = await autocomplete(destinationQuery)
-        setDestinationResults(results)
+        setIsSearchingLocation(true)
+        try {
+          const res = await fetch(`/api/autocomplete?q=${encodeURIComponent(destinationQuery)}`)
+          if (res.ok) {
+            const results = await res.json()
+            setDestinationResults(Array.isArray(results) ? results : [])
+            setOpenDropdown(true)
+          } else {
+            setDestinationResults([])
+          }
+        } catch (error) {
+          console.error("Location search failed:", error)
+          setDestinationResults([])
+        } finally {
+          setIsSearchingLocation(false)
+        }
       } else {
         setDestinationResults([])
+        setOpenDropdown(false)
       }
-    }, 500)
+    }, 450)
     return () => clearTimeout(timer)
   }, [destinationQuery, destination])
+
+  const highlightMatch = (text: string, query: string) => {
+    if (!query) return text
+    const parts = text.split(new RegExp(`(${query.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')})`, 'gi'))
+    return (
+      <span>
+        {parts.map((part, i) => 
+          part.toLowerCase() === query.toLowerCase() 
+            ? <strong key={i} className="text-slate-900 dark:text-white font-extrabold">{part}</strong>
+            : <span key={i}>{part}</span>
+        )}
+      </span>
+    )
+  }
+
+  const handleSelectSuggestion = (res: any) => {
+    setDestination({ name: res.display_name, lat: parseFloat(res.lat), lng: parseFloat(res.lon) })
+    setDestinationQuery(res.display_name.split(',')[0])
+    setDestinationResults([])
+    setOpenDropdown(false)
+    setActiveSuggestionIndex(-1)
+  }
+
+  const handleSelectCustom = () => {
+    setDestination({ name: destinationQuery, lat: 0, lng: 0 })
+    setDestinationResults([])
+    setOpenDropdown(false)
+    setActiveSuggestionIndex(-1)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!openDropdown) return
+
+    const totalItems = destinationResults.length + 1 // +1 for custom option
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault()
+      setActiveSuggestionIndex((prev) => (prev + 1) % totalItems)
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault()
+      setActiveSuggestionIndex((prev) => (prev - 1 + totalItems) % totalItems)
+    } else if (e.key === "Enter") {
+      e.preventDefault()
+      if (activeSuggestionIndex >= 0 && activeSuggestionIndex < destinationResults.length) {
+        handleSelectSuggestion(destinationResults[activeSuggestionIndex])
+      } else if (activeSuggestionIndex === destinationResults.length) {
+        handleSelectCustom()
+      } else {
+        if (destinationResults.length > 0) {
+          handleSelectSuggestion(destinationResults[0])
+        } else {
+          handleSelectCustom()
+        }
+      }
+    } else if (e.key === "Escape") {
+      e.preventDefault()
+      setOpenDropdown(false)
+      setActiveSuggestionIndex(-1)
+    }
+  }
 
   const handleGenerate = async () => {
     if (!destination || !startDate || !endDate || !budget || !groupId) {
@@ -263,33 +353,88 @@ export default function NewPlanPage() {
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white transition-colors duration-500">Step 1: The Basics</h2>
                 
                 <div className="space-y-4">
-                  <div className="relative">
+                  <div className="relative" ref={dropdownRef}>
                     <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1.5 transition-colors duration-500">Where are you going?</label>
-                    <Input 
-                      placeholder="Search city..." 
-                      className="h-12 rounded-xl text-lg bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
-                      value={destinationQuery}
-                      onChange={(e) => {
-                        setDestinationQuery(e.target.value)
-                        setDestination(null)
-                      }}
-                    />
-                    {destinationResults.length > 0 && !destination && (
-                      <div className="absolute top-full mt-2 w-full bg-white dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xl overflow-hidden z-50 transition-colors duration-500">
-                        {destinationResults.map((res: any, i) => (
-                          <div 
-                            key={i} 
-                            className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer border-b border-slate-50 dark:border-slate-900 last:border-0 flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300 transition-colors duration-200"
+                    <div className="relative">
+                      <Input 
+                        placeholder="Search city..." 
+                        className="h-12 rounded-xl text-lg bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 pr-20 focus-visible:ring-[#16795A]"
+                        value={destinationQuery}
+                        onChange={(e) => {
+                          setDestinationQuery(e.target.value)
+                          setDestination(null)
+                          setOpenDropdown(true)
+                        }}
+                        onFocus={() => {
+                          if (destinationQuery.length > 0) setOpenDropdown(true)
+                        }}
+                        onKeyDown={handleKeyDown}
+                      />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 z-10">
+                        {isSearchingLocation && (
+                          <Loader2 className="w-4 h-4 text-slate-400 dark:text-slate-550 animate-spin shrink-0" />
+                        )}
+                        {destination && !isSearchingLocation && (
+                          <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                        )}
+                        {destinationQuery && (
+                          <button 
+                            type="button"
                             onClick={() => {
-                              setDestination({ name: res.display_name, lat: parseFloat(res.lat), lng: parseFloat(res.lon) })
-                              setDestinationQuery(res.display_name.split(',')[0])
+                              setDestinationQuery("")
+                              setDestination(null)
                               setDestinationResults([])
+                              setOpenDropdown(false)
+                              setActiveSuggestionIndex(-1)
                             }}
+                            className="p-1 text-slate-400 hover:text-slate-650 dark:hover:text-slate-200 rounded-full hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+                            aria-label="Clear location input"
                           >
-                            <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
-                            <span className="truncate">{res.display_name}</span>
+                            <X className="w-3.5 h-3.5 shrink-0" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    {openDropdown && (destinationResults.length > 0 || destinationQuery.length > 2) && (
+                      <div className="absolute top-full mt-2 w-full bg-white/95 dark:bg-slate-950/95 backdrop-blur-md rounded-2xl border border-slate-150 dark:border-slate-800 shadow-2xl overflow-hidden z-50 transition-all duration-300">
+                        <div className="max-h-72 overflow-y-auto">
+                          {destinationResults.map((res: any, i) => {
+                            const isActive = i === activeSuggestionIndex;
+                            return (
+                              <div 
+                                key={i} 
+                                className={`px-4 py-3 cursor-pointer border-b border-slate-50 dark:border-slate-900/60 last:border-0 flex items-center gap-3 text-sm text-slate-700 dark:text-slate-350 transition-colors duration-250 ${
+                                  isActive ? 'bg-slate-100/80 dark:bg-slate-900/80 text-slate-950 dark:text-white' : 'hover:bg-slate-50 dark:hover:bg-slate-900/40'
+                                }`}
+                                onClick={() => handleSelectSuggestion(res)}
+                              >
+                                <MapPin className="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0" />
+                                <span className="truncate">{highlightMatch(res.display_name, destinationQuery)}</span>
+                              </div>
+                            );
+                          })}
+                          
+                          {destinationResults.length === 0 && !isSearchingLocation && destinationQuery.length > 2 && (
+                            <div className="px-4 py-3 text-xs text-slate-400 dark:text-slate-550 italic border-b border-slate-100 dark:border-slate-900">
+                              No exact matches found. You can still use the custom option below.
+                            </div>
+                          )}
+
+                          {/* Custom Option */}
+                          <div 
+                            className={`px-4 py-3 cursor-pointer flex items-center gap-3 text-sm font-semibold transition-colors duration-250 ${
+                              activeSuggestionIndex === destinationResults.length 
+                                ? 'bg-teal-50/80 dark:bg-teal-950/40 text-[#16795A] dark:text-teal-400' 
+                                : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40'
+                            }`}
+                            onClick={handleSelectCustom}
+                          >
+                            <MapPin className="w-4 h-4 text-[#16795A] dark:text-teal-400 shrink-0" />
+                            <span className="truncate flex items-center gap-1.5">
+                              Use custom location: <strong className="text-slate-900 dark:text-slate-100 italic font-bold font-mono bg-slate-100 dark:bg-slate-900 px-1.5 py-0.5 rounded">&ldquo;{destinationQuery}&rdquo;</strong>
+                            </span>
                           </div>
-                        ))}
+                        </div>
                       </div>
                     )}
                   </div>

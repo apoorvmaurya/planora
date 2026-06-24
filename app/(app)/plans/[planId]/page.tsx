@@ -27,7 +27,6 @@ import dynamic from "next/dynamic"
 import { syncOfflineOps, queueOfflineOp, offlineDB } from "@/lib/supabase/offlineSync"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
-import { autocomplete } from "@/lib/locationiq/geocode"
 
 const MapComponent = dynamic(
   () => import("@/components/shared/MapComponent").then((mod) => mod.MapComponent),
@@ -94,10 +93,16 @@ export default function PlanDetailPage() {
       if (locationQuery.length > 2) {
         setIsSearchingLocation(true)
         try {
-          const results = await autocomplete(locationQuery)
-          setLocationResults(results || [])
+          const res = await fetch(`/api/autocomplete?q=${encodeURIComponent(locationQuery)}`)
+          if (res.ok) {
+            const results = await res.json()
+            setLocationResults(results || [])
+          } else {
+            setLocationResults([])
+          }
         } catch (error) {
           console.error("Location search failed", error)
+          setLocationResults([])
         } finally {
           setIsSearchingLocation(false)
         }

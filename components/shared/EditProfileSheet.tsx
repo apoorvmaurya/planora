@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useProfile } from "@/hooks/useProfile"
-import { autocomplete } from "@/lib/locationiq/geocode"
 import { toast } from "sonner"
 import { Loader2, MapPin, Upload } from "lucide-react"
 
@@ -115,9 +114,20 @@ export function EditProfileSheet({ open, onOpenChange }: EditProfileSheetProps) 
     const delayDebounceFn = setTimeout(async () => {
       if (locationQuery.length > 2 && locationQuery !== `${selectedLocation?.city}, ${selectedLocation?.country}`) {
         setIsSearchingLocation(true)
-        const results = await autocomplete(locationQuery)
-        setLocationResults(results)
-        setIsSearchingLocation(false)
+        try {
+          const res = await fetch(`/api/autocomplete?q=${encodeURIComponent(locationQuery)}`)
+          if (res.ok) {
+            const results = await res.json()
+            setLocationResults(results || [])
+          } else {
+            setLocationResults([])
+          }
+        } catch (error) {
+          console.error("Location search failed", error)
+          setLocationResults([])
+        } finally {
+          setIsSearchingLocation(false)
+        }
       } else {
         setLocationResults([])
       }

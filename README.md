@@ -89,25 +89,25 @@ pnpm install
 ```
 
 ### 2. Configure Environment Variables
-Copy the local template and fill in your keys:
+Copy either the generic or local environment template and fill in your keys:
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env.local
 ```
 Key requirements:
 ```properties
 # Supabase Database Settings
-NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 
 # LLM Inference (Groq)
-GROQ_API_KEY=your-groq-api-key
+GROQ_API_KEY=gsk_your-groq-api-key
 
 # Geocoding & Mapping (LocationIQ)
-NEXT_PUBLIC_LOCATIONIQ_KEY=your-locationiq-key
+LOCATIONIQ_KEY=pk.your-locationiq-key
 
 # Email Dispatcher (Resend)
-RESEND_API_KEY=your-resend-key
+RESEND_API_KEY=re_your-resend-key
 
 # App Settings
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -129,6 +129,43 @@ supabase db push
 pnpm dev
 ```
 Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+---
+
+## 🧪 Testing & Isolated Verification
+
+Planora includes an enterprise-grade automated test suite built on **Vitest** and **@testing-library**, complete with an in-memory Supabase mock client so you can test features without live external accounts.
+
+### Run Automated Tests & Coverage
+```bash
+# Run all unit tests with full V8 coverage report
+pnpm test
+
+# Run tests in watch mode during development
+pnpm exec vitest
+```
+
+### Offline & Mock Testing Architecture
+- **In-Memory Supabase Mock Client** (`lib/testing/supabaseMock.ts`): Provides simulated CRUD operations, query filter chains (`.eq()`, `.in()`, `.order()`, `.single()`), and auth sessions.
+- **Network Isolation**: `vitest.setup.ts` automatically intercepts database clients, ensuring route handlers and component tests never invoke live network requests or consume API quotas.
+- **Coverage**: Verified unit test coverage across chronological itinerary sorting, security access authorization, and multi-party expense calculations.
+
+---
+
+## 🐳 Docker & Local Stack
+
+To run Planora and a local PostgreSQL database in isolated containers:
+
+```bash
+# Build and launch application and local database
+docker compose up -d
+
+# View container logs
+docker compose logs -f app
+```
+
+A VS Code Dev Container configuration is also included at `.devcontainer/devcontainer.json` for standardized environments across teams.
+
 
 ---
 

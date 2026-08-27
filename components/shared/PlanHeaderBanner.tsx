@@ -36,7 +36,7 @@ export function PlanHeaderBanner({
         priority
         className="object-cover object-center opacity-60 pointer-events-none"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-900/40 to-transparent pointer-events-none" />
 
       <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>

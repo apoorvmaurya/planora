@@ -239,8 +239,8 @@ export default function EditPlanPage() {
       />
 
       {/* Hero Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-[#0b1b17] dark:via-slate-900 dark:to-slate-950 rounded-3xl p-8 sm:p-10 shadow-2xl border border-transparent dark:border-slate-800/80">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#16795A]/15 via-transparent to-transparent pointer-events-none" />
+      <div className="relative overflow-hidden bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-[#0b1b17] dark:via-slate-900 dark:to-slate-950 rounded-3xl p-8 sm:p-10 shadow-2xl border border-transparent dark:border-slate-800/80">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-[#16795A]/15 via-transparent to-transparent pointer-events-none" />
         <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#16795A]/5 rounded-full blur-3xl pointer-events-none" />
         
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -347,11 +347,11 @@ export default function EditPlanPage() {
         <motion.div 
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden bg-gradient-to-br from-teal-50/60 via-white to-emerald-50/40 dark:from-teal-950/15 dark:via-slate-900/60 dark:to-emerald-950/10 rounded-3xl border border-teal-100 dark:border-teal-900/30 p-8 sm:p-10 text-center shadow-xl shadow-teal-100/10 dark:shadow-none"
+          className="relative overflow-hidden bg-linear-to-br from-teal-50/60 via-white to-emerald-50/40 dark:from-teal-950/15 dark:via-slate-900/60 dark:to-emerald-950/10 rounded-3xl border border-teal-100 dark:border-teal-900/30 p-8 sm:p-10 text-center shadow-xl shadow-teal-100/10 dark:shadow-none"
         >
           <div className="absolute -top-16 -right-16 w-48 h-48 bg-[#16795A]/5 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10">
-            <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-[#16795A] to-emerald-600 flex items-center justify-center mx-auto mb-5 shadow-xl shadow-[#16795A]/30">
+            <div className="w-16 h-16 rounded-3xl bg-linear-to-br from-[#16795A] to-emerald-600 flex items-center justify-center mx-auto mb-5 shadow-xl shadow-[#16795A]/30">
               <ShieldCheck className="w-8 h-8 text-white" />
             </div>
             <h2 className="font-extrabold text-2xl mb-2 text-slate-900 dark:text-white">Ready to lock it in?</h2>
@@ -362,7 +362,7 @@ export default function EditPlanPage() {
             <Button 
               onClick={handleConfirm}
               disabled={isConfirming || isGenerating}
-              className="bg-gradient-to-r from-slate-900 to-slate-800 dark:from-white dark:to-slate-100 text-white dark:text-slate-900 h-14 px-12 rounded-2xl text-lg font-extrabold shadow-xl shadow-slate-900/20 dark:shadow-white/10 cursor-pointer border-0 hover:shadow-2xl transition-shadow duration-300"
+              className="bg-linear-to-r from-slate-900 to-slate-800 dark:from-white dark:to-slate-100 text-white dark:text-slate-900 h-14 px-12 rounded-2xl text-lg font-extrabold shadow-xl shadow-slate-900/20 dark:shadow-white/10 cursor-pointer border-0 hover:shadow-2xl transition-shadow duration-300"
             >
               {isConfirming ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Confirm Plan'}
             </Button>

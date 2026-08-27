@@ -64,7 +64,7 @@ export function EditPlanComparisonPanel({
           <div className="bg-white/80 dark:bg-slate-900/60 backdrop-blur-xl rounded-3xl border border-slate-200/50 dark:border-slate-800/80 p-6 sm:p-8 shadow-xl shadow-slate-200/10 dark:shadow-none">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#16795A] to-emerald-600 flex items-center justify-center shadow-lg shadow-[#16795A]/25">
+                <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-[#16795A] to-emerald-600 flex items-center justify-center shadow-lg shadow-[#16795A]/25">
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -108,7 +108,7 @@ export function EditPlanComparisonPanel({
             </div>
 
             {object?.title && (
-              <div className="bg-gradient-to-r from-teal-50 to-emerald-50 dark:from-teal-950/15 dark:to-emerald-950/15 border border-teal-100 dark:border-teal-900/30 p-4 rounded-2xl flex items-center justify-between mb-6">
+              <div className="bg-linear-to-r from-teal-50 to-emerald-50 dark:from-teal-950/15 dark:to-emerald-950/15 border border-teal-100 dark:border-teal-900/30 p-4 rounded-2xl flex items-center justify-between mb-6">
                 <div>
                   <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#16795A]/70">AI Suggested Title</span>
                   <p className="font-extrabold text-slate-900 dark:text-white text-lg">{object.title}</p>
@@ -152,7 +152,7 @@ export function EditPlanComparisonPanel({
                   transition={{ delay: dayIdx * 0.08 }}
                   className="bg-white/80 dark:bg-slate-900/60 backdrop-blur-xl rounded-3xl border border-slate-200/50 dark:border-slate-800/80 shadow-lg shadow-slate-200/10 dark:shadow-none overflow-hidden"
                 >
-                  <div className="px-6 py-4 bg-gradient-to-r from-slate-50 to-transparent dark:from-slate-800/30 dark:to-transparent flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800/60">
+                  <div className="px-6 py-4 bg-linear-to-r from-slate-50 to-transparent dark:from-slate-800/30 dark:to-transparent flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800/60">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-xl bg-slate-900 dark:bg-white flex items-center justify-center">
                         <span className="text-sm font-black text-white dark:text-slate-900">{dayNum}</span>
@@ -193,7 +193,7 @@ export function EditPlanComparisonPanel({
 
                   <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-100 dark:divide-slate-800/60">
                     <div className={`p-5 space-y-2.5 transition-all duration-300 ${
-                      choice === 'current' ? 'opacity-100' : 'opacity-40 grayscale-[30%]'
+                      choice === 'current' ? 'opacity-100' : 'opacity-40 grayscale-30'
                     }`}>
                       <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
@@ -226,7 +226,7 @@ export function EditPlanComparisonPanel({
                     </div>
 
                     <div className={`p-5 space-y-2.5 transition-all duration-300 ${
-                      choice === 'new' ? 'opacity-100' : 'opacity-40 grayscale-[30%]'
+                      choice === 'new' ? 'opacity-100' : 'opacity-40 grayscale-30'
                     }`}>
                       <div className="text-[10px] font-extrabold text-emerald-500/80 uppercase tracking-widest mb-3 flex items-center justify-between">
                         <span className="flex items-center gap-1.5">
@@ -302,7 +302,7 @@ export function EditPlanComparisonPanel({
                 <Button
                   onClick={onSaveMerge}
                   disabled={isSavingMerge}
-                  className="rounded-2xl bg-gradient-to-r from-[#16795A] to-emerald-600 hover:from-[#115E46] hover:to-emerald-700 text-white font-extrabold h-14 px-10 shadow-lg shadow-[#16795A]/20 cursor-pointer w-full sm:w-auto flex items-center justify-center gap-2.5 text-base border-0"
+                  className="rounded-2xl bg-linear-to-r from-[#16795A] to-emerald-600 hover:from-[#115E46] hover:to-emerald-700 text-white font-extrabold h-14 px-10 shadow-lg shadow-[#16795A]/20 cursor-pointer w-full sm:w-auto flex items-center justify-center gap-2.5 text-base border-0"
                 >
                   {isSavingMerge ? (
                     <Loader2 className="w-5 h-5 animate-spin" />

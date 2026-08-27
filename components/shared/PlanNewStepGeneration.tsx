@@ -108,7 +108,7 @@ export function PlanNewStepGeneration({
 
         <div className="w-full max-w-md mx-auto bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden mb-4">
           <motion.div
-            className="h-full bg-gradient-to-r from-[#16795A] to-teal-400 rounded-full"
+            className="h-full bg-linear-to-r from-[#16795A] to-teal-400 rounded-full"
             initial={{ width: "0%" }}
             animate={{ width: statusDetails.progressWidth }}
             transition={{ duration: statusDetails.progressDuration, ease: "easeInOut" }}

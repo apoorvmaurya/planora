@@ -213,8 +213,8 @@ export function TransitPanel({
                          opt.type === 'train' ? <Train className="w-5 h-5 text-orange-500 mt-0.5 shrink-0" /> : 
                          <Bus className="w-5 h-5 text-[#16795A] mt-0.5 shrink-0" />}
                         <div className="flex-1 min-w-0 space-y-1">
-                          <p className="font-bold text-sm text-slate-900 dark:text-slate-100 break-words leading-snug">{opt.title}</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 break-words leading-relaxed">{opt.details}</p>
+                          <p className="font-bold text-sm text-slate-900 dark:text-slate-100 wrap-break-word leading-snug">{opt.title}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 wrap-break-word leading-relaxed">{opt.details}</p>
                           <span className="inline-block text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 px-2 py-0.5 rounded-md mt-1 border border-indigo-100/30 dark:border-indigo-900/10 shadow-sm">
                             Est: {opt.cost}
                           </span>

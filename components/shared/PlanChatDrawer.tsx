@@ -63,7 +63,7 @@ export function PlanChatDrawer({
             whileTap={{ scale: 0.9 }}
             onClick={onOpen}
             aria-label="Open AI Chat"
-            className="fixed bottom-6 right-6 z-40 bg-gradient-to-tr from-[#16795A] to-teal-500 hover:from-[#115E46] hover:to-teal-600 text-white rounded-full p-4 shadow-xl shadow-teal-500/20 flex items-center justify-center cursor-pointer border border-teal-400/20 group"
+            className="fixed bottom-6 right-6 z-40 bg-linear-to-tr from-[#16795A] to-teal-500 hover:from-[#115E46] hover:to-teal-600 text-white rounded-full p-4 shadow-xl shadow-teal-500/20 flex items-center justify-center cursor-pointer border border-teal-400/20 group"
           >
             <Sparkles className="w-6 h-6 animate-pulse group-hover:scale-110 transition-transform" />
           </motion.button>
@@ -77,12 +77,12 @@ export function PlanChatDrawer({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-full w-full sm:w-[460px] bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl border-l border-slate-200/50 dark:border-slate-800/50 shadow-2xl z-50 flex flex-col"
+            className="fixed top-0 right-0 h-full w-full sm:w-115 bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl border-l border-slate-200/50 dark:border-slate-800/50 shadow-2xl z-50 flex flex-col"
           >
             {/* Drawer Header */}
             <div className="p-5 border-b border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/35">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/30 dark:to-emerald-950/30 text-[#16795A] flex items-center justify-center shadow-inner">
+                <div className="w-10 h-10 rounded-xl bg-linear-to-br from-teal-50 to-emerald-50 dark:from-teal-950/30 dark:to-emerald-950/30 text-[#16795A] flex items-center justify-center shadow-inner">
                   <Bot className="w-5 h-5" />
                 </div>
                 <div>
@@ -104,7 +104,7 @@ export function PlanChatDrawer({
             </div>
 
             {/* Drawer Chat Body */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gradient-to-b from-slate-50/30 to-white dark:from-slate-900/10 dark:to-slate-950">
+            <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-linear-to-b from-slate-50/30 to-white dark:from-slate-900/10 dark:to-slate-950">
               {messages.length === 0 && (
                 <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-5 py-8 text-center px-4">
                   <div className="w-14 h-14 rounded-full bg-teal-50/60 dark:bg-teal-950/20 text-[#16795A] flex items-center justify-center shadow-sm">
@@ -112,7 +112,7 @@ export function PlanChatDrawer({
                   </div>
                   <div className="space-y-1">
                     <h4 className="font-extrabold text-slate-700 dark:text-slate-200 text-sm">How can I help you, {profileName}?</h4>
-                    <p className="text-xs text-slate-400 dark:text-slate-500 max-w-[280px]">
+                    <p className="text-xs text-slate-400 dark:text-slate-500 max-w-70">
                       Ask me to customize your activities, replan days, suggest restaurants, or check travel details.
                     </p>
                   </div>
@@ -135,7 +135,7 @@ export function PlanChatDrawer({
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm text-xs ${
                     m.role === "user"
                       ? "bg-slate-900 dark:bg-slate-800 text-white"
-                      : "bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/20 dark:to-emerald-950/20 text-[#16795A]"
+                      : "bg-linear-to-br from-teal-50 to-emerald-50 dark:from-teal-950/20 dark:to-emerald-950/20 text-[#16795A]"
                   }`}>
                     {m.role === "user" ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
                   </div>

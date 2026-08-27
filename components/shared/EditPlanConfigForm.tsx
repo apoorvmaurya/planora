@@ -154,7 +154,7 @@ export function EditPlanConfigForm({
         <Button
           onClick={onRegenerate}
           disabled={isGenerating || isAiLoading}
-          className="w-full h-14 rounded-2xl font-extrabold text-base bg-gradient-to-r from-[#16795A] to-emerald-600 hover:from-[#115E46] hover:to-emerald-700 text-white shadow-lg shadow-[#16795A]/20 transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer border-0"
+          className="w-full h-14 rounded-2xl font-extrabold text-base bg-linear-to-r from-[#16795A] to-emerald-600 hover:from-[#115E46] hover:to-emerald-700 text-white shadow-lg shadow-[#16795A]/20 transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer border-0"
         >
           {isGenerating || isAiLoading ? (
             <>
@@ -174,7 +174,7 @@ export function EditPlanConfigForm({
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-6 space-y-3">
             <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
               <motion.div
-                className="h-full bg-gradient-to-r from-[#16795A] to-emerald-400 rounded-full"
+                className="h-full bg-linear-to-r from-[#16795A] to-emerald-400 rounded-full"
                 initial={{ width: "5%" }}
                 animate={{
                   width: object?.days

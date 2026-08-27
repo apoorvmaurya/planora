@@ -113,11 +113,11 @@ export function PlanActivityLogDrawer({
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="fixed top-0 right-0 h-full w-full sm:w-[460px] bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl border-l border-slate-200/50 dark:border-slate-800/50 shadow-2xl z-50 flex flex-col"
+          className="fixed top-0 right-0 h-full w-full sm:w-115 bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl border-l border-slate-200/50 dark:border-slate-800/50 shadow-2xl z-50 flex flex-col"
         >
           <div className="p-5 border-b border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/35">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950/30 dark:to-violet-950/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-inner">
+              <div className="w-10 h-10 rounded-xl bg-linear-to-br from-indigo-50 to-violet-50 dark:from-indigo-950/30 dark:to-violet-950/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-inner">
                 <History className="w-5 h-5" />
               </div>
               <div>
@@ -139,7 +139,7 @@ export function PlanActivityLogDrawer({
             </Button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-5 space-y-5 bg-gradient-to-b from-slate-50/30 to-white dark:from-slate-900/10 dark:to-slate-950">
+          <div className="flex-1 overflow-y-auto p-5 space-y-5 bg-linear-to-b from-slate-50/30 to-white dark:from-slate-900/10 dark:to-slate-950">
             {activityLogs.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-3 py-8 text-center px-4">
                 <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-400 flex items-center justify-center">
@@ -147,7 +147,7 @@ export function PlanActivityLogDrawer({
                 </div>
                 <div>
                   <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300">No activity logged yet</h4>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 max-w-[240px] mt-1">
+                  <p className="text-xs text-slate-400 dark:text-slate-500 max-w-60 mt-1">
                     Changes made to the itinerary will appear here in real-time.
                   </p>
                 </div>
@@ -182,7 +182,7 @@ export function PlanActivityLogDrawer({
                   return (
                     <div key={log.id} className="relative group">
                       <div
-                        className={`absolute -left-[35px] top-1.5 w-6 h-6 rounded-full flex items-center justify-center text-[10px] shadow-sm z-10 ${iconBg}`}
+                        className={`absolute -left-8.75 top-1.5 w-6 h-6 rounded-full flex items-center justify-center text-[10px] shadow-sm z-10 ${iconBg}`}
                       >
                         {actionIcon}
                       </div>

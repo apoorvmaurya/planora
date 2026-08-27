@@ -4,6 +4,24 @@ import { getCoordinatesForLocation } from "@/lib/locationiq/geocode"
 import { reorderDayItems } from "@/lib/itinerary/sort"
 import { getPlanAccess } from "@/lib/security/access"
 
+import { z } from "zod"
+import { handleApiError } from "@/lib/errors"
+
+const itemPostSchema = z.object({
+  day_number: z.number().int().min(0),
+  time_of_day: z.string().min(1),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional().default(""),
+  location_name: z.string().min(1, "Location is required"),
+  lat: z.number().optional(),
+  lng: z.number().optional(),
+  category: z.string().optional().default("activity"),
+  duration_minutes: z.number().optional().default(60),
+  estimated_cost: z.number().optional().default(0),
+  parent_item_id: z.string().nullable().optional(),
+  is_delete_suggestion: z.boolean().optional().default(false),
+})
+
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ planId: string }> }
@@ -14,6 +32,12 @@ export async function POST(
   if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   try {
+    const rawBody = await req.json()
+    const parsed = itemPostSchema.safeParse(rawBody)
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.issues[0]?.message || "Invalid item payload" }, { status: 400 })
+    }
+
     const { 
       day_number, 
       time_of_day, 
@@ -27,11 +51,7 @@ export async function POST(
       estimated_cost,
       parent_item_id,
       is_delete_suggestion
-    } = await req.json()
-
-    if (!title || !location_name || !day_number || !time_of_day) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
-    }
+    } = parsed.data
 
     // Verify plan access and roles
     const { isAuthorized, isAdmin, plan } = await getPlanAccess(supabase, planId, user.id)
@@ -66,7 +86,7 @@ export async function POST(
       .from("itinerary_items")
       .insert({
         plan_id: planId,
-        day_number: parseInt(day_number),
+        day_number: Number(day_number),
         time_of_day,
         title,
         description: description || "",
@@ -74,8 +94,8 @@ export async function POST(
         lat,
         lng,
         category: category || "activity",
-        duration_minutes: parseInt(duration_minutes) || 60,
-        estimated_cost: parseFloat(estimated_cost) || 0,
+        duration_minutes: Number(duration_minutes) || 60,
+        estimated_cost: Number(estimated_cost) || 0,
         sort_order: nextSort,
         suggestion_status,
         parent_item_id: parent_item_id || null,
@@ -90,7 +110,7 @@ export async function POST(
     }
 
     // Sort all items for this day chronologically and logically
-    await reorderDayItems(supabase, planId, parseInt(day_number))
+    await reorderDayItems(supabase, planId, Number(day_number))
 
     // Retrieve the newly sorted item with its updated sort_order
     const { data: reorderedItem } = await supabase
@@ -101,8 +121,8 @@ export async function POST(
 
     return NextResponse.json({ success: true, item: reorderedItem || item })
 
-  } catch (err: any) {
-    console.error("Failed to manually create itinerary item:", err)
-    return NextResponse.json({ error: err.message || "Failed to create item" }, { status: 500 })
+  } catch (err: unknown) {
+    const message = handleApiError(err, "Failed to create item")
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

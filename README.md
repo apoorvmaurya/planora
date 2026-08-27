@@ -169,28 +169,44 @@ A VS Code Dev Container configuration is also included at `.devcontainer/devcont
 
 ---
 
-## 📂 Codebase Layout
+## 📂 Codebase Layout & Modular Architecture
+
+Planora strictly adheres to a modular design principle with **0 files exceeding 500 lines of code** across the entire repository. Heavy client views and AI tool orchestration are decomposed into focused, single-responsibility components:
 
 ```
 planora/
 ├── app/
-│   ├── (app)/              # Authenticated dashboard, plans, groups and settings
+│   ├── (app)/              # Authenticated dashboard, plans, groups, and settings
+│   │   ├── plans/[planId]/ # Modularized trip view (<450 LOC) with extracted tab/drawer components
+│   │   ├── plans/new/      # 4-step wizard decomposed into dedicated step components
+│   │   └── groups/         # Group collaborative space and tabbed settings panels
 │   ├── (auth)/             # Authentication flow (sign up, sign in, onboarding)
-│   ├── (public)/           # High-conversion landing page
-│   ├── api/                # API routes (secure itinerary, voting, expenses, OCR, chat)
+│   ├── (public)/           # High-conversion landing page and guides
+│   ├── api/                # Strictly validated API routes with Zod schema checks
 │   └── globals.css         # Modern CSS system, HSL color tokens, and animations
 ├── components/
-│   ├── layout/             # Navigation controls and sidebar
-│   ├── providers/          # Authentication context providers
-│   ├── shared/             # Reusable UI cards, PlaBot chat drawer, and Modals
-│   └── ui/                 # Atomic design primitives (shadcn/ui custom components)
-├── hooks/                  # Specialized reactive hooks (useGroup, useFriends)
+│   ├── layout/             # Navigation controls and responsive sidebar
+│   ├── providers/          # Authentication and theme context providers
+│   ├── shared/             # Specialized modular UI components:
+│   │   ├── PlanChatDrawer.tsx          # Real-time AI chat slide-over (<250 LOC)
+│   │   ├── PlanItineraryTab.tsx        # Chronological day slot & map orchestration (<210 LOC)
+│   │   ├── PlanSidebar.tsx             # Trip metadata, group avatars, and actions (<190 LOC)
+│   │   ├── PlanActivityLogDrawer.tsx   # Audit history with diff view & 1-click revert (<200 LOC)
+│   │   ├── EditPlanComparisonPanel.tsx # Side-by-side AI draft comparison & merge (<320 LOC)
+│   │   ├── EditPlanConfigForm.tsx      # Trip configuration and regeneration controls (<170 LOC)
+│   │   └── TransitPanel.tsx            # Multi-modal transit route suggestions & sync (<220 LOC)
+│   └── ui/                 # Atomic design primitives (shadcn/ui accessible components)
+├── hooks/                  # Specialized reactive hooks (usePlanDetails, useGroup, useFriends)
 ├── lib/
-│   ├── ai/                 # Centralized AI model configs (AI_MODELS) and prompts
-│   ├── itinerary/          # Logical sorting and database reordering utilities
+│   ├── ai/                 # Centralized AI model configs (AI_MODELS), prompt schemas, and tools:
+│   │   ├── planChatTools.ts            # PlaBot tool definitions & execution (<330 LOC)
+│   │   └── bulkUpdateTool.ts           # Atomic batch itinerary upsert/delete operations (<290 LOC)
+│   ├── itinerary/          # Logical sorting, time-of-day weighting, and database reordering utilities
 │   ├── locationiq/         # Geocoding helpers and request rate-limiting queues
-│   ├── security/           # Centralized authorization (getPlanAccess), rate-limiting, and input guardrails
-│   └── utils.ts            # UI styles class merging tool (cn)
+│   ├── security/           # Centralized authorization (getPlanAccess), rate-limiting, and guardrails
+│   ├── types/              # Strongly typed domain interfaces (PlanItem, MemberVote, GroupMember)
+│   ├── validations/        # Zod validation schemas for all API route requests
+│   └── errors.ts           # Standardized application error hierarchy (AppError, ValidationError)
 ├── store/                  # Zustand state trees for local/offline reactivity
 ├── supabase/               # Database migration scripts and edge functions
 └── public/                 # Static assets, Web manifest files, and PWA configurations
@@ -202,8 +218,9 @@ planora/
 Planora is built with a defense-in-depth approach to security:
 1.  **Insecure Direct Object Reference (IDOR) Mitigation**: All write and read routes validate client requests against the centralized `getPlanAccess` guard.
 2.  **Input Guardrails**: Protects against jailbreak attempts and off-topic requests using a fast classification pass before LLM dispatch.
-3.  **Stateless Rate Limiting**: Centralized API request logs prevent system abuse and protect infrastructure from high token utilization.
-4.  **Supabase Row Level Security (RLS)**: Secures all tables with tenant-level RLS policies to prevent direct database leaks.
+3.  **Strict Zod Request Validation**: API endpoints (`vote`, `transit/add`, `items`) enforce strict schema validation to reject malformed input before execution.
+4.  **Stateless Rate Limiting**: Centralized API request logs prevent system abuse and protect infrastructure from high token utilization.
+5.  **Supabase Row Level Security (RLS)**: Secures all tables with tenant-level RLS policies to prevent direct database leaks.
 
 ---
 

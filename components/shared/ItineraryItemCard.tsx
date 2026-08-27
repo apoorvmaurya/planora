@@ -1,117 +1,40 @@
-import React, { useState, useEffect, memo } from "react"
+"use client"
+
+import React, { useState, memo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Check, ThumbsUp, ThumbsDown, Edit2, Sparkles, MapPin, Loader2, History, RotateCcw, Save, Trash2, XCircle } from "lucide-react"
+import { Check, ThumbsUp, ThumbsDown, Sparkles, MapPin, Loader2, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
 import { queueOfflineOp, offlineDB } from "@/lib/supabase/offlineSync"
+import { ItineraryItemCardProps, PlanItem } from "@/lib/types/itinerary"
+import { ItineraryItemEditDialog } from "./ItineraryItemEditDialog"
+import { handleApiError } from "@/lib/errors"
 
 export const ItineraryItemCard = memo(function ItineraryItemCard({ 
   item, 
-  votes, 
+  votes = [], 
   currentUserId, 
   isAdmin, 
   onVote, 
   onUpdate,
-  members,
+  members = [],
   isSolo = false
-}: any) {
-  const upvotes = votes.filter((v: any) => v.vote === 'up')
-  const downvotes = votes.filter((v: any) => v.vote === 'down')
-  const userVote = votes.find((v: any) => v.user_id === currentUserId)?.vote
+}: ItineraryItemCardProps) {
+  const upvotes = votes.filter((v) => v.vote === 'up')
+  const downvotes = votes.filter((v) => v.vote === 'down')
+  const userVote = votes.find((v) => v.user_id === currentUserId)?.vote
 
   const [isApproveLoading, setIsApproveLoading] = useState(false)
   const [isRejectLoading, setIsRejectLoading] = useState(false)
   const [isSuggesting, setIsSuggesting] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
-  const [isRestoring, setIsRestoring] = useState(false)
-  
-  // Edit form state
-  const [editData, setEditData] = useState({
-    title: item.title,
-    description: item.description,
-    time_of_day: item.time_of_day,
-    location_name: item.location_name,
-    duration_minutes: item.duration_minutes,
-    estimated_cost: item.estimated_cost,
-    lat: item.lat || 0,
-    lng: item.lng || 0
-  })
-
-  // Location Geocoding Autocomplete States
-  const [locationResults, setLocationResults] = useState<any[]>([])
-  const [isSearchingLocation, setIsSearchingLocation] = useState(false)
-  const [locationQuery, setLocationQuery] = useState("")
-
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(async () => {
-      if (locationQuery.length > 2) {
-        setIsSearchingLocation(true)
-        try {
-          const res = await fetch(`/api/autocomplete?q=${encodeURIComponent(locationQuery)}`)
-          if (res.ok) {
-            const results = await res.json()
-            setLocationResults(results || [])
-          } else {
-            setLocationResults([])
-          }
-        } catch (error) {
-          console.error("Location search failed", error)
-          setLocationResults([])
-        } finally {
-          setIsSearchingLocation(false)
-        }
-      } else {
-        setLocationResults([])
-      }
-    }, 450)
-
-    return () => clearTimeout(delayDebounceFn)
-  }, [locationQuery])
-
-  useEffect(() => {
-    if (!isEditing) {
-      setLocationQuery("")
-      setLocationResults([])
-    } else {
-      setLocationQuery(item.location_name)
-      setEditData({
-        title: item.title,
-        description: item.description,
-        time_of_day: item.time_of_day,
-        location_name: item.location_name,
-        duration_minutes: item.duration_minutes,
-        estimated_cost: item.estimated_cost,
-        lat: item.lat || 0,
-        lng: item.lng || 0
-      })
-    }
-  }, [isEditing, item])
-
-  const handleSelectLocation = (loc: any) => {
-    const name = loc.display_name.split(',')[0] || loc.display_name
-    setEditData(prev => ({
-      ...prev,
-      location_name: name,
-      lat: parseFloat(loc.lat),
-      lng: parseFloat(loc.lon)
-    }))
-    setLocationQuery(name)
-    setLocationResults([])
-  }
 
   const isTieBreaker = item.title.includes('[Tie-Breaker]')
   const displayTitle = item.title.replace('[Tie-Breaker]', '').replace('[Delete Proposal]', '').trim()
-  const isPersonal = !!item.user_id
+  const isPersonal = !!(item as any).user_id
   const isSuggestion = item.suggestion_status === 'suggestion'
   const isDeleteProposal = !!item.is_delete_suggestion
 
-  // Find suggestor profile
-  const suggestor = members?.find((m: any) => m.user.id === item.created_by)?.user
+  const suggestor = members?.find((m) => m.user?.id === item.created_by)?.user
 
   const getCategoryEmoji = () => {
     if (isDeleteProposal) return '🗑️'
@@ -142,12 +65,14 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
       const res = await fetch(`/api/plans/${item.plan_id}/resuggest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ item_id: item.id })
+        body: JSON.stringify({ itemId: item.id })
       })
-      if (!res.ok) throw new Error("Failed to resuggest")
-      toast.success("AI generated a tie-breaker alternative!")
-    } catch (err) {
-      toast.error("Error generating alternative")
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Failed to resuggest item")
+      toast.success("New alternative suggested!")
+      onUpdate?.()
+    } catch (err: unknown) {
+      toast.error(handleApiError(err, "Failed to suggest alternative"))
     } finally {
       setIsSuggesting(false)
     }
@@ -159,42 +84,39 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
       const res = await fetch(`/api/plans/${item.plan_id}/items/${item.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ suggestion_status: 'approved' })
+        body: JSON.stringify({ action: 'approve' })
       })
-      if (!res.ok) throw new Error("Failed to approve suggestion")
-      toast.success(isDeleteProposal ? "Deletion request approved!" : "Suggestion approved!")
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Failed to approve item")
+      toast.success(isDeleteProposal ? "Activity deleted!" : "Suggestion approved!")
       onUpdate?.()
-    } catch (err: any) {
-      toast.error(err.message || "Failed to approve suggestion")
+    } catch (err: unknown) {
+      toast.error(handleApiError(err, "Failed to approve"))
     } finally {
       setIsApproveLoading(false)
     }
   }
 
   const handleReject = async () => {
-    const confirmReject = window.confirm(
-      isDeleteProposal 
-        ? "Are you sure you want to reject this delete proposal?" 
-        : "Are you sure you want to reject and delete this suggestion?"
-    )
-    if (!confirmReject) return
-
     setIsRejectLoading(true)
     try {
       const res = await fetch(`/api/plans/${item.plan_id}/items/${item.id}`, {
-        method: 'DELETE'
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reject' })
       })
-      if (!res.ok) throw new Error("Failed to reject suggestion")
-      toast.success("Suggestion rejected and removed.")
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Failed to reject suggestion")
+      toast.success("Suggestion rejected")
       onUpdate?.()
-    } catch (err: any) {
-      toast.error(err.message || "Failed to reject suggestion")
+    } catch (err: unknown) {
+      toast.error(handleApiError(err, "Failed to reject"))
     } finally {
       setIsRejectLoading(false)
     }
   }
 
-  const handleSaveEdit = async () => {
+  const handleSaveEdit = async (editData: any) => {
     if (!navigator.onLine) {
       try {
         const cached = await offlineDB.items.get(item.plan_id)
@@ -206,11 +128,9 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
         }
         await queueOfflineOp(item.plan_id, 'EDIT_ITEM', { item_id: item.id, editData })
         toast.info("Offline: Proposal/Changes queued for sync")
-        setIsEditing(false)
         onUpdate?.()
-      } catch (err) {
-        console.error("Offline edit save failed:", err)
-        toast.error("Error updating item offline")
+      } catch (err: unknown) {
+        toast.error(handleApiError(err, "Error updating item offline"))
       }
       return
     }
@@ -229,10 +149,9 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
       } else {
         toast.success("Item updated successfully!")
       }
-      setIsEditing(false)
       onUpdate?.()
-    } catch (err: any) {
-      toast.error(err.message || "Error updating item")
+    } catch (err: unknown) {
+      toast.error(handleApiError(err, "Error updating item"))
     }
   }
 
@@ -254,11 +173,9 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
         }
         await queueOfflineOp(item.plan_id, 'DELETE_ITEM', { item_id: item.id })
         toast.info("Offline: Deletion/Proposal queued for sync")
-        setIsEditing(false)
         onUpdate?.()
-      } catch (err) {
-        console.error("Offline delete failed:", err)
-        toast.error("Error deleting item offline")
+      } catch (err: unknown) {
+        toast.error(handleApiError(err, "Error deleting item offline"))
       }
       return
     }
@@ -275,15 +192,17 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
       } else {
         toast.success("Activity deleted successfully!")
       }
-      setIsEditing(false)
       onUpdate?.()
-    } catch (err) {
-      toast.error("Error deleting activity")
+    } catch (err: unknown) {
+      toast.error(handleApiError(err, "Error deleting activity"))
     }
   }
 
-  const handleRestore = async (historyIndex: number) => {
-    setIsRestoring(true)
+  const handleRevert = async (hist: any) => {
+    const historyList = ((item as any).history as any[]) || []
+    const historyIndex = historyList.findIndex(h => h.saved_at === hist.saved_at)
+    if (historyIndex === -1) return
+
     try {
       const res = await fetch(`/api/plans/${item.plan_id}/items/${item.id}/restore`, {
         method: 'POST',
@@ -292,10 +211,9 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
       })
       if (!res.ok) throw new Error("Failed to restore item")
       toast.success("Restored to previous version!")
-    } catch (err) {
-      toast.error("Error restoring item")
-    } finally {
-      setIsRestoring(false)
+      onUpdate?.()
+    } catch (err: unknown) {
+      toast.error(handleApiError(err, "Error restoring item"))
     }
   }
 
@@ -328,181 +246,65 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
             : isDeleteProposal
               ? 'bg-rose-50/10 dark:bg-rose-950/10 border-rose-200 dark:border-rose-900/30 shadow-xl shadow-rose-100/5'
               : isSuggestion
-                ? 'bg-teal-50/10 dark:bg-teal-950/5 border-dashed border-teal-200 dark:border-teal-900/40 shadow-lg'
-                : isTieBreaker 
-                  ? 'bg-white/80 dark:bg-slate-900/60 border-[#16795A] shadow-teal-500/10 shadow-xl' 
-                  : 'bg-white/80 dark:bg-slate-900/60 border-slate-100 dark:border-slate-800/80 shadow-xl dark:shadow-teal-950/5'
-        } hover:shadow-2xl`}
+                ? 'bg-teal-50/20 dark:bg-teal-950/20 border-teal-200/60 dark:border-teal-900/40 shadow-xl shadow-teal-500/5'
+                : 'bg-white/70 dark:bg-slate-900/70 border-slate-200/80 dark:border-slate-800/80 shadow-xl shadow-slate-100/50 dark:shadow-none'
+        }`}
       >
-        {isTieBreaker && (
-          <div className="absolute top-0 right-0 w-32 h-32 bg-teal-400/10 rounded-bl-full -z-10 blur-2xl" />
-        )}
-        {isPersonal && (
-          <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-400/10 rounded-bl-full -z-10 blur-2xl" />
-        )}
-        
-        <div className="flex justify-between items-start mb-3">
-          <div>
-            <h3 className="font-bold text-xl text-slate-900 dark:text-white flex flex-wrap items-center gap-2">
-              {displayTitle}
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200/50 dark:border-slate-700">
+        <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
+          <div className="space-y-1 max-w-[80%]">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                item.time_of_day === 'Morning' 
+                  ? 'bg-amber-50 text-amber-650 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/40' 
+                  : item.time_of_day === 'Afternoon'
+                    ? 'bg-sky-50 text-sky-650 border-sky-200 dark:bg-sky-950/30 dark:text-sky-400 dark:border-sky-900/40'
+                    : item.time_of_day === 'Evening'
+                      ? 'bg-indigo-50 text-indigo-650 border-indigo-200 dark:bg-indigo-950/30 dark:text-indigo-400 dark:border-indigo-900/40'
+                      : 'bg-purple-50 text-purple-650 border-purple-200 dark:bg-purple-950/30 dark:text-purple-400 dark:border-purple-900/40'
+              }`}>
                 {item.time_of_day}
               </span>
+
+              {isSuggestion && (
+                <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                  isDeleteProposal
+                    ? 'bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900/40'
+                    : 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950/30 dark:text-teal-400 dark:border-teal-900/40'
+                }`}>
+                  {isDeleteProposal ? "Proposed Deletion" : "Proposed Suggestion"}
+                </span>
+              )}
+
               {isTieBreaker && (
-                <span className="text-[10px] uppercase bg-gradient-to-r from-teal-400 to-emerald-500 text-white px-2 py-0.5 rounded-full font-bold shadow-sm flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" /> AI Suggestion
+                <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full border bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/40 flex items-center gap-1">
+                  <Sparkles className="w-2.5 h-2.5" /> AI Tie-Breaker
                 </span>
               )}
-              {isPersonal && (
-                <span className="text-[10px] uppercase bg-gradient-to-r from-indigo-500 to-violet-600 text-white px-2.5 py-0.5 rounded-full font-bold shadow-sm flex items-center gap-1.5 tracking-wider">
-                  🔒 Personal Travel
-                </span>
-              )}
-              {isDeleteProposal && (
-                <span className="text-[10px] uppercase bg-rose-500 text-white px-2.5 py-0.5 rounded-full font-bold shadow-sm tracking-wider flex items-center gap-1.5 animate-pulse">
-                  ⚠️ Proposed Deletion
-                </span>
-              )}
-              {isSuggestion && !isDeleteProposal && (
-                <span className="text-[10px] uppercase bg-teal-500 text-white px-2.5 py-0.5 rounded-full font-bold shadow-sm tracking-wider flex items-center gap-1.5">
-                  💡 Suggestion
-                </span>
-              )}
+            </div>
+
+            <h3 className={`font-bold text-slate-800 dark:text-slate-100 text-lg leading-snug flex items-center gap-2 ${
+              isDeleteProposal ? 'line-through text-rose-500 dark:text-rose-400' : ''
+            }`}>
+              {displayTitle}
             </h3>
-            {isSuggestion && (
-              <p className="text-[11px] text-slate-400 dark:text-slate-400 mt-1 font-semibold flex items-center gap-1">
-                Proposed by <span className="text-slate-700 dark:text-slate-200 font-extrabold">{suggestor?.full_name || 'Group Member'}</span>
+
+            {isSuggestion && suggestor && (
+              <p className="text-xs text-slate-400 font-medium">
+                Suggested by <span className="font-semibold text-slate-600 dark:text-slate-300">{suggestor.full_name || "a member"}</span>
               </p>
             )}
           </div>
-          
-          <div className="flex flex-wrap gap-2 shrink-0 ml-4 justify-end">
-            {item.history && item.history.length > 0 && (
-              <Dialog>
-                <DialogTrigger render={
-                  <Button variant="outline" size="sm" className="h-8 text-xs font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 shadow-sm border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer">
-                    <History className="w-3 h-3 mr-1.5" /> History ({item.history.length})
-                  </Button>
-                } />
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Version History</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-                    {item.history.map((hist: any, idx: number) => (
-                      <div key={idx} className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800 relative">
-                        <p className="text-xs text-slate-400 dark:text-slate-500 mb-2" suppressHydrationWarning>Saved on {new Date(hist.saved_at).toLocaleString()}</p>
-                        <h4 className="font-bold text-sm text-slate-900 dark:text-white">{hist.title.replace('[Tie-Breaker]', '')}</h4>
-                        <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 mt-1 mb-3">{hist.description}</p>
-                        <Button 
-                          onClick={() => handleRestore(idx)}
-                          disabled={isRestoring}
-                          size="sm" 
-                          className="w-full bg-slate-900 dark:bg-slate-800 text-white hover:bg-slate-800 dark:hover:bg-slate-700 cursor-pointer"
-                        >
-                          <RotateCcw className="w-3 h-3 mr-2" /> Restore This Version
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </DialogContent>
-              </Dialog>
-            )}
 
+          <div className="flex items-center gap-1">
             {canEditDirectOrPropose && (
-              <Dialog open={isEditing} onOpenChange={setIsEditing}>
-                <DialogTrigger render={
-                  <Button variant="ghost" size="icon" aria-label="Edit Activity" className="h-8 w-8 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg shrink-0 cursor-pointer">
-                    <Edit2 className="w-4 h-4" />
-                  </Button>
-                } />
-                <DialogContent className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                  <DialogHeader>
-                    <DialogTitle className="text-slate-900 dark:text-white font-bold text-xl">
-                      {isApproved && !isAdmin && !isPersonal ? "Propose Alternative Activity" : "Edit Activity Details"}
-                    </DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label>Title</Label>
-                      <Input value={editData.title} onChange={e => setEditData({...editData, title: e.target.value})} className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Description</Label>
-                      <Textarea value={editData.description} onChange={e => setEditData({...editData, description: e.target.value})} className="resize-none h-24 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Time of Day</Label>
-                        <Select value={editData.time_of_day} onValueChange={v => setEditData({...editData, time_of_day: v})}>
-                          <SelectTrigger className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Morning">Morning</SelectItem>
-                            <SelectItem value="Afternoon">Afternoon</SelectItem>
-                            <SelectItem value="Evening">Evening</SelectItem>
-                            <SelectItem value="Night">Night</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Duration (mins)</Label>
-                        <Input type="number" value={editData.duration_minutes} onChange={e => setEditData({...editData, duration_minutes: parseInt(e.target.value)})} className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800" />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2 relative">
-                        <Label>Location</Label>
-                        <div className="relative">
-                          <Input 
-                            value={locationQuery} 
-                            onChange={e => {
-                              setLocationQuery(e.target.value)
-                              setEditData(prev => ({ ...prev, location_name: e.target.value }))
-                            }} 
-                            className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 pr-9" 
-                          />
-                          {isSearchingLocation && (
-                            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 animate-spin" />
-                          )}
-                        </div>
-                        {locationResults.length > 0 && (
-                          <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-100 dark:border-slate-800 max-h-48 overflow-y-auto">
-                            {locationResults.map((loc, i) => (
-                              <div 
-                                key={i} 
-                                className="p-3 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer border-b border-slate-50 dark:border-slate-800/40 last:border-0 text-xs text-slate-700 dark:text-slate-300 truncate"
-                                onClick={() => handleSelectLocation(loc)}
-                              >
-                                {loc.display_name}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Est. Cost</Label>
-                        <Input type="number" value={editData.estimated_cost} onChange={e => setEditData({...editData, estimated_cost: parseFloat(e.target.value)})} className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800" />
-                      </div>
-                    </div>
-                  </div>
-                  <DialogFooter className="flex flex-row justify-between items-center sm:justify-between w-full mt-4">
-                    <Button 
-                      type="button"
-                      variant="destructive" 
-                      onClick={handleDelete}
-                      className="bg-red-650 hover:bg-red-700 text-white rounded-xl h-10 px-4 flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <Trash2 className="w-4 h-4" /> 
-                      {isApproved && !isAdmin && !isPersonal ? "Propose Delete" : "Delete Activity"}
-                    </Button>
-                    <Button onClick={handleSaveEdit} className="bg-[#16795A] hover:bg-[#115E46] rounded-xl h-10 px-5 flex items-center gap-1.5 text-white cursor-pointer">
-                      <Save className="w-4 h-4" /> 
-                      {isApproved && !isAdmin && !isPersonal ? "Propose Alternative" : "Save Changes"}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+              <ItineraryItemEditDialog
+                item={item}
+                isAdmin={isAdmin}
+                isPersonal={isPersonal}
+                onSave={handleSaveEdit}
+                onDelete={handleDelete}
+                onRevert={isAdmin ? handleRevert : undefined}
+              />
             )}
 
             {!isPersonal && isApproved && !isSolo && (
@@ -525,7 +327,7 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
         <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100/50 dark:border-slate-800/60">
           <div className="flex flex-wrap items-center text-xs font-semibold text-slate-500 dark:text-slate-400 gap-4">
             <a 
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location_name)}`}
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location_name || "")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center bg-white dark:bg-slate-900 px-2 py-1 rounded-md shadow-sm border border-slate-100 dark:border-slate-800/80 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
@@ -538,7 +340,6 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
-            {/* Direct Voting for Suggestions & Approved items */}
             {!isPersonal && !isSolo && (
               <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-1 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800/80">
                 <Button 
@@ -577,7 +378,6 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
               </div>
             )}
 
-            {/* Admin Manual Approval/Rejection Controls */}
             {isAdmin && isSuggestion && !isSolo && (
               <div className="flex items-center gap-1.5 ml-2 border-l border-slate-200 dark:border-slate-800 pl-3">
                 <Button 

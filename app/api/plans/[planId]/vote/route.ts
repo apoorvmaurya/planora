@@ -6,6 +6,7 @@ import { reorderDayItems } from "@/lib/itinerary/sort"
 import { z } from 'zod'
 import { getPlanAccess } from "@/lib/security/access"
 import { AI_MODELS } from "@/lib/ai/models"
+import { voteSchema } from "@/lib/validations/api"
 
 export async function POST(req: Request, { params }: { params: Promise<{ planId: string }> }) {
   const { planId } = await params
@@ -17,8 +18,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ planId:
   if (!plan) return NextResponse.json({ error: "Plan not found" }, { status: 404 })
   if (!isAuthorized) return NextResponse.json({ error: "Access denied" }, { status: 403 })
 
-  const { item_id, vote } = await req.json()
-  if (!item_id || !vote) return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+  const body = await req.json()
+  const parsed = voteSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues[0]?.message || "Invalid vote input" }, { status: 400 })
+  }
+  const { item_id, vote } = parsed.data
 
   const { data: existingVote } = await supabase
     .from('member_votes')

@@ -3,6 +3,16 @@ import { createClient } from "@/lib/supabase/server"
 import { forwardGeocode } from "@/lib/locationiq/geocode"
 import { getPlanAccess } from "@/lib/security/access"
 
+import { z } from "zod"
+
+const transitRouteSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  details: z.string().optional().default(""),
+  cost: z.union([z.number(), z.string()]).optional().default(0),
+  type: z.string().optional().default("transit"),
+  day_number: z.number().int().optional().default(1),
+})
+
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ planId: string }> }
@@ -16,8 +26,12 @@ export async function POST(
   if (!plan) return NextResponse.json({ error: "Plan not found" }, { status: 404 })
   if (!isAuthorized) return NextResponse.json({ error: "Access denied" }, { status: 403 })
 
-  const { title, details, cost, type, day_number } = await req.json()
-  if (!title) return NextResponse.json({ error: "Title is required" }, { status: 400 })
+  const body = await req.json()
+  const parsed = transitRouteSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues[0]?.message || "Invalid transit payload" }, { status: 400 })
+  }
+  const { title, details, cost, type, day_number } = parsed.data
 
   // Get the max sort_order for the target day
   const { data: existingItems } = await supabase
@@ -78,7 +92,7 @@ export async function POST(
       location_name: resolvedLocationName,
       category: "transit",
       duration_minutes: type === "flight" ? 180 : type === "train" ? 120 : 60,
-      estimated_cost: parseFloat(cost?.replace(/[^0-9.]/g, "")) || 0,
+      estimated_cost: parseFloat(String(cost ?? "").replace(/[^0-9.]/g, "")) || 0,
       sort_order: nextSort,
       lat,
       lng,

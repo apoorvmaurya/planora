@@ -2,8 +2,8 @@
  * Momentum Engine - Supabase Edge Function
  * 
  * 1. Set the secrets in Supabase:
- *    supabase secrets set GROQ_API_KEY="your-key"
- *    supabase secrets set RESEND_API_KEY="your-resend-key"
+ *    supabase secrets set GROQ_API_KEY=<your-groq-key>
+ *    supabase secrets set RESEND_API_KEY=<your-resend-key>
  * 2. Deploy the function:
  *    supabase functions deploy momentum-engine --no-verify-jwt
  */

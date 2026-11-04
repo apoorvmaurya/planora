@@ -62,7 +62,12 @@ export default function EditPlanPage() {
 
   useEffect(() => {
     async function fetchPlanAndItems() {
-      const { data, error } = await supabase.from('plans').select('*, group:groups(name)').eq('id', planId).single()
+      const [planRes, itemsRes] = await Promise.all([
+        supabase.from('plans').select('*, group:groups(name)').eq('id', planId).single(),
+        supabase.from('itinerary_items').select('*').eq('plan_id', planId).order('day_number').order('sort_order')
+      ])
+
+      const data = planRes.data
       if (data) {
         setPlan(data)
         setStartDate(data.start_date || "")
@@ -70,6 +75,8 @@ export default function EditPlanPage() {
         setBudget(data.budget_total?.toString() || "")
         setCurrency(data.currency || "USD")
       }
+
+      if (itemsRes.data) setCurrentItems(itemsRes.data)
 
       if (data && profile?.id) {
         if (data.created_by === profile.id) {
@@ -91,14 +98,6 @@ export default function EditPlanPage() {
           }
         }
       }
-
-      const { data: itemsData } = await supabase
-        .from('itinerary_items')
-        .select('*')
-        .eq('plan_id', planId)
-        .order('day_number')
-        .order('sort_order')
-      if (itemsData) setCurrentItems(itemsData)
 
       setIsLoadingPlan(false)
     }

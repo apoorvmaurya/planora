@@ -24,26 +24,54 @@ export function usePlanDetails(planId: string, profile: any) {
           offlineDB.votes.get(planId),
         ])
 
-        if (cachedPlan) setPlan(cachedPlan)
+        if (cachedPlan) setPlan(cachedPlan.data || cachedPlan)
         if (cachedItems) setItems(cachedItems.data)
         if (cachedVotes) setVotes(cachedVotes.data)
 
-        const { data: pData, error: pError } = await supabase
-          .from("plans")
-          .select("*")
-          .eq("id", planId)
-          .single()
+        // Parallelize independent table fetches to eliminate request waterfalls
+        const [pRes, iRes, vRes, logRes] = await Promise.all([
+          supabase.from("plans").select("*").eq("id", planId).single(),
+          supabase
+            .from("itinerary_items")
+            .select("*")
+            .eq("plan_id", planId)
+            .order("day_number")
+            .order("sort_order"),
+          supabase.from("member_votes").select("*").eq("plan_id", planId),
+          supabase
+            .from("plan_activity_logs")
+            .select("*")
+            .eq("plan_id", planId)
+            .order("created_at", { ascending: false }),
+        ])
 
-        if (pError || !pData) {
+        const pData = pRes.data
+        if (pRes.error || !pData) {
           if (!cachedPlan) {
             setIsLoading(false)
             return
           }
         } else {
           setPlan(pData)
-          await offlineDB.plans.put(pData)
+          // Store standardized shape compatible with both object-direct and .data consumers
+          await offlineDB.plans.put({ id: planId, ...pData, data: pData })
         }
 
+        if (iRes.data) {
+          setItems(iRes.data)
+          await offlineDB.items.put({ id: planId, planId, data: iRes.data })
+        }
+
+        if (vRes.data) {
+          setVotes(vRes.data)
+          await offlineDB.votes.put({ id: planId, planId, data: vRes.data })
+        }
+
+        if (logRes.data) {
+          setActivityLogs(logRes.data)
+        }
+
+        // Fetch group members if plan has group_id
         if (pData?.group_id) {
           const { data: mData } = await supabase
             .from("group_members")
@@ -51,33 +79,6 @@ export function usePlanDetails(planId: string, profile: any) {
             .eq("group_id", pData.group_id)
           if (mData) setMembers(mData)
         }
-
-        const { data: iData } = await supabase
-          .from("itinerary_items")
-          .select("*")
-          .eq("plan_id", planId)
-          .order("day_number")
-          .order("sort_order")
-        if (iData) {
-          setItems(iData)
-          await offlineDB.items.put({ id: planId, planId, data: iData })
-        }
-
-        const { data: vData } = await supabase
-          .from("member_votes")
-          .select("*")
-          .eq("plan_id", planId)
-        if (vData) {
-          setVotes(vData)
-          await offlineDB.votes.put({ id: planId, planId, data: vData })
-        }
-
-        const { data: logData } = await supabase
-          .from("plan_activity_logs")
-          .select("*")
-          .eq("plan_id", planId)
-          .order("created_at", { ascending: false })
-        if (logData) setActivityLogs(logData)
       } catch (err) {
         console.error("Data load failed:", err)
       } finally {

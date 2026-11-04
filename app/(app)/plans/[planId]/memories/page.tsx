@@ -11,6 +11,7 @@ import { AddMemoryModal } from "@/components/shared/AddMemoryModal"
 import { Button } from "@/components/ui/button"
 import { UserAvatar } from "@/components/shared/UserAvatar"
 import { Breadcrumb } from "@/components/shared/Breadcrumb"
+import { MemoriesSkeleton } from "@/components/shared/PageSkeleton"
 
 export default function MemoriesPage() {
   const params = useParams()
@@ -100,7 +101,7 @@ export default function MemoriesPage() {
     setTimeout(() => setCopiedLink(false), 2000)
   }
 
-  if (!plan) return <div className="text-center py-20 text-slate-500 dark:text-slate-400 transition-colors duration-500">Loading memories...</div>
+  if (!plan) return <MemoriesSkeleton />
 
   return (
     <div className="max-w-6xl mx-auto pb-20 space-y-8">
@@ -186,7 +187,7 @@ export default function MemoriesPage() {
                   <img src={memory.photo_url} alt="Trip memory" className="w-full object-cover" />
                   
                   {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-4">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-end justify-between p-4">
                     <button 
                       onClick={() => handleLike(memory.id)}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full backdrop-blur-md transition-colors ${

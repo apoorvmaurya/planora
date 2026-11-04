@@ -19,7 +19,7 @@ interface TransitPanelProps {
 
 export function TransitPanel({
   planId,
-  groupId,
+  groupId: _groupId,
   profile,
   onTransitAdded,
   destinationName = "Destination"
@@ -131,7 +131,7 @@ export function TransitPanel({
         </p>
       </div>
 
-      <div className={groupId ? "grid md:grid-cols-2 gap-6 items-start" : "max-w-3xl mx-auto space-y-6"}>
+      <div className="max-w-3xl mx-auto space-y-6 w-full">
         <div className="bg-white dark:bg-slate-900/50 backdrop-blur-md p-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 flex flex-col w-full min-w-0 overflow-hidden">
           <div className="w-full min-w-0">
             <div className="flex items-center gap-3 mb-4">

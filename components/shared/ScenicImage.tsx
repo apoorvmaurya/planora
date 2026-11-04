@@ -90,19 +90,13 @@ export function ScenicImage({
   priority = false,
   sizes
 }: ScenicImageProps) {
-  // 0 = Pollinations AI, 1 = Unsplash Fallback, 2 = Gradient Fallback
+  // 0 = High-performance Unsplash CDN, 1 = Gradient Fallback
   const [imgState, setImgState] = useState(0)
 
   const cleanName = destination ? destination.split(',')[0].trim() : ""
-  const w = width || 800
-  const h = height || 600
-  
-  const pollinationsUrl = `https://image.pollinations.ai/prompt/beautiful%20scenic%20travel%20destination%20${encodeURIComponent(cleanName)}?width=${w}&height=${h}&nologo=true`
   const unsplashUrl = getScenicImageUrl(cleanName)
 
-  const src = imgState === 0 ? pollinationsUrl : unsplashUrl
-
-  if (imgState === 2 || !cleanName) {
+  if (imgState === 1 || !cleanName) {
     return (
       <div className={`absolute inset-0 bg-gradient-to-br from-teal-400 to-emerald-600 dark:from-teal-600 dark:to-emerald-950 flex items-center justify-center text-white font-extrabold uppercase text-4xl select-none ${className}`}>
         <span className="opacity-75">{destination ? destination.substring(0, 2) : "TR"}</span>
@@ -111,23 +105,18 @@ export function ScenicImage({
   }
 
   const handleError = () => {
-    if (imgState === 0) {
-      setImgState(1)
-    } else {
-      setImgState(2)
-    }
+    setImgState(1)
   }
 
   if (fill) {
     return (
       <Image
-        src={src}
+        src={unsplashUrl}
         alt={alt || destination}
         fill
         priority={priority}
         sizes={sizes}
         className={className}
-        unoptimized
         onError={handleError}
       />
     )
@@ -135,8 +124,10 @@ export function ScenicImage({
 
   return (
     <img
-      src={src}
+      src={unsplashUrl}
       alt={alt || destination}
+      width={width}
+      height={height}
       className={className}
       onError={handleError}
     />

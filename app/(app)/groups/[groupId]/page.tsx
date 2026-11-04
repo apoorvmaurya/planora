@@ -8,6 +8,7 @@ import { motion } from "framer-motion"
 import { Users, Plus, MapPin, Map, Calendar, Shield, Copy, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { GroupDetailSkeleton } from "@/components/shared/PageSkeleton"
 import Link from "next/link"
 
 export default function GroupDetailPage() {
@@ -32,7 +33,7 @@ export default function GroupDetailPage() {
   }
 
   if (isLoading) {
-    return <div className="text-center py-20 text-slate-500">Loading group...</div>
+    return <GroupDetailSkeleton />
   }
 
   if (!group) {

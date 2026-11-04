@@ -223,8 +223,8 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
 
   return (
     <div className="relative flex items-start group">
-      <div className="flex flex-col items-center mr-4">
-        <div className={`w-12 h-12 rounded-full border-4 border-white dark:border-slate-950 flex items-center justify-center text-xl shadow-sm z-10 shrink-0 ${
+      <div className="flex flex-col items-center mr-2.5 sm:mr-4">
+        <div className={`w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 sm:border-4 border-white dark:border-slate-950 flex items-center justify-center text-base sm:text-xl shadow-sm z-10 shrink-0 ${
           isPersonal 
             ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-650 dark:text-indigo-300' 
             : isDeleteProposal 
@@ -235,12 +235,12 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
         }`}>
           {getCategoryEmoji()}
         </div>
-        <div className="w-0.5 h-full bg-slate-200 dark:bg-slate-800 absolute top-12 left-6 -translate-x-1/2 group-last:hidden" />
+        <div className="w-0.5 h-full bg-slate-200 dark:bg-slate-800 absolute top-9 sm:top-12 left-[18px] sm:left-6 -translate-x-1/2 group-last:hidden" />
       </div>
       
       <motion.div 
         layout
-        className={`flex-1 backdrop-blur-xl rounded-2xl p-5 border transition-all duration-300 mb-6 relative overflow-hidden ${
+        className={`flex-1 backdrop-blur-xl rounded-2xl p-3.5 sm:p-5 border transition-all duration-300 mb-6 relative overflow-hidden ${
           isPersonal 
             ? 'bg-indigo-50/15 dark:bg-indigo-950/10 border-indigo-200 dark:border-indigo-900/40 shadow-xl shadow-indigo-100/10 dark:shadow-none' 
             : isDeleteProposal
@@ -324,8 +324,8 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
         
         <p className="text-sm text-slate-600 dark:text-slate-300 mb-5 leading-relaxed">{item.description}</p>
         
-        <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100/50 dark:border-slate-800/60">
-          <div className="flex flex-wrap items-center text-xs font-semibold text-slate-500 dark:text-slate-400 gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/40 p-2.5 sm:p-3 rounded-xl border border-slate-100/50 dark:border-slate-800/60">
+          <div className="flex flex-wrap items-center text-xs font-semibold text-slate-500 dark:text-slate-400 gap-2 sm:gap-4">
             <a 
               href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location_name || "")}`}
               target="_blank"
@@ -339,7 +339,7 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
             <span className="bg-white dark:bg-slate-900 px-2 py-1 rounded-md shadow-sm border border-slate-100 dark:border-slate-800/80 font-mono">{item.estimated_cost}</span>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap justify-between sm:justify-end w-full sm:w-auto">
             {!isPersonal && !isSolo && (
               <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-1 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800/80">
                 <Button 
@@ -379,7 +379,7 @@ export const ItineraryItemCard = memo(function ItineraryItemCard({
             )}
 
             {isAdmin && isSuggestion && !isSolo && (
-              <div className="flex items-center gap-1.5 ml-2 border-l border-slate-200 dark:border-slate-800 pl-3">
+              <div className="flex items-center gap-1.5 sm:ml-2 sm:border-l sm:border-slate-200 dark:sm:border-slate-800 sm:pl-3">
                 <Button 
                   size="sm" 
                   disabled={isApproveLoading}

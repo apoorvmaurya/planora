@@ -79,7 +79,7 @@ export function PlaBot() {
   }, [messages, isOpen])
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end max-w-[calc(100vw-2rem)]">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -87,7 +87,7 @@ export function PlaBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="w-[350px] h-[480px] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 mb-4 flex flex-col overflow-hidden transition-all duration-500"
+            className="w-[calc(100vw-2rem)] sm:w-[350px] max-w-[350px] h-[75vh] sm:h-[480px] max-h-[520px] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 mb-3 sm:mb-4 flex flex-col overflow-hidden transition-all duration-500"
           >
             {/* Header */}
             <div className="bg-slate-900 dark:bg-slate-950 text-white p-4 flex items-center justify-between transition-colors duration-500">

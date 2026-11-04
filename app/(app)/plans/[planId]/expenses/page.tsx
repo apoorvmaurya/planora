@@ -9,6 +9,7 @@ import { Plus, Receipt, Download, ArrowRight, Wallet, TrendingUp, AlertCircle } 
 import { Button } from "@/components/ui/button"
 import { AddExpenseModal } from "@/components/shared/AddExpenseModal"
 import { ErrorState } from "@/components/shared/ErrorState"
+import { ExpensesSkeleton } from "@/components/shared/PageSkeleton"
 import { UserAvatar } from "@/components/shared/UserAvatar"
 import { Breadcrumb } from "@/components/shared/Breadcrumb"
 import { calculateRawSplits, calculateSimplifiedSplits, Expense, Settlement } from "@/lib/utils/splitCalculator"
@@ -36,11 +37,21 @@ export default function ExpensesPage() {
   const fetchData = async () => {
     setIsLoading(true)
     try {
-      // Fetch plan
-      const { data: pData, error: pErr } = await supabase.from('plans').select('*').eq('id', planId).single()
-      if (pErr) throw pErr
+      // Parallelize plan fetch and expenses API call
+      const [planRes, expRes] = await Promise.all([
+        supabase.from('plans').select('*').eq('id', planId).single(),
+        fetch(`/api/plans/${planId}/expenses`).then(r => r.json()).catch(() => null)
+      ])
+
+      const pData = planRes.data
+      if (planRes.error || !pData) throw planRes.error || new Error("Plan not found")
       setPlan(pData)
-      await offlineDB.plans.put({ id: planId, data: pData })
+      await offlineDB.plans.put({ id: planId, ...pData, data: pData })
+
+      if (expRes?.expenses) {
+        setExpenses(expRes.expenses)
+        await offlineDB.expenses.put({ id: planId, planId, data: expRes.expenses })
+      }
 
       // Fetch members
       if (pData.group_id) {
@@ -49,21 +60,14 @@ export default function ExpensesPage() {
       } else if (profile) {
         setMembers([{ user: profile }])
       }
-
-      // Fetch expenses
-      const res = await fetch(`/api/plans/${planId}/expenses`)
-      const data = await res.json()
-      if (res.ok) {
-        setExpenses(data.expenses)
-        await offlineDB.expenses.put({ id: planId, planId, data: data.expenses })
-      }
     } catch (err) {
       console.warn("Offline or network failed in expenses page, loading from cache:", err)
       const localPlan = await offlineDB.plans.get(planId)
       if (localPlan) {
-        setPlan(localPlan.data)
-        if (localPlan.data.group_id) {
-          const { data: mData } = await supabase.from('group_members').select('user:profiles(*)').eq('group_id', localPlan.data.group_id)
+        const planObj = localPlan.data || localPlan
+        setPlan(planObj)
+        if (planObj.group_id) {
+          const { data: mData } = await supabase.from('group_members').select('user:profiles(*)').eq('group_id', planObj.group_id)
           if (mData) setMembers(mData)
         } else if (profile) {
           setMembers([{ user: profile }])
@@ -123,7 +127,7 @@ export default function ExpensesPage() {
     window.print()
   }
 
-  if (isLoading) return <div className="text-center py-20 text-slate-500 dark:text-slate-400 transition-colors duration-500">Loading expenses...</div>
+  if (isLoading) return <ExpensesSkeleton />
   if (!plan) return <ErrorState variant="not_found" title="Plan not found" backHref="/plans" backLabel="Back to plans" />
 
   const totalSpent = expenses.reduce((acc, exp) => acc + exp.amount, 0)

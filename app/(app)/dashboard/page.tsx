@@ -27,17 +27,12 @@ export default function DashboardPage() {
   const [recentPlans, setRecentPlans] = useState<any[]>([])
   const [upcomingEvent, setUpcomingEvent] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
   const [avatarErrors, setAvatarErrors] = useState<Record<string, boolean>>({})
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
-
-  const handleImageError = (id: string) => {
-    setImageErrors(prev => ({ ...prev, [id]: true }))
-  }
 
   const handleAvatarError = (userId: string) => {
     setAvatarErrors(prev => ({ ...prev, [userId]: true }))
@@ -48,32 +43,37 @@ export default function DashboardPage() {
       if (!profile?.id) return;
 
       try {
-        // 1. Fetch Friends Count
-        const { count: friendsCount } = await supabase
-          .from('friendships')
-          .select('*', { count: 'exact', head: true })
-          .or(`requester_id.eq.${profile.id},addressee_id.eq.${profile.id}`)
-          .eq('status', 'accepted');
+        // Parallelize initial queries (friends count, group membership, and solo plans)
+        const [friendsRes, groupsRes, soloPlansRes] = await Promise.all([
+          supabase
+            .from('friendships')
+            .select('*', { count: 'exact', head: true })
+            .or(`requester_id.eq.${profile.id},addressee_id.eq.${profile.id}`)
+            .eq('status', 'accepted'),
+          supabase
+            .from('group_members')
+            .select('group_id')
+            .eq('user_id', profile.id),
+          supabase
+            .from('plans')
+            .select(`
+              id, destination_name, start_date, end_date, status, created_at
+            `)
+            .is('group_id', null)
+            .eq('created_by', profile.id)
+            .order('created_at', { ascending: false })
+        ]);
 
-        // 2. Fetch Groups Count
-        const { count: groupsCount } = await supabase
-          .from('group_members')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', profile.id);
+        const friendsCount = friendsRes.count || 0;
+        const memberGroups = groupsRes.data || [];
+        const groupsCount = memberGroups.length;
+        const groupIds = memberGroups.map(g => g.group_id);
 
-        // 3. Fetch User's Group IDs
-        const { data: memberGroups } = await supabase
-          .from('group_members')
-          .select('group_id')
-          .eq('user_id', profile.id);
-          
-        const groupIds = memberGroups?.map(g => g.group_id) || [];
+        let plans: any[] = soloPlansRes.data || [];
 
-        let plans: any[] = [];
-
-        // Fetch group plans
+        // Fetch group plans if member has groups
         if (groupIds.length > 0) {
-          const { data } = await supabase
+          const { data: groupPlans } = await supabase
             .from('plans')
             .select(`
               id, destination_name, start_date, end_date, status, created_at,
@@ -81,23 +81,11 @@ export default function DashboardPage() {
             `)
             .in('group_id', groupIds)
             .order('created_at', { ascending: false });
-            
-          plans = data || [];
-        }
 
-        // Fetch solo plans (group_id is null, created by this user)
-        const { data: soloPlans } = await supabase
-          .from('plans')
-          .select(`
-            id, destination_name, start_date, end_date, status, created_at
-          `)
-          .is('group_id', null)
-          .eq('created_by', profile.id)
-          .order('created_at', { ascending: false });
-
-        if (soloPlans && soloPlans.length > 0) {
-          plans = [...plans, ...soloPlans];
-          plans.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+          if (groupPlans && groupPlans.length > 0) {
+            plans = [...plans, ...groupPlans];
+            plans.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+          }
         }
 
         const activePlans = plans.filter(p => p.status !== 'completed' && p.status !== 'cancelled');

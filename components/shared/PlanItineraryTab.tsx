@@ -45,12 +45,12 @@ export function PlanItineraryTab({
 
   return (
     <Tabs defaultValue={days[0]?.toString() || "1"} className="w-full">
-      <TabsList className="flex flex-wrap h-auto bg-transparent mb-6 gap-2">
+      <TabsList className="flex items-center overflow-x-auto no-scrollbar py-1 h-auto bg-transparent mb-6 gap-2 w-full max-w-full justify-start">
         {days.map((dayNum: any) => (
           <TabsTrigger
             key={dayNum}
             value={dayNum.toString()}
-            className="data-[state=active]:bg-[#16795A] data-[state=active]:text-white bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full px-6 py-2 transition-all duration-300 cursor-pointer"
+            className="shrink-0 data-[state=active]:bg-[#16795A] data-[state=active]:text-white bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full px-5 py-2 text-sm transition-all duration-300 cursor-pointer"
           >
             Day {dayNum}
           </TabsTrigger>
@@ -58,7 +58,7 @@ export function PlanItineraryTab({
         {days.length > 0 && (
           <TabsTrigger
             value="map"
-            className="data-[state=active]:bg-[#16795A] data-[state=active]:text-white bg-teal-50/50 dark:bg-teal-950/20 text-[#16795A] dark:text-teal-400 rounded-full px-6 py-2 font-bold flex items-center gap-1.5 border border-teal-100 dark:border-teal-900/30 transition-all duration-300 cursor-pointer"
+            className="shrink-0 data-[state=active]:bg-[#16795A] data-[state=active]:text-white bg-teal-50/50 dark:bg-teal-950/20 text-[#16795A] dark:text-teal-400 rounded-full px-5 py-2 text-sm font-bold flex items-center gap-1.5 border border-teal-100 dark:border-teal-900/30 transition-all duration-300 cursor-pointer"
           >
             🗺️ Map View
           </TabsTrigger>

@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useUserStore } from "@/store/userStore"
 import { toast } from "sonner"
 import { ErrorState } from "@/components/shared/ErrorState"
+import { PlanDetailSkeleton } from "@/components/shared/PageSkeleton"
 import confetti from "canvas-confetti"
 import { queueOfflineOp, offlineDB } from "@/lib/supabase/offlineSync"
 import { usePlanDetails } from "@/hooks/usePlanDetails"
@@ -306,7 +307,7 @@ export default function PlanDetailPage() {
     })
   }, [visibleItems, plan?.destination_name])
 
-  if (isLoading) return <div className="text-center py-20 text-slate-500">Loading plan...</div>
+  if (isLoading) return <PlanDetailSkeleton />
   if (!plan)
     return (
       <ErrorState
@@ -339,6 +340,42 @@ export default function PlanDetailPage() {
         }}
         onOpenAdmin={() => setAdminSheetOpen(true)}
       />
+
+      {/* Mobile Quick Navigation Bar */}
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 lg:hidden">
+        <a
+          href="#itinerary"
+          className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+        >
+          📅 Itinerary
+        </a>
+        <a
+          href={`/plans/${planId}/expenses`}
+          className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+        >
+          💰 Expenses
+        </a>
+        <a
+          href={`/plans/${planId}/memories`}
+          className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+        >
+          📸 Memories
+        </a>
+        <button
+          onClick={() => setIsChatOpen(true)}
+          className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full bg-[#16795A]/10 text-[#16795A] dark:bg-[#16795A]/20 dark:text-[#34d399] hover:bg-[#16795A]/20 transition"
+        >
+          💬 AI Chat
+        </button>
+        {isAdmin && (
+          <button
+            onClick={() => setAdminSheetOpen(true)}
+            className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+          >
+            ⚙️ Settings
+          </button>
+        )}
+      </div>
 
       {plan.group_id && onlineUsers.length > 0 && (
         <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 font-medium">

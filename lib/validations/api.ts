@@ -7,7 +7,7 @@ import { z } from 'zod'
 export const voteSchema = z.object({
   item_id: z.string().min(1, 'Item ID is required'),
   vote: z.enum(['up', 'down'], {
-    errorMap: () => ({ message: "Vote must be either 'up' or 'down'" }),
+    message: "Vote must be either 'up' or 'down'",
   }),
 })
 

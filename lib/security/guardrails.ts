@@ -52,13 +52,13 @@ export async function runInputGuardrail(message: string): Promise<{ safe: boolea
     }
   }
 
-  // 3. Fast LLM Classification using Groq (llama-3.3-70b-versatile, maxOutputTokens: 5)
+  // 3. Fast LLM Classification using Groq (maxOutputTokens: 100 to support reasoning tokens)
   try {
     const { text } = await generateText({
       model: AI_MODELS.chat,
       system: GUARDRAIL_SYSTEM_PROMPT,
       prompt: `User message to classify:\n"""\n${message}\n"""\n\nClassification (SAFE or UNSAFE):`,
-      maxOutputTokens: 5,
+      maxOutputTokens: 100,
       temperature: 0,
     })
 

@@ -1,6 +1,7 @@
 import { streamText } from 'ai'
 import { z } from 'zod'
 import { AI_MODELS } from '@/lib/ai/models'
+import { withFallback } from '@/lib/ai/fallback'
 import { rateLimit } from '@/lib/security/rateLimiter'
 import { runInputGuardrail } from '@/lib/security/guardrails'
 
@@ -57,7 +58,7 @@ export async function POST(req: Request) {
     
     Planora Knowledge Base:
     - Planora is a collaborative group trip planning platform that aligns friends, schedules, and budgets.
-    - Tech Stack: Built on Next.js 15 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS v4, shadcn/ui, Supabase (PostgreSQL with RLS, Auth, Storage, Edge Functions), Vercel AI SDK + Groq (Llama 3.3 70B), Resend for emails, Zustand for state, Framer Motion for animations, Leaflet for geocoded maps, Serwist for PWA offline caching & Web Push for notifications, and Dexie.js (IndexedDB) for local offline persistence.
+    - Tech Stack: Built on Next.js 15 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS v4, shadcn/ui, Supabase (PostgreSQL with RLS, Auth, Storage, Edge Functions), Vercel AI SDK + Groq (OpenAI GPT-OSS 20B), Resend for emails, Zustand for state, Framer Motion for animations, Leaflet for geocoded maps, Serwist for PWA offline caching & Web Push for notifications, and Dexie.js (IndexedDB) for local offline persistence.
     - Features:
       * AI Itinerary Gen: Custom itineraries in seconds via Groq.
       * PlaBot Chat: Real-time AI travel assistant with tool-calling to modify itineraries right inside the plan screen.
@@ -72,10 +73,10 @@ export async function POST(req: Request) {
   `
 
   const result = streamText({
-    model: AI_MODELS.chat,
+    model: withFallback(AI_MODELS.chat, AI_MODELS.chatFallback),
     system: systemPrompt,
     messages: messages,
-    maxOutputTokens: 400,
+    maxOutputTokens: 600,
   })
 
   return result.toTextStreamResponse()

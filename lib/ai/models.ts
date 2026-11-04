@@ -2,11 +2,14 @@ import { groq } from '@ai-sdk/groq'
 import { withFallback } from './fallback'
 
 export const AI_MODELS = {
-  // Main conversational model (Llama 3.3 70B)
-  chat: groq('llama-3.3-70b-versatile'),
+  // Main conversational / chatbot model (OpenAI GPT-OSS 20B as default)
+  chat: groq('openai/gpt-oss-20b'),
 
-  // Chat fallback model (Llama 3.1 8B)
-  chatFallback: groq('llama-3.1-8b-instant'),
+  // High-capacity model for deeper reasoning and complex project questions (OpenAI GPT-OSS 120B)
+  chatDeep: groq('openai/gpt-oss-120b'),
+
+  // Chat fallback model (OpenAI GPT-OSS 120B)
+  chatFallback: groq('openai/gpt-oss-120b'),
 
   // Structured generation model supporting JSON mode with fallback
   structured: withFallback(

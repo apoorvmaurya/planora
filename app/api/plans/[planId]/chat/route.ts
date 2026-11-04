@@ -159,7 +159,7 @@ Rules:
     stopWhen: stepCountIs(5),
     toolChoice,
     temperature: 0.1,
-    maxOutputTokens: 800,
+    maxOutputTokens: 1500,
     tools: createPlanChatTools({ supabase, planId, user, isAdmin, plan }),
   })
 

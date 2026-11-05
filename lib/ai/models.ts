@@ -11,9 +11,12 @@ export const AI_MODELS = {
   // Chat fallback model (OpenAI GPT-OSS 120B)
   chatFallback: groq('openai/gpt-oss-120b'),
 
+  // Ultra-fast dedicated Prompt Guard ML model for instantaneous jailbreak & injection classification
+  promptGuard: groq('meta-llama/llama-prompt-guard-2-86m'),
+
   // Structured generation model supporting JSON mode with fallback
   structured: withFallback(
-    groq('llama-3.3-70b-versatile'),
-    groq('llama-3.1-8b-instant')
+    groq('openai/gpt-oss-20b'),
+    groq('openai/gpt-oss-120b')
   ),
 }

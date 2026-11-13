@@ -163,6 +163,18 @@ export default function LoginPage() {
             Sign up
           </Link>
         </p>
+
+        <div className="mt-6 p-3.5 bg-emerald-50/70 dark:bg-emerald-950/20 rounded-2xl border border-emerald-200 dark:border-emerald-900/40 text-center">
+          <p className="text-xs font-semibold text-emerald-900 dark:text-emerald-300 mb-1.5">
+            Recruiter or exploring without an account?
+          </p>
+          <Link
+            href="/demo"
+            className="inline-flex items-center justify-center text-xs font-bold text-white bg-[#16795A] hover:bg-[#115E46] px-4 py-2 rounded-xl transition-all shadow-sm"
+          >
+            ⚡ Open Instant Demo (No Signup)
+          </Link>
+        </div>
       </motion.div>
     </div>
   );

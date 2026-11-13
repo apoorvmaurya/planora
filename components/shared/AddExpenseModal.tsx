@@ -168,6 +168,20 @@ export function AddExpenseModal({
     }
   }
 
+  const handleLoadSampleReceipt = () => {
+    setValue("title", "Trattoria Da Enzo")
+    setValue("amount", 48.50)
+    const sampleSplits = [
+      { itemName: "Margherita Pizza", cost: 14.00, selectedUsers: [] },
+      { itemName: "Pasta Carbonara", cost: 16.50, selectedUsers: [] },
+      { itemName: "Tiramisu & Espresso", cost: 9.00, selectedUsers: [] },
+      { itemName: "Sparkling Water", cost: 9.00, selectedUsers: [] },
+    ]
+    setScannedItems(sampleSplits)
+    setScanError(null)
+    toast.success("Sample receipt loaded! Select members to claim items.")
+  }
+
   const onSubmit = async (data: ExpenseFormValues) => {
     setIsSubmitting(true)
 
@@ -276,28 +290,41 @@ export function AddExpenseModal({
                 <h4 className="text-sm font-semibold text-emerald-950 dark:text-emerald-350 transition-colors duration-500">AI Receipt Scanner</h4>
                 <p className="text-xs text-emerald-600/80 dark:text-emerald-400/80 mt-0.5 font-normal transition-colors duration-500">Upload or take a photo to pre-fill expense details instantly</p>
               </div>
-              <label className="cursor-pointer">
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  className="hidden" 
-                  onChange={handleScanReceipt} 
-                  disabled={isScanning || isSubmitting} 
-                />
-                <div className="mt-2.5 inline-flex items-center justify-center h-9 px-4 rounded-lg bg-[#16795A] hover:bg-[#115E46] text-white font-medium text-sm transition duration-150 disabled:opacity-50 cursor-pointer shadow-sm hover:shadow">
-                  {isScanning ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Analyzing with AI...
-                    </>
-                  ) : (
-                    <>
-                      <Camera className="w-4 h-4 mr-2" />
-                      Scan Receipt
-                    </>
-                  )}
-                </div>
-              </label>
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-2.5">
+                <label className="cursor-pointer">
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="hidden" 
+                    onChange={handleScanReceipt} 
+                    disabled={isScanning || isSubmitting} 
+                  />
+                  <div className="inline-flex items-center justify-center h-9 px-4 rounded-lg bg-[#16795A] hover:bg-[#115E46] text-white font-medium text-sm transition duration-150 disabled:opacity-50 cursor-pointer shadow-sm hover:shadow">
+                    {isScanning ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Analyzing with AI...
+                      </>
+                    ) : (
+                      <>
+                        <Camera className="w-4 h-4 mr-2" />
+                        Scan Receipt
+                      </>
+                    )}
+                  </div>
+                </label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLoadSampleReceipt}
+                  disabled={isScanning || isSubmitting}
+                  className="h-9 px-3 text-xs font-medium border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100/60 dark:hover:bg-emerald-900/40"
+                >
+                  <Sparkles className="w-3.5 h-3.5 mr-1.5 text-emerald-600 dark:text-emerald-400" />
+                  Load Sample
+                </Button>
+              </div>
             </div>
             {scanError && (
               <p className="text-xs text-red-650 font-medium mt-2 bg-red-50 dark:bg-red-950/20 p-2 rounded border border-red-100 dark:border-red-900/30 transition-colors duration-500">

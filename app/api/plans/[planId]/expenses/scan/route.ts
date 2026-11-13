@@ -8,8 +8,6 @@ import { rateLimit } from "@/lib/security/rateLimiter"
 
 export const maxDuration = 60
 
-
-
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ planId: string }> }
@@ -58,40 +56,48 @@ export async function POST(
     const buffer = Buffer.from(arrayBuffer)
     const base64Image = buffer.toString('base64')
 
-    // Call Groq Vision using Vercel AI SDK
-    const { object } = await generateObject({
-      model: AI_MODELS.structured,
-      schema: z.object({
-        merchant: z.string().describe("The name of the merchant/store"),
-        total: z.number().describe("Total amount of the transaction"),
-        currency: z.string().describe("The currency code if found, e.g. USD, EUR, INR. Otherwise default empty."),
-        description: z.string().describe("A summary of items purchased or description"),
-        date: z.string().describe("The date of the transaction if found in ISO format (YYYY-MM-DD), otherwise empty string"),
-        suggestedSplits: z.array(
-          z.object({
-            itemName: z.string().describe("Name of the item on the receipt"),
-            cost: z.number().describe("Cost of the item")
-          })
-        )
-      }),
-      messages: [
-        {
-          role: 'user',
-          content: [
-            { 
-              type: 'text', 
-              text: `Perform high-fidelity OCR scanning on this receipt image. Extract: merchant name, total amount, transaction date, and currency. Identify individual items for optional group splits.` 
-            },
-            {
-              type: 'image',
-              image: `data:${file.type};base64,${base64Image}`
-            }
-          ]
-        }
-      ]
-    })
+    try {
+      // Call Vision model using Vercel AI SDK
+      const { object } = await generateObject({
+        model: AI_MODELS.structured,
+        schema: z.object({
+          merchant: z.string().describe("The name of the merchant/store"),
+          total: z.number().describe("Total amount of the transaction"),
+          currency: z.string().describe("The currency code if found, e.g. USD, EUR, INR. Otherwise default empty."),
+          description: z.string().describe("A summary of items purchased or description"),
+          date: z.string().describe("The date of the transaction if found in ISO format (YYYY-MM-DD), otherwise empty string"),
+          suggestedSplits: z.array(
+            z.object({
+              itemName: z.string().describe("Name of the item on the receipt"),
+              cost: z.number().describe("Cost of the item")
+            })
+          )
+        }),
+        messages: [
+          {
+            role: 'user',
+            content: [
+              { 
+                type: 'text', 
+                text: `Perform high-fidelity OCR scanning on this receipt image. Extract: merchant name, total amount, transaction date, and currency. Identify individual items for optional group splits.` 
+              },
+              {
+                type: 'image',
+                image: `data:${file.type};base64,${base64Image}`
+              }
+            ]
+          }
+        ],
+        abortSignal: req.signal,
+      })
 
-    return NextResponse.json({ success: true, receipt: object })
+      return NextResponse.json({ success: true, receipt: object })
+    } catch (visionErr: any) {
+      console.warn("Vision model inference unavailable:", visionErr?.message)
+      return NextResponse.json({
+        error: "Receipt OCR scanning is temporarily paused pending provider vision model update. Please enter expense details manually or load sample items."
+      }, { status: 503 })
+    }
 
   } catch (error: any) {
     console.error("AI OCR Receipt scanning error:", error)

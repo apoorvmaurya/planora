@@ -12,7 +12,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ planId:
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const { item_id } = await req.json()
+  const body = await req.json()
+  const item_id = body.item_id || body.itemId
   if (!item_id) return NextResponse.json({ error: "Missing item_id" }, { status: 400 })
 
   const { data: item } = await supabase.from('itinerary_items').select('*').eq('id', item_id).single()

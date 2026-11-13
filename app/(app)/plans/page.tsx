@@ -29,8 +29,8 @@ export default async function PlansPage() {
     <div className="max-w-6xl mx-auto pb-20 space-y-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">My Plans</h1>
-          <p className="text-slate-500 mt-1">Manage your upcoming trips, drafts, and past memories.</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">My Plans</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Manage your upcoming trips, drafts, and past memories.</p>
         </div>
         
         <Link href="/plans/new" className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#16795A] hover:bg-[#115E46] text-white gap-2 h-11 px-6 shadow-sm text-sm font-medium transition-all">

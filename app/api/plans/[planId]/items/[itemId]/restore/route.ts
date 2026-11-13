@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { getPlanAccess } from "@/lib/security/access"
 
 export async function POST(req: Request, { params }: { params: Promise<{ planId: string, itemId: string }> }) {
   const { planId, itemId } = await params
@@ -7,6 +8,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ planId:
   
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  const { isAuthorized, isAdmin, plan } = await getPlanAccess(supabase, planId, user.id)
+  if (!plan) return NextResponse.json({ error: "Plan not found" }, { status: 404 })
+  if (!isAuthorized) return NextResponse.json({ error: "Access denied" }, { status: 403 })
+  if (!isAdmin && plan.group_id) {
+    return NextResponse.json({ error: "Only admins can restore previous item versions" }, { status: 403 })
+  }
 
   const { historyIndex } = await req.json()
   if (typeof historyIndex !== 'number') return NextResponse.json({ error: "Missing historyIndex" }, { status: 400 })
@@ -19,9 +27,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ planId:
   }
 
   const restoredState = item.history[historyIndex]
-  
-  // We can choose to keep the current state in history or replace it.
-  // We&apos;ll replace it and keep the history array as is for now.
 
   const { data: updatedItem, error } = await supabase
     .from('itinerary_items')

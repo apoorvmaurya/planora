@@ -120,18 +120,18 @@ export function EditPlanComparisonPanel({
             )}
 
             {daysList.length > 0 && !isAiLoading && (
-              <div className="grid grid-cols-3 gap-3 mb-6">
-                <div className="bg-slate-50 dark:bg-slate-950/30 rounded-xl p-3 text-center border border-slate-100 dark:border-slate-800/60">
-                  <p className="text-2xl font-black text-slate-900 dark:text-white">{daysList.length}</p>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Days</p>
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6">
+                <div className="bg-slate-50 dark:bg-slate-950/30 rounded-xl p-2 sm:p-3 text-center border border-slate-100 dark:border-slate-800/60">
+                  <p className="text-base sm:text-2xl font-black text-slate-900 dark:text-white">{daysList.length}</p>
+                  <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Days</p>
                 </div>
-                <div className="bg-emerald-50/50 dark:bg-emerald-950/10 rounded-xl p-3 text-center border border-emerald-100 dark:border-emerald-900/30">
-                  <p className="text-2xl font-black text-[#16795A]">{selectedNewCount}</p>
-                  <p className="text-[10px] font-bold text-emerald-500/80 uppercase tracking-wider">Using AI New</p>
+                <div className="bg-emerald-50/50 dark:bg-emerald-950/10 rounded-xl p-2 sm:p-3 text-center border border-emerald-100 dark:border-emerald-900/30">
+                  <p className="text-base sm:text-2xl font-black text-[#16795A]">{selectedNewCount}</p>
+                  <p className="text-[9px] sm:text-[10px] font-bold text-emerald-500/80 uppercase tracking-wider">Using AI New</p>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-950/30 rounded-xl p-3 text-center border border-slate-100 dark:border-slate-800/60">
-                  <p className="text-2xl font-black text-slate-600 dark:text-slate-300">{selectedKeepCount}</p>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Keeping Original</p>
+                <div className="bg-slate-50 dark:bg-slate-950/30 rounded-xl p-2 sm:p-3 text-center border border-slate-100 dark:border-slate-800/60">
+                  <p className="text-base sm:text-2xl font-black text-slate-600 dark:text-slate-300">{selectedKeepCount}</p>
+                  <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">Keeping Original</p>
                 </div>
               </div>
             )}

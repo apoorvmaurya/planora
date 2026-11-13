@@ -15,7 +15,15 @@
 
 ---
 
-Planora is an enterprise-grade collaborative travel planning application designed to streamline group trip coordination. By merging real-time synchronization, interactive AI generation, democratic voting consensus engines, and smart chronological sorting, Planora eliminates coordination friction and solves group travel planning challenges.
+Planora is a collaborative travel planning application designed to streamline group trip coordination. By merging real-time synchronization, interactive AI generation, democratic voting consensus engines, and smart chronological sorting, Planora eliminates coordination friction and solves group travel planning challenges.
+
+---
+
+## ⚡ 30-Second Recruiter & Guest Demo
+
+Recruiters and reviewers can test Planora immediately without creating an account:
+*   **Instant Demo**: Navigate to [`/demo`](https://planora-plum-beta.vercel.app/demo) to explore a seeded 5-day Tokyo trip.
+*   **Interactive Features**: Test real-time activity voting, review automated debt settlement calculations, and chat directly with PlaBot.
 
 ---
 
@@ -65,9 +73,9 @@ graph TD
 *   **AI scout Tie-Breaker**: Automatically calls the Llama Scout tie-breaker tool when consensus results in a tie, suggesting an alternative item matching the budget and category.
 *   **Real-time synchronization**: Propagates voting cards and consensus actions instantly to all active browsers using Supabase Realtime subscriptions.
 
-### 📊 Expense Splitter & Receipt OCR Engine
-*   **High-Fidelity OCR Scanning**: Integrates Groq Vision to extract total, merchant, date, currency, and line items from receipts.
-*   **Collaborative Ledger**: Supports multiple currencies and calculates optimal repayment balances instantly, resolving who owes what.
+### 📊 Multi-Currency Expense Splitter & Itemized Claiming
+*   **Collaborative Settlement Ledger**: Supports multi-currency expenses, equal and custom splits, and calculates optimal debt repayment balances instantly so friends know exactly who owes what.
+*   **Itemized Claiming & Receipt Scanner**: Includes an interactive line-item claiming workflow with sample receipt pre-fills (receipt image OCR was prototyped with vision models and is currently paused pending provider vision model availability).
 
 ---
 
@@ -134,7 +142,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ## 🧪 Testing & Isolated Verification
 
-Planora includes an enterprise-grade automated test suite built on **Vitest** and **@testing-library**, complete with an in-memory Supabase mock client so you can test features without live external accounts.
+Planora includes a comprehensive automated test suite built on **Vitest** and **@testing-library**, complete with an in-memory Supabase mock client so you can test features without live external accounts.
 
 ### Run Automated Tests & Coverage
 ```bash

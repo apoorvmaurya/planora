@@ -123,18 +123,25 @@ export default function EditPlanPage() {
 
     setIsGenerating(true)
     submit({
-      destination: plan?.destination_name || "Unknown",
-      duration_days: daysCount,
-      budget_total: parseFloat(budget) || 0,
-      currency: currency || "USD",
-      group_size: 1,
+      planId,
+      destination: {
+        name: plan?.destination_name || "Unknown",
+        lat: Number(plan?.destination_lat) || 0,
+        lng: Number(plan?.destination_lng) || 0,
+      },
+      startDate,
+      endDate,
+      budget: parseFloat(budget) || 100,
+      currency: (currency || "USD").slice(0, 3).toUpperCase(),
+      groupId: plan?.group_id || "solo",
+      saveToDb: false,
       preferences: {
-        trip_type: tripType,
-        pace: pace,
-        dietary: "",
-        must_haves: "",
-        avoid: ""
-      }
+        tripType,
+        pace,
+        dietaryNotes: "",
+        mustHaves: "",
+        avoid: "",
+      },
     })
   }
 

@@ -48,6 +48,21 @@ export async function DELETE(req: Request) {
   
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 })
 
+  // Verify the friendship belongs to the requesting user
+  const { data: friendship, error: fetchErr } = await supabase
+    .from("friendships")
+    .select("requester_id, addressee_id")
+    .eq("id", id)
+    .single()
+
+  if (fetchErr || !friendship) {
+    return NextResponse.json({ error: "Friendship not found" }, { status: 404 })
+  }
+
+  if (friendship.requester_id !== user.id && friendship.addressee_id !== user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+  }
+
   const { error } = await supabase
     .from("friendships")
     .delete()

@@ -74,6 +74,9 @@ export default function PublicHomePage() {
 
             {/* Desktop nav links */}
             <div className="hidden md:flex items-center space-x-6">
+              <Link href="/demo" className="text-emerald-700 dark:text-emerald-400 font-bold text-sm transition-colors duration-200 flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-500" /> Demo
+              </Link>
               <Link href="#features" className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 text-sm font-medium transition-colors duration-200">Features</Link>
               <Link href="#how-it-works" className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 text-sm font-medium transition-colors duration-200">How it works</Link>
               <Link href="/coming-soon" className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 text-sm font-medium transition-colors duration-200">Coming Soon</Link>
@@ -132,6 +135,9 @@ export default function PublicHomePage() {
               style={{ WebkitBackdropFilter: "blur(20px)" }}
             >
               <div className="flex flex-col space-y-4">
+                <Link href="/demo" onClick={() => setMobileMenuOpen(false)} className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline py-2 flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-emerald-500" /> Live Recruiter Demo
+                </Link>
                 <Link href="#features" onClick={() => setMobileMenuOpen(false)} className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition-colors py-2">Features</Link>
                 <Link href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition-colors py-2">How it works</Link>
                 <Link href="/coming-soon" onClick={() => setMobileMenuOpen(false)} className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition-colors py-2">Coming Soon</Link>
@@ -167,8 +173,8 @@ export default function PublicHomePage() {
                   Start planning free
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
-                <Link href="#how-it-works" className="flex items-center justify-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-8 py-3.5 rounded-full font-semibold text-lg transition-all shadow-sm">
-                  See how it works
+                <Link href="/demo" className="flex items-center justify-center bg-white dark:bg-slate-900 border-2 border-emerald-600 text-[#16795A] dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800 px-8 py-3.5 rounded-full font-bold text-lg transition-all shadow-sm">
+                  ⚡ Instant Demo (No Signup)
                 </Link>
               </div>
             </motion.div>

@@ -74,12 +74,23 @@ export async function POST(req: Request) {
     - Pricing: 100% free right now! Premium plans (Pro & Groups) are coming soon (sign up at /coming-soon). Solo trips are fully supported!
   `
 
-  const result = streamText({
-    model: withFallback(AI_MODELS.chat, AI_MODELS.chatFallback),
-    system: systemPrompt,
-    messages: messages,
-    maxOutputTokens: 600,
-  })
+  try {
+    const result = streamText({
+      model: withFallback(AI_MODELS.chat, AI_MODELS.chatFallback),
+      system: systemPrompt,
+      messages: messages,
+      maxOutputTokens: 600,
+      abortSignal: req.signal,
+    })
 
-  return result.toTextStreamResponse()
+    return result.toTextStreamResponse()
+  } catch (err: any) {
+    console.error("PlaBot stream generation error:", err)
+    return new Response(
+      JSON.stringify({
+        error: "PlaBot is having trouble connecting right now. Please tap Retry to ask again."
+      }),
+      { status: 503, headers: { "Content-Type": "application/json" } }
+    )
+  }
 }

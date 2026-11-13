@@ -215,7 +215,7 @@ export function MapComponent({ items, planDestination }: MapComponentProps) {
       <div className="absolute top-4 left-4 right-4 z-[1000] flex flex-col gap-2 pointer-events-none">
         <div className="flex items-center gap-2.5 bg-slate-900/90 backdrop-blur-md px-4 py-2.5 rounded-full border border-slate-800 text-white shadow-xl max-w-lg self-center pointer-events-auto transition-all duration-300">
           <Sparkles className="w-4 h-4 text-[#16795A] shrink-0 animate-pulse" />
-          <p className="text-xs font-semibold leading-none">
+          <p className="text-xs font-semibold leading-snug">
             <span className="text-[#16795A] font-black uppercase mr-1">✨ Premium Preview:</span>
             Map routing is in early preview and will soon be exclusive to Pro plans.
           </p>

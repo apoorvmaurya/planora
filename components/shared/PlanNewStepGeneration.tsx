@@ -3,7 +3,7 @@
 import React from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Sparkles, ArrowRight, Loader2, Check, AlertCircle } from "lucide-react"
+import { Sparkles, ArrowRight, Loader2, Check, AlertCircle, RotateCcw } from "lucide-react"
 
 interface PlanNewStepGenerationProps {
   step: number
@@ -136,6 +136,22 @@ export function PlanNewStepGeneration({
       <h2 className="text-xl font-bold text-slate-900 dark:text-white transition-colors duration-500">
         Step 4: Review & Generate
       </h2>
+
+      {error && (
+        <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm text-red-700 dark:text-red-300">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 shrink-0 text-red-500" />
+            <span>{typeof error === "string" ? error : error.message || "Failed to generate itinerary. Please try again."}</span>
+          </div>
+          <Button
+            type="button"
+            onClick={onGenerate}
+            className="bg-red-600 hover:bg-red-700 text-white rounded-xl h-9 px-4 shrink-0 text-xs font-semibold cursor-pointer"
+          >
+            <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> Retry Generation
+          </Button>
+        </div>
+      )}
 
       <div className="bg-slate-50 dark:bg-slate-950/40 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-4 transition-colors duration-500">
         <div className="grid grid-cols-2 gap-4 text-sm">

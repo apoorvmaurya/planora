@@ -23,6 +23,27 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ planId
     return NextResponse.json({ error: "Access denied" }, { status: 403 })
   }
 
+  // Handle reject action directly
+  if (updates.action === 'reject') {
+    if (!isAdmin && item.created_by !== user.id) {
+      return NextResponse.json({ error: "Only admins or the author can reject this suggestion" }, { status: 403 })
+    }
+    const { error: delErr } = await supabase.from('itinerary_items').delete().eq('id', itemId)
+    if (delErr) {
+      return NextResponse.json({ error: delErr.message }, { status: 500 })
+    }
+    await reorderDayItems(supabase, planId, item.day_number)
+    return NextResponse.json({ success: true, rejected: true })
+  }
+
+  // Handle approve action
+  if (updates.action === 'approve') {
+    if (!isAdmin) {
+      return NextResponse.json({ error: "Only admins can approve suggestions directly" }, { status: 403 })
+    }
+    updates.suggestion_status = 'approved'
+  }
+
   // Determine if this is a direct update or a suggestion insertion
   const isSuggestionUpdate = item.suggestion_status === 'suggestion' && item.created_by === user.id
   const isDirectUpdateAllowed = isAdmin || !plan.group_id || isSuggestionUpdate
@@ -198,7 +219,7 @@ export async function DELETE(
       .single()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 550 })
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     // Reorder items logically

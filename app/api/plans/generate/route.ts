@@ -92,83 +92,94 @@ export async function POST(req: Request) {
 
   const model = AI_MODELS.structured
 
-  const result = streamText({
-    model,
-    prompt: fullPrompt,
-    maxOutputTokens: 4000,
-    output: Output.object({ schema: itineraryResponseSchema }),
-    providerOptions: {
-      groq: {
-        structuredOutputs: false,
+  try {
+    const result = streamText({
+      model,
+      prompt: fullPrompt,
+      maxOutputTokens: 4000,
+      abortSignal: req.signal,
+      output: Output.object({ schema: itineraryResponseSchema }),
+      providerOptions: {
+        groq: {
+          structuredOutputs: false,
+        },
       },
-    },
-  })
+    })
 
-  // Start background task to save to database when stream finishes
-  Promise.resolve(result.output).then(async (object) => {
-    try {
-      if (saveToDb === false) {
-        // Compare & merge drawer handles saving manually on approval
-        return
-      }
+    // Start background task to save to database when stream finishes
+    Promise.resolve(result.output).then(async (object) => {
+      try {
+        if (saveToDb === false) {
+          // Compare & merge drawer handles saving manually on approval
+          return
+        }
 
-      if (object?.title) {
-        await supabase.from('plans').update({ title: object.title }).eq('id', planId)
-      }
-      
-      if (object?.days) {
-        // Delete old itinerary items for this plan first to enable clean regeneration
-        await supabase.from('itinerary_items').delete().eq('plan_id', planId)
-
-        const itemsToInsert = []
-        for (const day of object.days) {
-          if (!day) continue
-          
-          const dayItems = (day.itinerary_items || []).filter(Boolean)
-          dayItems.forEach(cleanseAndValidateItineraryItem)
-          const sortedDayItems = [...dayItems].sort((a, b) => {
-            return getItemSortScore(a) - getItemSortScore(b)
-          })
-
-          let sortOrder = 0
-          for (const item of sortedDayItems) {
-            let lat = item.lat
-            let lng = item.lng
-            
-            // Only trigger forwardGeocode lookup if coordinates are missing/zero from the AI model response
-            if (!lat || !lng) {
-              const coords = await getCoordinatesForLocation(item.location_name, destination.name)
-              lat = coords.lat
-              lng = coords.lng
-            }
-
-            itemsToInsert.push({
-              plan_id: planId,
-              day_number: day.day_number,
-              time_of_day: item.time_of_day,
-              title: item.title,
-              description: item.description,
-              location_name: item.location_name,
-              lat: lat || 0,
-              lng: lng || 0,
-              category: item.category,
-              duration_minutes: item.duration_minutes,
-              estimated_cost: item.estimated_cost,
-              sort_order: sortOrder++
-            })
-          }
+        if (object?.title) {
+          await supabase.from('plans').update({ title: object.title }).eq('id', planId)
         }
         
-        if (itemsToInsert.length > 0) {
-          await supabase.from('itinerary_items').insert(itemsToInsert)
-        }
-      }
-    } catch (e) {
-      console.error("Failed to parse and save generated itinerary", e)
-    }
-  }).catch((err: unknown) => {
-    console.error("Error in streamText result.output resolution:", err)
-  })
+        if (object?.days) {
+          // Delete old itinerary items for this plan first to enable clean regeneration
+          await supabase.from('itinerary_items').delete().eq('plan_id', planId)
 
-  return result.toTextStreamResponse()
+          const itemsToInsert = []
+          for (const day of object.days) {
+            if (!day) continue
+            
+            const dayItems = (day.itinerary_items || []).filter(Boolean)
+            dayItems.forEach(cleanseAndValidateItineraryItem)
+            const sortedDayItems = [...dayItems].sort((a, b) => {
+              return getItemSortScore(a) - getItemSortScore(b)
+            })
+
+            let sortOrder = 0
+            for (const item of sortedDayItems) {
+              let lat = item.lat
+              let lng = item.lng
+              
+              // Only trigger forwardGeocode lookup if coordinates are missing/zero from the AI model response
+              if (!lat || !lng) {
+                const coords = await getCoordinatesForLocation(item.location_name, destination.name)
+                lat = coords.lat
+                lng = coords.lng
+              }
+
+              itemsToInsert.push({
+                plan_id: planId,
+                day_number: day.day_number,
+                time_of_day: item.time_of_day,
+                title: item.title,
+                description: item.description,
+                location_name: item.location_name,
+                lat: lat || 0,
+                lng: lng || 0,
+                category: item.category,
+                duration_minutes: item.duration_minutes,
+                estimated_cost: item.estimated_cost,
+                sort_order: sortOrder++
+              })
+            }
+          }
+          
+          if (itemsToInsert.length > 0) {
+            await supabase.from('itinerary_items').insert(itemsToInsert)
+          }
+        }
+      } catch (e) {
+        console.error("Failed to parse and save generated itinerary", e)
+      }
+    }).catch((err: unknown) => {
+      console.error("Error in streamText result.output resolution:", err)
+    })
+
+    return result.toTextStreamResponse()
+  } catch (err: any) {
+    console.error("Itinerary generation route error:", err)
+    return new Response(
+      JSON.stringify({
+        error: "AI itinerary generation service is momentarily unavailable. Please retry."
+      }),
+      { status: 503, headers: { "Content-Type": "application/json" } }
+    )
+  }
 }

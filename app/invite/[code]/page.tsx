@@ -36,6 +36,10 @@ export default function InvitePage() {
         }
 
         if (!res.ok) {
+          if (res.status === 401) {
+            router.push(`/login?next=/invite/${encodeURIComponent(code)}`)
+            return
+          }
           setStatus("error")
           setErrorMsg(data.error || "Failed to join group")
           return

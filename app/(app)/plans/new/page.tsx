@@ -35,6 +35,7 @@ export default function NewPlanPage() {
   const [generationStatus, setGenerationStatus] = useState<
     "idle" | "initializing" | "streaming" | "saving" | "ready"
   >("idle")
+  const [generationError, setGenerationError] = useState<string | null>(null)
   const planIdRef = useRef<string | null>(null)
 
   useEffect(() => {
@@ -52,6 +53,20 @@ export default function NewPlanPage() {
     }
     fetchGroups()
   }, [])
+
+  // 50-second timeout guard against stuck streams
+  useEffect(() => {
+    let timeout: NodeJS.Timeout
+    if (isGenerating && (generationStatus === "initializing" || generationStatus === "streaming")) {
+      timeout = setTimeout(() => {
+        setIsGenerating(false)
+        setGenerationStatus("idle")
+        setGenerationError("Generation took longer than expected. Please tap Retry to generate your itinerary.")
+        toast.error("Generation timed out. Please tap Retry.")
+      }, 50000)
+    }
+    return () => clearTimeout(timeout)
+  }, [isGenerating, generationStatus])
 
   const { submit, error } = useObject({
     api: "/api/plans/generate",
@@ -89,6 +104,7 @@ export default function NewPlanPage() {
     onError: (err) => {
       setIsGenerating(false)
       setGenerationStatus("idle")
+      setGenerationError(err.message || "We encountered a temporary connection issue while streaming your itinerary. Please tap Retry.")
       toast.error(err.message || "Failed to generate plan")
     },
   })
@@ -125,29 +141,35 @@ export default function NewPlanPage() {
 
     setIsGenerating(true)
     setGenerationStatus("initializing")
+    setGenerationError(null)
 
     try {
-      const createRes = await fetch("/api/plans/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          destination,
-          startDate,
-          endDate,
-          budget: parseFloat(budget),
-          currency,
-          groupId,
-          preferences: { tripType, pace, dietaryNotes, mustHaves, avoid },
-        }),
-      })
+      // Reuse existing created planId if retrying, or create a new plan
+      let planId = planIdRef.current
+      if (!planId) {
+        const createRes = await fetch("/api/plans/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            destination,
+            startDate,
+            endDate,
+            budget: parseFloat(budget),
+            currency,
+            groupId,
+            preferences: { tripType, pace, dietaryNotes, mustHaves, avoid },
+          }),
+        })
 
-      if (!createRes.ok) {
-        const err = await createRes.json()
-        throw new Error(err.error || "Failed to create plan")
+        if (!createRes.ok) {
+          const err = await createRes.json()
+          throw new Error(err.error || "Failed to create plan")
+        }
+
+        const data = await createRes.json()
+        planId = data.planId
+        planIdRef.current = planId
       }
-
-      const { planId } = await createRes.json()
-      planIdRef.current = planId
 
       setGenerationStatus("streaming")
       submit({
@@ -161,6 +183,7 @@ export default function NewPlanPage() {
         preferences: { tripType, pace, dietaryNotes, mustHaves, avoid },
       })
     } catch (err: any) {
+      setGenerationError(err.message || "Generation failed. Please try again.")
       toast.error(err.message || "Generation failed")
       setIsGenerating(false)
       setGenerationStatus("idle")
@@ -247,7 +270,7 @@ export default function NewPlanPage() {
                 isGenerating={false}
                 generationStatus={generationStatus}
                 onGenerate={handleGenerate}
-                error={error}
+                error={generationError || error}
               />
             )}
           </AnimatePresence>
@@ -268,7 +291,7 @@ export default function NewPlanPage() {
           isGenerating={true}
           generationStatus={generationStatus}
           onGenerate={handleGenerate}
-          error={error}
+          error={generationError || error}
         />
       )}
     </div>

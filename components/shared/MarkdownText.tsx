@@ -5,6 +5,49 @@ interface MarkdownTextProps {
   className?: string
 }
 
+function isTableDelimiter(line: string): boolean {
+  const trimmed = line.trim()
+  if (!trimmed.includes("-") || !trimmed.includes("|")) return false
+  const cells = trimmed
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map(c => c.trim())
+  return cells.length > 0 && cells.every(c => /^:?-{2,}:?$/.test(c))
+}
+
+function parseTableRow(line: string): string[] {
+  return line
+    .trim()
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map(c => c.trim())
+}
+
+function getTableAlignments(line: string): Array<"left" | "center" | "right" | undefined> {
+  const cells = line
+    .trim()
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map(c => c.trim())
+
+  return cells.map(c => {
+    const left = c.startsWith(":")
+    const right = c.endsWith(":")
+    if (left && right) return "center"
+    if (right) return "right"
+    if (left) return "left"
+    return undefined
+  })
+}
+
+function isTableRow(line: string): boolean {
+  const trimmed = line.trim()
+  return trimmed.includes("|") && trimmed.length >= 3
+}
+
 export function MarkdownText({ content, className = "" }: MarkdownTextProps) {
   if (!content) return null
 
@@ -67,7 +110,6 @@ export function MarkdownText({ content, className = "" }: MarkdownTextProps) {
     })
   }
 
-  // Parse block-level markdown: headings, bullet lists, numbered lists, paragraphs
   const lines = content.split("\n")
   const elements: React.ReactNode[] = []
 
@@ -93,16 +135,82 @@ export function MarkdownText({ content, className = "" }: MarkdownTextProps) {
     currentList = null
   }
 
-  lines.forEach((rawLine, lineIndex) => {
+  let i = 0
+  while (i < lines.length) {
+    const rawLine = lines[i]
     const line = rawLine.trim()
 
     // Empty line -> flush list and skip
     if (!line) {
       flushList()
-      return
+      i++
+      continue
     }
 
-    // Unordered list item: starts with '- ' or '* ' or '• '
+    // 1. Table Detection: Header row followed by delimiter row
+    if (isTableRow(line) && i + 1 < lines.length && isTableDelimiter(lines[i + 1])) {
+      flushList()
+      const headerRow = parseTableRow(line)
+      const alignments = getTableAlignments(lines[i + 1])
+      const rows: string[][] = []
+      i += 2 // skip header and delimiter
+
+      while (i < lines.length && isTableRow(lines[i]) && !isTableDelimiter(lines[i])) {
+        rows.push(parseTableRow(lines[i]))
+        i++
+      }
+
+      elements.push(
+        <div key={`table-${elements.length}`} className="my-2.5 max-w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead className="bg-slate-100 dark:bg-slate-800/80 text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 font-bold">
+              <tr>
+                {headerRow.map((h, colIdx) => (
+                  <th
+                    key={colIdx}
+                    className={`p-2.5 sm:px-3 sm:py-2.5 whitespace-nowrap ${
+                      alignments[colIdx] === "center"
+                        ? "text-center"
+                        : alignments[colIdx] === "right"
+                          ? "text-right"
+                          : "text-left"
+                    }`}
+                  >
+                    {renderInline(h)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900/60 text-slate-700 dark:text-slate-300">
+              {rows.map((row, rowIdx) => (
+                <tr key={rowIdx} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                  {headerRow.map((_, colIdx) => {
+                    const cell = row[colIdx] || ""
+                    return (
+                      <td
+                        key={colIdx}
+                        className={`p-2.5 sm:px-3 sm:py-2.5 leading-snug ${
+                          alignments[colIdx] === "center"
+                            ? "text-center"
+                            : alignments[colIdx] === "right"
+                              ? "text-right"
+                              : "text-left"
+                        }`}
+                      >
+                        {renderInline(cell)}
+                      </td>
+                    )
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )
+      continue
+    }
+
+    // 2. Unordered list item: starts with '- ' or '* ' or '• '
     const ulMatch = line.match(/^[-*•]\s+(.*)$/)
     if (ulMatch) {
       if (currentList && currentList.type !== "ul") {
@@ -112,10 +220,11 @@ export function MarkdownText({ content, className = "" }: MarkdownTextProps) {
         currentList = { type: "ul", items: [] }
       }
       currentList.items.push(ulMatch[1])
-      return
+      i++
+      continue
     }
 
-    // Ordered list item: starts with '1. ', '2. ', etc.
+    // 3. Ordered list item: starts with '1. ', '2. ', etc.
     const olMatch = line.match(/^\d+\.\s+(.*)$/)
     if (olMatch) {
       if (currentList && currentList.type !== "ol") {
@@ -125,45 +234,50 @@ export function MarkdownText({ content, className = "" }: MarkdownTextProps) {
         currentList = { type: "ol", items: [] }
       }
       currentList.items.push(olMatch[1])
-      return
+      i++
+      continue
     }
 
     // Not a list line, so flush any pending list
     flushList()
 
-    // Headings
+    // 4. Headings
     if (line.startsWith("### ")) {
       elements.push(
-        <h4 key={`h4-${lineIndex}`} className="font-bold text-sm mt-2.5 mb-1 text-slate-900 dark:text-white">
+        <h4 key={`h4-${i}`} className="font-bold text-sm mt-2.5 mb-1 text-slate-900 dark:text-white">
           {renderInline(line.slice(4))}
         </h4>
       )
-      return
+      i++
+      continue
     }
     if (line.startsWith("## ")) {
       elements.push(
-        <h3 key={`h3-${lineIndex}`} className="font-bold text-base mt-3 mb-1 text-slate-900 dark:text-white">
+        <h3 key={`h3-${i}`} className="font-bold text-base mt-3 mb-1 text-slate-900 dark:text-white">
           {renderInline(line.slice(3))}
         </h3>
       )
-      return
+      i++
+      continue
     }
     if (line.startsWith("# ")) {
       elements.push(
-        <h2 key={`h2-${lineIndex}`} className="font-extrabold text-lg mt-3.5 mb-1.5 text-slate-900 dark:text-white">
+        <h2 key={`h2-${i}`} className="font-extrabold text-lg mt-3.5 mb-1.5 text-slate-900 dark:text-white">
           {renderInline(line.slice(2))}
         </h2>
       )
-      return
+      i++
+      continue
     }
 
-    // Regular paragraph
+    // 5. Regular paragraph
     elements.push(
-      <p key={`p-${lineIndex}`} className="my-1 first:mt-0 last:mb-0 leading-relaxed">
+      <p key={`p-${i}`} className="my-1 first:mt-0 last:mb-0 leading-relaxed">
         {renderInline(line)}
       </p>
     )
-  })
+    i++
+  }
 
   // Flush remaining list if any
   flushList()

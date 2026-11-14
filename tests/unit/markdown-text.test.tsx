@@ -61,4 +61,35 @@ Try the \`JR Pass\` for transit.
     expect(a?.textContent).toBe('Planora')
     expect(a?.getAttribute('href')).toBe('https://planora.com')
   })
+
+  it('renders markdown tables with headers and rows properly', () => {
+    const markdown = `
+Top Matcha Desserts in Ginza
+| Spot | What to try | Price* | Why it's a must |
+|---|:---:|---:|---|
+| Ginza Chaya | **Matcha Tiramisu** | ¥3,200 | Creamy and airy. |
+| Harumi Ginza | Matcha Cheesecake | ¥2,800 | Rich and velvety. |
+`
+    const { container } = render(<MarkdownText content={markdown} />)
+    const table = container.querySelector('table')
+    expect(table).not.toBeNull()
+
+    const headers = container.querySelectorAll('th')
+    expect(headers.length).toBe(4)
+    expect(headers[0].textContent).toBe('Spot')
+    expect(headers[1].textContent).toBe('What to try')
+    expect(headers[2].textContent).toBe('Price*')
+    expect(headers[3].textContent).toBe("Why it's a must")
+
+    const rows = container.querySelectorAll('tbody tr')
+    expect(rows.length).toBe(2)
+
+    const firstRowCells = rows[0].querySelectorAll('td')
+    expect(firstRowCells.length).toBe(4)
+    expect(firstRowCells[0].textContent).toBe('Ginza Chaya')
+    // Bold tag inside cell
+    const strongCell = firstRowCells[1].querySelector('strong')
+    expect(strongCell?.textContent).toBe('Matcha Tiramisu')
+    expect(firstRowCells[2].textContent).toBe('¥3,200')
+  })
 })

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { X, Send, Bot, User, Sparkles, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { MarkdownText } from "@/components/shared/MarkdownText"
 
 type ChatMessage = {
   id: string
@@ -229,12 +230,16 @@ export function PlaBot() {
                       </div>
                       <div className={`px-4 py-2.5 rounded-2xl max-w-[80%] text-sm ${
                         m.role === "user" 
-                          ? "bg-slate-900 dark:bg-slate-800 text-white rounded-tr-sm" 
+                          ? "bg-slate-900 dark:bg-slate-800 text-white rounded-tr-sm whitespace-pre-wrap" 
                           : m.isError
-                            ? "bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-900 dark:text-red-200 rounded-tl-sm"
-                            : "bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm text-slate-800 dark:text-slate-200 rounded-tl-sm whitespace-pre-wrap transition-colors duration-500"
+                            ? "bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-900 dark:text-red-200 rounded-tl-sm whitespace-pre-wrap"
+                            : "bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm text-slate-800 dark:text-slate-200 rounded-tl-sm transition-colors duration-500"
                       }`}>
-                        {m.content}
+                        {m.role === "assistant" && !m.isError ? (
+                          <MarkdownText content={m.content} />
+                        ) : (
+                          m.content
+                        )}
                         {m.isError && (
                           <div className="mt-2.5 pt-2 border-t border-red-200 dark:border-red-900/50 flex items-center justify-end">
                             <Button

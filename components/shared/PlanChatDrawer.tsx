@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Sparkles, Bot, XCircle, User, Send, Loader2 } from "lucide-react"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
+import { MarkdownText } from "@/components/shared/MarkdownText"
 
 interface PlanChatDrawerProps {
   isOpen: boolean
@@ -146,9 +147,14 @@ export function PlanChatDrawer({
                   }`}>
                     {m.parts.map((part, pi) => {
                       if (part.type === "text") {
+                        if (!part.text) return null
                         return (
-                          <div key={pi} className={`whitespace-pre-wrap leading-relaxed ${m.role === "assistant" ? "px-4 py-2.5" : ""}`}>
-                            {part.text}
+                          <div key={pi} className={m.role === "assistant" ? "px-4 py-2.5" : "whitespace-pre-wrap leading-relaxed"}>
+                            {m.role === "assistant" ? (
+                              <MarkdownText content={part.text} />
+                            ) : (
+                              part.text
+                            )}
                           </div>
                         )
                       }

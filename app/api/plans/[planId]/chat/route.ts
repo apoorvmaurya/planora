@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server'
 import { streamText, convertToModelMessages, stepCountIs } from 'ai'
 import { createClient } from '@/lib/supabase/server'
 import { rateLimit } from '@/lib/security/rateLimiter'
@@ -171,16 +172,25 @@ Rules:
   const backupModel = AI_MODELS.chatFallback
   const modelWithFallback = withFallback(baseModel, backupModel)
 
-  const result = streamText({
-    model: modelWithFallback,
-    system: systemPrompt,
-    messages: await convertToModelMessages(messages),
-    stopWhen: stepCountIs(5),
-    toolChoice,
-    temperature: 0.1,
-    maxOutputTokens: 1500,
-    tools: createPlanChatTools({ supabase, planId, user, isAdmin, plan }),
-  })
+  try {
+    const result = streamText({
+      model: modelWithFallback,
+      system: systemPrompt,
+      messages: await convertToModelMessages(messages),
+      stopWhen: stepCountIs(5),
+      toolChoice,
+      temperature: 0.1,
+      maxOutputTokens: 1500,
+      tools: createPlanChatTools({ supabase, planId, user, isAdmin, plan }),
+      abortSignal: req.signal,
+    })
 
-  return result.toUIMessageStreamResponse()
+    return result.toUIMessageStreamResponse()
+  } catch (error: any) {
+    console.error("Plan chat stream error:", error)
+    return NextResponse.json(
+      { error: "Chat service is temporarily unavailable. Please try again." },
+      { status: 503 }
+    )
+  }
 }

@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
+import { MarkdownText } from "@/components/shared/MarkdownText"
 import { Breadcrumb } from "@/components/shared/Breadcrumb"
 
 /* ── tool name → friendly label & icon mapping ── */
@@ -200,8 +201,12 @@ export default function PlanChatPage() {
                   if (part.type === "text") {
                     if (!part.text) return null
                     return (
-                      <div key={pi} className={`whitespace-pre-wrap leading-relaxed ${m.role === "assistant" ? "px-5 py-3" : ""}`}>
-                        {part.text}
+                      <div key={pi} className={m.role === "assistant" ? "px-5 py-3" : "whitespace-pre-wrap leading-relaxed"}>
+                        {m.role === "assistant" ? (
+                          <MarkdownText content={part.text} />
+                        ) : (
+                          part.text
+                        )}
                       </div>
                     )
                   }

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useMemo } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { 
@@ -18,11 +18,14 @@ import {
   Clock, 
   CreditCard,
   Send,
-  Loader2
+  Loader2,
+  Sparkles
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
+import { calculateSimplifiedSplits } from "@/lib/utils/splitCalculator"
+import { MarkdownText } from "@/components/shared/MarkdownText"
 
 interface DemoItem {
   id: string
@@ -45,8 +48,25 @@ interface DemoExpense {
   title: string
   amount: number
   paidBy: string
+  paidById: string
   splitType: "equal" | "custom"
 }
+
+interface DemoChatMessage {
+  id: string
+  role: "user" | "assistant"
+  content: string
+  isSample?: boolean
+  isError?: boolean
+  failedPrompt?: string
+}
+
+const DEMO_MEMBERS = [
+  { user_id: "demo-user", full_name: "Demo User (You)", avatar_url: "" },
+  { user_id: "alex", full_name: "Alex M.", avatar_url: "" },
+  { user_id: "sofia", full_name: "Sofia R.", avatar_url: "" },
+  { user_id: "kenji", full_name: "Kenji T.", avatar_url: "" },
+]
 
 const INITIAL_ITEMS: DemoItem[] = [
   {
@@ -157,9 +177,9 @@ const INITIAL_ITEMS: DemoItem[] = [
 ]
 
 const INITIAL_EXPENSES: DemoExpense[] = [
-  { id: "exp-1", title: "Shinjuku Izakaya Dinner", amount: 168.00, paidBy: "Alex M.", splitType: "equal" },
-  { id: "exp-2", title: "Shinkansen Bullet Train Passes", amount: 320.00, paidBy: "Demo User (You)", splitType: "equal" },
-  { id: "exp-3", title: "teamLab Planets Group Tickets", amount: 152.00, paidBy: "Sofia R.", splitType: "equal" },
+  { id: "exp-1", title: "Shinjuku Izakaya Dinner", amount: 168.00, paidBy: "Alex M.", paidById: "alex", splitType: "equal" },
+  { id: "exp-2", title: "Shinkansen Bullet Train Passes", amount: 320.00, paidBy: "Demo User (You)", paidById: "demo-user", splitType: "equal" },
+  { id: "exp-3", title: "teamLab Planets Group Tickets", amount: 152.00, paidBy: "Sofia R.", paidById: "sofia", splitType: "equal" },
 ]
 
 export default function DemoPage() {
@@ -169,12 +189,29 @@ export default function DemoPage() {
   const [activeTab, setActiveTab] = useState<"itinerary" | "expenses" | "plabot">("itinerary")
   const [botPrompt, setBotPrompt] = useState("")
   const [botLoading, setBotLoading] = useState(false)
-  const [botMessages, setBotMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([
+  const [botSource, setBotSource] = useState<"live" | "sample" | "streaming" | "error">("sample")
+  const [botMessages, setBotMessages] = useState<DemoChatMessage[]>([
     {
+      id: "welcome-1",
       role: "assistant",
-      content: "Kon'nichiwa! 🌸 I'm PlaBot, your AI group travel concierge for Tokyo. Ask me for recommendations, hidden gems, or itinerary advice for your 5-day trip!"
+      content: "Kon'nichiwa! 🌸 I'm PlaBot, your AI group travel concierge for Tokyo. Ask me for recommendations, hidden gems, or itinerary advice for your 5-day trip!",
+      isSample: true
     }
   ])
+
+  // Compute live simplified repayments from the current expense ledger
+  const computedSettlements = useMemo(() => {
+    const formatted = expenses.map(e => ({
+      id: e.id,
+      plan_id: "demo-plan",
+      paid_by: e.paidById,
+      title: e.title,
+      amount: e.amount,
+      split_type: e.splitType,
+      split_details: null
+    }))
+    return calculateSimplifiedSplits(formatted, DEMO_MEMBERS)
+  }, [expenses])
 
   // Voting simulation
   const handleVote = (itemId: string, direction: "up" | "down") => {
@@ -186,13 +223,11 @@ export default function DemoPage() {
       let userVoted = item.userVoted
 
       if (userVoted === direction) {
-        // Toggle off
         if (direction === "up") upvotes--
         else downvotes--
         userVoted = null
         toast.info("Vote removed")
       } else {
-        // Switch or apply vote
         if (userVoted === "up") upvotes--
         if (userVoted === "down") downvotes--
 
@@ -211,66 +246,101 @@ export default function DemoPage() {
     }))
   }
 
-  // PlaBot Chat Simulation / Live Response
-  const handleSendPrompt = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault()
-    if (!botPrompt.trim() || botLoading) return
+  // PlaBot Chat Simulation & Live Response with honest labeling and timeout
+  const executeSendPrompt = async (promptToSend: string, isRetry = false) => {
+    if (!promptToSend.trim() || botLoading) return
 
-    const userText = botPrompt.trim()
     setBotPrompt("")
-    setBotMessages(prev => [...prev, { role: "user", content: userText }])
     setBotLoading(true)
+    setBotSource("streaming")
+
+    const userMsgId = `user-${Date.now()}`
+    const assistantMsgId = `assistant-${Date.now()}`
+
+    if (!isRetry) {
+      setBotMessages(prev => [
+        ...prev,
+        { id: userMsgId, role: "user", content: promptToSend }
+      ])
+    } else {
+      setBotMessages(prev => prev.filter(m => !m.isError))
+    }
+
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 20000)
 
     try {
+      const historyPayload = botMessages
+        .filter(m => !m.isError)
+        .map(m => ({ role: m.role, content: m.content }))
+
       const res = await fetch("/api/plabot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: [
-            { role: "system", content: "You are PlaBot, an enthusiastic, knowledgeable travel planner assisting with a 5-day group trip to Tokyo. Answer concisely with bullet points and realistic prices in USD or JPY." },
-            ...botMessages.map(m => ({ role: m.role, content: m.content })),
-            { role: "user", content: userText }
+            {
+              role: "system",
+              content: "You are PlaBot, an enthusiastic, knowledgeable travel planner assisting with a 5-day group trip to Tokyo. Answer concisely using markdown formatting (bullet points, bold text) and realistic prices in USD or JPY."
+            },
+            ...historyPayload,
+            { role: "user", content: promptToSend }
           ]
-        })
+        }),
+        signal: controller.signal
       })
 
-      if (res.ok && res.body) {
-        const reader = res.body.getReader()
-        const decoder = new TextDecoder()
-        let fullAnswer = ""
+      clearTimeout(timeoutId)
 
-        // Append assistant message placeholder
-        setBotMessages(prev => [...prev, { role: "assistant", content: "" }])
-
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-          const chunk = decoder.decode(value, { stream: true })
-          fullAnswer += chunk
-          setBotMessages(prev => {
-            const next = [...prev]
-            next[next.length - 1] = { role: "assistant", content: fullAnswer }
-            return next
-          })
-        }
-      } else {
-        // Fallback friendly response if unauthenticated or error
-        setTimeout(() => {
-          setBotMessages(prev => [
-            ...prev,
-            {
-              role: "assistant",
-              content: `Great question about "${userText}"! For your Tokyo itinerary, I highly recommend visiting Omoide Yokocho in Shinjuku for late-night skewers, or grabbing breakfast at Daiwa Sushi near Toyosu Market. Both offer unforgettable flavors and authentic Tokyo vibes!`
-            }
-          ])
-        }, 600)
+      if (!res.ok) {
+        throw new Error(`API returned status ${res.status}`)
       }
-    } catch {
+      if (!res.body) {
+        throw new Error("No response stream body")
+      }
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let fullAnswer = ""
+
+      setBotMessages(prev => [
+        ...prev,
+        { id: assistantMsgId, role: "assistant", content: "", isSample: false }
+      ])
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        const chunk = decoder.decode(value, { stream: true })
+        fullAnswer += chunk
+        setBotMessages(prev =>
+          prev.map(m => m.id === assistantMsgId ? { ...m, content: fullAnswer } : m)
+        )
+      }
+
+      if (!fullAnswer.trim()) {
+        throw new Error("Stream closed with empty content")
+      }
+
+      setBotSource("live")
+    } catch (err: any) {
+      clearTimeout(timeoutId)
+      console.warn("Demo PlaBot request failed:", err)
+
+      const isTimeout = err.name === "AbortError"
+      const errorText = isTimeout
+        ? "Request timed out after 20 seconds."
+        : "Live AI stream could not be reached."
+
+      setBotSource("error")
       setBotMessages(prev => [
         ...prev,
         {
+          id: assistantMsgId,
           role: "assistant",
-          content: `Here are top recommendations for "${userText}": 1. Shibuya Sky at sunset for panoramic city views. 2. Harajuku for vintage shopping along Cat Street. 3. Yanaka Ginza for an authentic old-town Tokyo feel with cat-themed street snacks!`
+          content: `${errorText} You can retry the live connection or load an offline sample answer below.`,
+          isError: true,
+          failedPrompt: promptToSend
         }
       ])
     } finally {
@@ -278,20 +348,58 @@ export default function DemoPage() {
     }
   }
 
+  const handleLoadSampleAnswer = (prompt: string) => {
+    const sampleContent = `**Sample Tokyo Recommendations for "${prompt}":**
+- **Shibuya Sky**: Visit during golden hour for panoramic 360-degree city views ($18 / person).
+- **Cat Street in Harajuku**: Wander quiet pedestrian backstreets packed with specialty coffee and vintage boutiques.
+- **Omoide Yokocho (Shinjuku)**: Enjoy authentic charcoal yakitori and highballs in lantern-lit alleyways.
+
+*Estimated Budget:* $25-$45 per person.`
+
+    setBotMessages(prev => {
+      const withoutError = prev.filter(m => !m.isError)
+      return [
+        ...withoutError,
+        {
+          id: `sample-${Date.now()}`,
+          role: "assistant",
+          content: sampleContent,
+          isSample: true
+        }
+      ]
+    })
+    setBotSource("sample")
+    toast.info("Loaded offline sample answer")
+  }
+
+  const handleSendPrompt = (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    executeSendPrompt(botPrompt)
+  }
+
   // Expense calculation
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0)
-  const perPersonExpense = (totalExpenses / 4).toFixed(2)
+  const perPersonExpense = (totalExpenses / DEMO_MEMBERS.length).toFixed(2)
 
   const handleAddSampleExpense = () => {
+    const sampleOptions = [
+      { title: "Tsukiji Seafood Tasting & Matcha", amount: 64.00, paidBy: "Kenji T.", paidById: "kenji" },
+      { title: "Hakone Ropeway Cable Car Passes", amount: 88.00, paidBy: "Sofia R.", paidById: "sofia" },
+      { title: "Ramen Dinner at Afuri Harajuku", amount: 56.00, paidBy: "Alex M.", paidById: "alex" },
+    ]
+    const nextIdx = (expenses.length - 3) % sampleOptions.length
+    const sample = sampleOptions[Math.max(0, nextIdx)]
+
     const newExp: DemoExpense = {
       id: `exp-${Date.now()}`,
-      title: "Tsukiji Seafood Tasting & Matcha",
-      amount: 64.00,
-      paidBy: "Kenji T.",
+      title: sample.title,
+      amount: sample.amount,
+      paidBy: sample.paidBy,
+      paidById: sample.paidById,
       splitType: "equal"
     }
     setExpenses(prev => [newExp, ...prev])
-    toast.success("Added sample expense: $64.00 (Split evenly among 4 members)")
+    toast.success(`Added sample expense: $${sample.amount.toFixed(2)} paid by ${sample.paidBy}`)
   }
 
   const handleReset = () => {
@@ -349,7 +457,7 @@ export default function DemoPage() {
                   ✨ Seeded Recruiter Workspace
                 </Badge>
                 <Badge variant="outline" className="border-slate-700 text-slate-300 text-xs">
-                  ● 4 Group Members Online
+                  ● 4 Demo Members (Simulated Presence)
                 </Badge>
               </div>
               <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
@@ -525,7 +633,7 @@ export default function DemoPage() {
               <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800">
                 <span className="text-xs uppercase font-bold text-slate-400">Total Group Spend</span>
                 <p className="text-3xl font-black text-slate-900 dark:text-white mt-1">${totalExpenses.toFixed(2)}</p>
-                <p className="text-xs text-slate-500 mt-1">Converted to USD at live spot rates</p>
+                <p className="text-xs text-slate-500 mt-1">Sample expenses in USD (Multi-currency supported)</p>
               </div>
               <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800">
                 <span className="text-xs uppercase font-bold text-slate-400">Per Person Share</span>
@@ -535,12 +643,12 @@ export default function DemoPage() {
               <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col justify-between">
                 <div>
                   <span className="text-xs uppercase font-bold text-slate-400">Interactive Action</span>
-                  <p className="text-xs text-slate-500 mt-1">Test the expense ledger and split settlements.</p>
+                  <p className="text-xs text-slate-500 mt-1">Test adding expenses to see settlements dynamically rebalance.</p>
                 </div>
                 <Button 
                   onClick={handleAddSampleExpense}
                   size="sm"
-                  className="mt-3 bg-[#16795A] hover:bg-[#115E46] text-white text-xs font-bold rounded-xl"
+                  className="mt-3 bg-[#16795A] hover:bg-[#115E46] text-white text-xs font-bold rounded-xl cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5 mr-1" /> Add Sample Expense
                 </Button>
@@ -567,14 +675,39 @@ export default function DemoPage() {
               ))}
             </div>
 
-            {/* Simulated Balance Settlement */}
-            <div className="p-5 bg-emerald-50/40 dark:bg-emerald-950/20 rounded-2xl border border-emerald-100 dark:border-emerald-900/30">
-              <h4 className="font-bold text-sm text-emerald-900 dark:text-emerald-200 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Simplified Repayments (Calculated Automatically)
-              </h4>
-              <p className="text-xs text-emerald-800/80 dark:text-emerald-400/80 mt-1">
-                Alex M. owes Demo User (You) $42.00 • Sofia R. settles with Kenji T. for $18.50
-              </p>
+            {/* Dynamic Balance Settlement */}
+            <div className="p-5 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-100 dark:border-emerald-900/40">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-bold text-sm text-emerald-900 dark:text-emerald-200 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Simplified Repayments (Calculated Live)
+                </h4>
+                <Badge variant="outline" className="text-[10px] border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300">
+                  {computedSettlements.length} {computedSettlements.length === 1 ? "settlement" : "settlements"} needed
+                </Badge>
+              </div>
+              {computedSettlements.length === 0 ? (
+                <p className="text-xs text-emerald-700 dark:text-emerald-300">
+                  All group members are settled up! No outstanding balances.
+                </p>
+              ) : (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {computedSettlements.map((s, idx) => {
+                    const fromName = DEMO_MEMBERS.find(m => m.user_id === s.from)?.full_name || s.from
+                    const toName = DEMO_MEMBERS.find(m => m.user_id === s.to)?.full_name || s.to
+                    return (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-emerald-200 dark:border-emerald-800/60 text-xs font-semibold text-emerald-950 dark:text-emerald-200 shadow-2xs"
+                      >
+                        <span className="text-slate-700 dark:text-slate-300">{fromName}</span>
+                        <span className="text-emerald-600 font-bold">owes</span>
+                        <span className="text-slate-700 dark:text-slate-300">{toName}</span>
+                        <span className="font-black text-[#16795A] dark:text-emerald-400 ml-0.5">${s.amount.toFixed(2)}</span>
+                      </span>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -593,27 +726,89 @@ export default function DemoPage() {
                   <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">● Connected to Tokyo Trip Context</p>
                 </div>
               </div>
-              <Badge variant="outline" className="text-xs">Live AI Response</Badge>
+
+              {/* Honest Status Badge */}
+              {botSource === "streaming" ? (
+                <Badge variant="outline" className="text-xs border-emerald-500 text-emerald-600 dark:text-emerald-400 animate-pulse flex items-center gap-1">
+                  <Loader2 className="w-3 h-3 animate-spin" /> Live AI Streaming (Groq)
+                </Badge>
+              ) : botSource === "live" ? (
+                <Badge variant="outline" className="text-xs border-emerald-500 text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-emerald-500" /> Live AI Response (Groq)
+                </Badge>
+              ) : botSource === "error" ? (
+                <Badge variant="outline" className="text-xs border-red-400 text-red-600 dark:text-red-400">
+                  Connection Error
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="text-xs border-amber-400 text-amber-700 dark:text-amber-400 bg-amber-50/50 dark:bg-amber-950/20">
+                  Offline Sample Response
+                </Badge>
+              )}
             </div>
 
             {/* Chat Messages */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-              {botMessages.map((msg, idx) => (
+              {botMessages.map((msg) => (
                 <div
-                  key={idx}
+                  key={msg.id}
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
                     className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 text-xs sm:text-sm leading-relaxed ${
                       msg.role === "user"
-                        ? "bg-[#16795A] text-white rounded-br-none"
-                        : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-bl-none"
+                        ? "bg-[#16795A] text-white rounded-br-none whitespace-pre-wrap"
+                        : msg.isError
+                          ? "bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 text-red-900 dark:text-red-200 rounded-bl-none"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-bl-none"
                     }`}
                   >
-                    {msg.content || (
+                    {msg.role === "assistant" && (
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                          {msg.isSample ? "Sample Content" : "PlaBot"}
+                        </span>
+                        {msg.isSample && (
+                          <span className="text-[10px] bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 px-1.5 py-0.5 rounded font-medium">
+                            Offline Demo
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {msg.content ? (
+                      msg.role === "assistant" && !msg.isError ? (
+                        <MarkdownText content={msg.content} />
+                      ) : (
+                        <p className="whitespace-pre-wrap">{msg.content}</p>
+                      )
+                    ) : (
                       <span className="flex items-center gap-2 text-slate-400">
                         <Loader2 className="w-3.5 h-3.5 animate-spin" /> Thinking...
                       </span>
+                    )}
+
+                    {msg.isError && (
+                      <div className="mt-3 pt-2.5 border-t border-red-200 dark:border-red-900/50 flex flex-wrap gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => executeSendPrompt(msg.failedPrompt || "", true)}
+                          disabled={botLoading}
+                          className="h-7 text-xs border-red-300 dark:border-red-800 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30 font-bold cursor-pointer"
+                        >
+                          <RotateCcw className="w-3 h-3 mr-1" /> Retry Live Call
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleLoadSampleAnswer(msg.failedPrompt || "Tokyo")}
+                          disabled={botLoading}
+                          className="h-7 text-xs font-semibold cursor-pointer"
+                        >
+                          Load Offline Sample Answer
+                        </Button>
+                      </div>
                     )}
                   </div>
                 </div>

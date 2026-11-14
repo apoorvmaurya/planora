@@ -251,9 +251,21 @@ export default function PublicHomePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                { stat: "78%", text: "of group plans never happen", desc: "Lost in chaotic chat threads and endless scrolling." },
-                { stat: "11", text: "apps used for one trip", desc: "Spreadsheets, chats, notes, and payment apps." },
-                { stat: "0", text: "tools for follow-through", desc: "Until Planora's Momentum Engine." }
+                { 
+                  badge: "Chat Thread Chaos", 
+                  title: "Plans get buried in the group chat", 
+                  desc: "Great travel ideas get lost across unread messages, screenshot dumps, and forgotten polls with no clear decisions." 
+                },
+                { 
+                  badge: "Scattered Tools", 
+                  title: "Too many disconnected apps", 
+                  desc: "Juggling spreadsheets for itineraries, notes for flight links, and separate tools for expense splits creates coordination fatigue." 
+                },
+                { 
+                  badge: "Decision Paralysis", 
+                  title: "Momentum stalls before booking", 
+                  desc: "Without collaborative voting, democratic consensus, and automated reminders, enthusiasm fades before dates get locked in." 
+                }
               ].map((item, i) => (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -261,14 +273,16 @@ export default function PublicHomePage() {
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ delay: i * 0.1 }}
                   key={i}
-                  className="bg-slate-50 dark:bg-slate-900 rounded-[2rem] p-8 lg:p-10 border border-slate-100 dark:border-slate-800 text-center relative overflow-hidden group hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-black/40 transition-all duration-300"
+                  className="bg-slate-50 dark:bg-slate-900 rounded-[2rem] p-8 lg:p-10 border border-slate-100 dark:border-slate-800 text-left relative overflow-hidden group hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-black/40 transition-all duration-300"
                 >
                   <div className="absolute -top-6 -right-6 p-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500 rotate-12">
                     <Sparkles className="w-32 h-32 text-[#16795A]" />
                   </div>
-                  <h3 className="text-5xl lg:text-6xl font-black text-[#16795A] mb-4 tracking-tight">{item.stat}</h3>
-                  <p className="text-xl font-bold text-slate-900 dark:text-slate-50 mb-3">{item.text}</p>
-                  <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{item.desc}</p>
+                  <span className="inline-block text-xs font-bold uppercase tracking-wider text-[#16795A] bg-teal-50 dark:bg-teal-950/40 px-3 py-1 rounded-full mb-4">
+                    {item.badge}
+                  </span>
+                  <h3 className="text-xl lg:text-2xl font-bold text-slate-900 dark:text-slate-50 mb-3">{item.title}</h3>
+                  <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">{item.desc}</p>
                 </motion.div>
               ))}
             </div>

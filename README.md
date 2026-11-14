@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js" alt="Next.js 15" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8?style=for-the-badge&logo=tailwind-css" alt="Tailwind v4" />
   <img src="https://img.shields.io/badge/Supabase-Database-3ecf8e?style=for-the-badge&logo=supabase" alt="Supabase" />
-  <img src="https://img.shields.io/badge/Groq-Llama_AI-f55?style=for-the-badge" alt="Groq Llama" />
+  <img src="https://img.shields.io/badge/Groq-GPT--OSS_AI-f55?style=for-the-badge" alt="Groq GPT-OSS" />
   <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="MIT License" />
 </p>
 
@@ -44,7 +44,7 @@ graph TD
     end
 
     subgraph Core Engines
-        SecurityGate -->|Vercel AI SDK| GroqAPI[Groq API / Llama Inference]
+        SecurityGate -->|Vercel AI SDK| GroqAPI[Groq API / GPT-OSS & Prompt Guard]
         AccessControl -->|Queries & Operations| SupabaseDB[Supabase Postgres DB]
         SupabaseDB -->|Postgres Triggers| ActivityLogs[Activity Logging]
         SupabaseDB -->|Edge Function Cron| EdgeFunctions[Supabase Edge Functions & Resend]
@@ -70,7 +70,7 @@ graph TD
 
 ### 🗳️ Democratic Decision Engine
 *   **Consensus-Driven Promotion**: Automatically promotes group suggestions to the official itinerary when all members vote and the upvotes exceed downvotes, cleaning up alternatives in real time.
-*   **AI scout Tie-Breaker**: Automatically calls the Llama Scout tie-breaker tool when consensus results in a tie, suggesting an alternative item matching the budget and category.
+*   **AI scout Tie-Breaker**: Automatically calls the AI Scout tie-breaker tool when consensus results in a tie, suggesting an alternative item matching the budget and category.
 *   **Real-time synchronization**: Propagates voting cards and consensus actions instantly to all active browsers using Supabase Realtime subscriptions.
 
 ### 📊 Multi-Currency Expense Splitter & Itemized Claiming
@@ -85,7 +85,7 @@ graph TD
 - **Node.js** &ge; 18.0.0
 - **pnpm** &ge; 9.0.0 (Recommended)
 - A **Supabase** project instance
-- A **Groq Cloud** API key
+- A **Groq Cloud** API key (serving OpenAI GPT-OSS 20B/120B for itineraries & chat, and Llama Prompt Guard 86M for security)
 - A **Resend** mail delivery account
 - A **LocationIQ** geocoding token
 
@@ -179,36 +179,36 @@ A VS Code Dev Container configuration is also included at `.devcontainer/devcont
 
 ## 📂 Codebase Layout & Modular Architecture
 
-Planora strictly adheres to a modular design principle with **0 files exceeding 500 lines of code** across the entire repository. Heavy client views and AI tool orchestration are decomposed into focused, single-responsibility components:
+Planora adheres to a modular design principle. Heavy client views and AI tool orchestration are decomposed into focused, single-responsibility components:
 
 ```
 planora/
 ├── app/
 │   ├── (app)/              # Authenticated dashboard, plans, groups, and settings
-│   │   ├── plans/[planId]/ # Modularized trip view (<450 LOC) with extracted tab/drawer components
+│   │   ├── plans/[planId]/ # Modular trip view with extracted tab/drawer components
 │   │   ├── plans/new/      # 4-step wizard decomposed into dedicated step components
 │   │   └── groups/         # Group collaborative space and tabbed settings panels
 │   ├── (auth)/             # Authentication flow (sign up, sign in, onboarding)
-│   ├── (public)/           # High-conversion landing page and guides
+│   ├── (public)/           # High-conversion landing page, demo, and guides
 │   ├── api/                # Strictly validated API routes with Zod schema checks
 │   └── globals.css         # Modern CSS system, HSL color tokens, and animations
 ├── components/
 │   ├── layout/             # Navigation controls and responsive sidebar
 │   ├── providers/          # Authentication and theme context providers
 │   ├── shared/             # Specialized modular UI components:
-│   │   ├── PlanChatDrawer.tsx          # Real-time AI chat slide-over (<250 LOC)
-│   │   ├── PlanItineraryTab.tsx        # Chronological day slot & map orchestration (<210 LOC)
-│   │   ├── PlanSidebar.tsx             # Trip metadata, group avatars, and actions (<190 LOC)
-│   │   ├── PlanActivityLogDrawer.tsx   # Audit history with diff view & 1-click revert (<200 LOC)
-│   │   ├── EditPlanComparisonPanel.tsx # Side-by-side AI draft comparison & merge (<320 LOC)
-│   │   ├── EditPlanConfigForm.tsx      # Trip configuration and regeneration controls (<170 LOC)
-│   │   └── TransitPanel.tsx            # Multi-modal transit route suggestions & sync (<220 LOC)
+│   │   ├── PlanChatDrawer.tsx          # Real-time AI chat slide-over
+│   │   ├── PlanItineraryTab.tsx        # Chronological day slot & map orchestration
+│   │   ├── PlanSidebar.tsx             # Trip metadata, group avatars, and actions
+│   │   ├── PlanActivityLogDrawer.tsx   # Audit history with diff view & 1-click revert
+│   │   ├── EditPlanComparisonPanel.tsx # Side-by-side AI draft comparison & merge
+│   │   ├── EditPlanConfigForm.tsx      # Trip configuration and regeneration controls
+│   │   └── TransitPanel.tsx            # Multi-modal transit route suggestions & sync
 │   └── ui/                 # Atomic design primitives (shadcn/ui accessible components)
 ├── hooks/                  # Specialized reactive hooks (usePlanDetails, useGroup, useFriends)
 ├── lib/
 │   ├── ai/                 # Centralized AI model configs (AI_MODELS), prompt schemas, and tools:
-│   │   ├── planChatTools.ts            # PlaBot tool definitions & execution (<330 LOC)
-│   │   └── bulkUpdateTool.ts           # Atomic batch itinerary upsert/delete operations (<290 LOC)
+│   │   ├── planChatTools.ts            # PlaBot tool definitions & execution
+│   │   └── bulkUpdateTool.ts           # Atomic batch itinerary upsert/delete operations
 │   ├── itinerary/          # Logical sorting, time-of-day weighting, and database reordering utilities
 │   ├── locationiq/         # Geocoding helpers and request rate-limiting queues
 │   ├── security/           # Centralized authorization (getPlanAccess), rate-limiting, and guardrails
